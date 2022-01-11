@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <ProjectOutputs />
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\OBJGeometryShader.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\OBJPixelShader.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\OBJVertexShader.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\SpritePS.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\SpriteVS.cso</FullPath>
+    </ContentFile>
+  </ContentFiles>
+  <SatelliteDlls />
+  <NonRecipeFileRefs />
+</Project>
