@@ -1,6 +1,7 @@
 #include "SpriteManager.h"
+#include "TexManager.h"
 
-void SpriteManager::CreateSpriteManager(ID3D12Device *dev, int window_w, int window_h)
+void SpriteManager::CreateSpriteManager(ID3D12Device *dev, ID3D12GraphicsCommandList *cmd, int window_w, int window_h)
 {
     //ウィンドウサイズ設定
     window_width = window_width;
@@ -10,12 +11,15 @@ void SpriteManager::CreateSpriteManager(ID3D12Device *dev, int window_w, int win
     matViewport.r[1].m128_f32[1] = -window_height / 2;
     matViewport.r[3].m128_f32[0] = window_width / 2;
     matViewport.r[3].m128_f32[1] = window_height / 2;
+    //デバイスとコマンドリストのポインタを格納
+    this->dev = dev;
+    this->cmd = cmd;
     //パイプライン生成
-    CreateSpritePipeline(dev);
+    CreateSpritePipeline();
     matProjection = XMMatrixOrthographicOffCenterLH(0.0f, (float)this->window_width, (float)this->window_height, 0.0f, 0.0f, 1.0f);
 }
 
-void SpriteManager::CreateSpritePipeline(ID3D12Device *dev)
+void SpriteManager::CreateSpritePipeline()
 {
     HRESULT result;
 
@@ -27,7 +31,7 @@ void SpriteManager::CreateSpritePipeline(ID3D12Device *dev)
 
     //頂点シェーダーの読み込みとコンパイル
     result = D3DCompileFromFile(
-        L"../RakiEngine_Library/Shaders/SpriteVS.hlsl", //シェーダーファイル名
+        L"Resources/Shaders/SpriteVS.hlsl", //シェーダーファイル名
         nullptr,//シェーダーマクロオブジェクト（今回は使わない）
         D3D_COMPILE_STANDARD_FILE_INCLUDE, //インクルードオブジェクト（インクルード可能にする）
         "main", "vs_5_0", //エントリーポイント名、シェーダーモデル指定
@@ -54,7 +58,7 @@ void SpriteManager::CreateSpritePipeline(ID3D12Device *dev)
 
     //ピクセルシェーダーの読み込みとコンパイル
     result = D3DCompileFromFile(
-        L"../RakiEngine_Library/Shaders/SpritePS.hlsl",
+        L"Resources/Shaders/SpritePS.hlsl",
         nullptr,
         D3D_COMPILE_STANDARD_FILE_INCLUDE,
         "main", "ps_5_0",
@@ -173,79 +177,14 @@ void SpriteManager::CreateSpritePipeline(ID3D12Device *dev)
     result = dev->CreateGraphicsPipelineState(&gpipeline, IID_PPV_ARGS(&pipelinestate));
 
     //デスクリプタヒープ生成
-    D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc{};
-    descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    descHeapDesc.NumDescriptors = MAX_TEX_NUM;
-    result = dev->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descheap));
+    //D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc{};
+    //descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+    //descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    //descHeapDesc.NumDescriptors = MAX_TEX_NUM;
+    //result = dev->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descheap));
 }
 
-void SpriteManager::LoadSpriteTexture(UINT texNumber, const wchar_t *filename, ID3D12Device *dev)
-{
-    assert(texNumber <= MAX_TEX_NUM - 1);
-
-    HRESULT result;
-
-    //WICテクスチャのロード
-    TexMetadata metadata{};
-    ScratchImage scratchImg{};
-    //読み込み
-    result = LoadFromWICFile(filename,
-        WIC_FLAGS_NONE,
-        &metadata, scratchImg
-    );
-    const Image *img = scratchImg.GetImage(0, 0, 0);
-
-    // テクスチャバッファ生成
-    D3D12_HEAP_PROPERTIES texHeapProp{};//テクスチャヒープ設定
-    texHeapProp.Type = D3D12_HEAP_TYPE_CUSTOM;
-    texHeapProp.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;
-    texHeapProp.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;
-
-    D3D12_RESOURCE_DESC texresDesc{};//リソース設定
-    texresDesc.Dimension = static_cast<D3D12_RESOURCE_DIMENSION>(metadata.dimension);//2Dテクスチャ用
-    texresDesc.Format = metadata.format;//RGBAフォーマット
-    texresDesc.Width = metadata.width;//横
-    texresDesc.Height = (UINT)metadata.height;//縦
-    texresDesc.DepthOrArraySize = (UINT16)metadata.arraySize;
-    texresDesc.MipLevels = (UINT16)metadata.mipLevels;
-    texresDesc.SampleDesc.Count = 1;
-
-    result = dev->CreateCommittedResource(//GPUリソース生成
-        &texHeapProp,
-        D3D12_HEAP_FLAG_NONE,
-        &texresDesc,
-        D3D12_RESOURCE_STATE_GENERIC_READ,
-        nullptr,
-        IID_PPV_ARGS(&texbuff[texNumber])
-    );
-
-    //テクスチャバッファへのデータ転送
-    result = texbuff[texNumber]->WriteToSubresource(
-        0,
-        nullptr,
-        img->pixels,
-        (UINT)img->rowPitch,
-        (UINT)img->slicePitch
-    );
-
-    //シェーダーリソースビュー設定
-    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-    srvDesc.Format = metadata.format;
-    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-    srvDesc.Texture2D.MipLevels = 1;
-
-    //ヒープの2番目にシェーダーリソースビュー作成
-    D3D12_CPU_DESCRIPTOR_HANDLE cpuDescHandleSRV = descheap.Get()->GetCPUDescriptorHandleForHeapStart();
-    D3D12_GPU_DESCRIPTOR_HANDLE gpuDescHandleSRV = descheap.Get()->GetGPUDescriptorHandleForHeapStart();
-    dev->CreateShaderResourceView(texbuff[texNumber].Get(), &srvDesc,
-        CD3DX12_CPU_DESCRIPTOR_HANDLE(descheap.Get()->GetCPUDescriptorHandleForHeapStart(),texNumber, 
-        dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)));
-
-}
-
-void SpriteManager::SetCommonBeginDraw(ID3D12GraphicsCommandList *cmd)
+void SpriteManager::SetCommonBeginDraw()
 {
     //パイプラインステートをセット
     cmd->SetPipelineState(pipelinestate.Get());
@@ -254,6 +193,6 @@ void SpriteManager::SetCommonBeginDraw(ID3D12GraphicsCommandList *cmd)
     //プリミティブ形状設定
     cmd->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
     //デスクリプタヒープ設定
-    ID3D12DescriptorHeap *ppHeaps[] = { descheap.Get() };
+    ID3D12DescriptorHeap *ppHeaps[] = { TexManager::texDsvHeap.Get() };
     cmd->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 }

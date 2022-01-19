@@ -8,6 +8,7 @@
 #include <d3dcompiler.h>
 #include <wrl.h>
 #include <vector>
+#include <memory>
 
 using namespace Microsoft::WRL;
 using namespace std;
@@ -161,8 +162,11 @@ public:
 	/// 3Dオブジェクトの描画を実行するための前準備を行う
 	/// </summary>
 	/// <param name="cmd">ID3D12GraphicsCommandListのポインタ</param>
-	void SetCommonBeginDrawObject3D(ID3D12GraphicsCommandList *cmd);
+	void SetCommonBeginDrawObject3D();
 
+	static ID3D12Device *GetDev() {
+		return dev;
+	}
 
 private:
 
@@ -170,7 +174,7 @@ private:
 	bool isUpdated = false;
 
 	//デバイスのポインタ
-	ID3D12Device *dev;
+	static ID3D12Device *dev;
 
 
 	/// <summary>

@@ -1,4 +1,5 @@
 #include "NY_Camera.h"
+#include "Raki_WinAPI.h"
 
 NY_Camera::NY_Camera(XMFLOAT3 eye_, XMFLOAT3 target_, XMFLOAT3 up_)
 {
@@ -9,6 +10,13 @@ NY_Camera::NY_Camera(XMFLOAT3 eye_, XMFLOAT3 target_, XMFLOAT3 up_)
 
 	//ビュー行列格納
 	_matView = XMMatrixLookAtLH(XMLoadFloat3(&_eye), XMLoadFloat3(&_target), XMLoadFloat3(&_up));
+
+	//プロジェクション行列生成
+	_matProjection = XMMatrixPerspectiveFovLH(
+		XMConvertToRadians(60.0f),
+		(float)Raki_WinAPI::window_width / (float)Raki_WinAPI::window_height,
+		0.1f, 1000.0f
+	);
 
 	//ローカル座標生成
 	_camRocal = XMMatrixIdentity();
@@ -237,4 +245,15 @@ void NY_Camera::UpdateFollowingViewAndWorld(XMMATRIX target)
 
 	//ビューの最終更新
 	_matView *= _camWorld;
+}
+
+void NY_Camera::UpdateViewMat() {
+	_matView = XMMatrixIdentity();
+	_matView = XMMatrixLookAtLH(XMLoadFloat3(&_eye), XMLoadFloat3(&_target), XMLoadFloat3(&_up));
+	//プロジェクション行列生成
+	_matProjection = XMMatrixPerspectiveFovLH(
+		XMConvertToRadians(60.0f),
+		(float)Raki_WinAPI::window_width / (float)Raki_WinAPI::window_height,
+		0.1f, 1000.0f
+	);
 }

@@ -10,8 +10,12 @@ public:
 	XMFLOAT3 _eye;//視点
 	XMFLOAT3 _target;//注視点
 	XMFLOAT3 _up;//上ベクトル
+
 	//ビュー行列
 	XMMATRIX _matView;
+
+	//射影変換行列
+	XMMATRIX _matProjection;
 
 	//アフィン変換情報
 	XMFLOAT3 _scale{ 1,1,1 };
@@ -28,7 +32,9 @@ public:
 public:
 	//コンストラクタ
 	NY_Camera(XMFLOAT3 eye_, XMFLOAT3 target_, XMFLOAT3 up_);
-	NY_Camera() {};
+	NY_Camera() {
+
+	};
 
 	//カメラが追従するオブジェクトの設定
 	//void SetFollowingObject(NY_Object3D *followObjWorld) { _matFollowObject = followObjWorld; }
@@ -54,9 +60,6 @@ public:
 	void UpdateFollowingViewAndWorld(XMMATRIX target, XMFLOAT3 range);
 	void UpdateFollowingViewAndWorld(XMMATRIX target);
 
-	void UpdateViewMat() {
-		_matView = XMMatrixIdentity();
-		_matView = XMMatrixLookAtLH(XMLoadFloat3(&_eye), XMLoadFloat3(&_target), XMLoadFloat3(&_up));
-	}
+	void UpdateViewMat();
 };
 

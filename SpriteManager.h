@@ -61,7 +61,8 @@ const int MAX_TEX_NUM = 512;
 
 class SpriteManager
 {
-	//template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
 
 private:
 	//スプライト用グラフィックスパイプラインセット
@@ -78,7 +79,7 @@ private:
 		matViewport.r[3].m128_f32[0] = window_width / 2;
 		matViewport.r[3].m128_f32[1] = window_height / 2;
 		//パイプライン生成
-		CreateSpritePipeline(dev);
+		CreateSpritePipeline();
 		matProjection = XMMatrixOrthographicOffCenterLH(0.0f, (float)this->window_width, (float)this->window_height, 0.0f, 0.0f, 1.0f);
 	};
 	SpriteManager() {};
@@ -90,27 +91,27 @@ public:
 	//共通ビューポート行列
 	XMMATRIX matViewport{};
 	//テクスチャ用デスクリプタヒープ
-	ComPtr<ID3D12DescriptorHeap> descheap;
+	//ComPtr<ID3D12DescriptorHeap> descheap;
 	//テクスチャリソース配列
-	ComPtr<ID3D12Resource> texbuff[MAX_TEX_NUM];
+	//ComPtr<ID3D12Resource> texbuff[MAX_TEX_NUM];
 	//ウィンドウサイズ
 	int window_width = 1280, window_height = 720;
 
 
-	void CreateSpriteManager(ID3D12Device *dev, int window_w, int window_h);
+	void CreateSpriteManager(ID3D12Device *dev, ID3D12GraphicsCommandList *cmd, int window_w, int window_h);
 	//スプライトのグラフィックスパイプラインを生成
-	void CreateSpritePipeline(ID3D12Device *dev);
-	//スプライトのテクスチャ読み込み
-	void LoadSpriteTexture(UINT texNumber, const wchar_t *fliename, ID3D12Device *dev);
+	void CreateSpritePipeline();
 	//スプライト共通のグラフィックスコマンドをセット
-	void SetCommonBeginDraw(ID3D12GraphicsCommandList *cmd);
+	void SetCommonBeginDraw();
 
 	//インスタンス取得
 	static SpriteManager *Get() {
 		static SpriteManager mgr;
 		return &mgr;
 	}
-
+	//描画に必要なポインタ
+	ID3D12Device *dev;
+	ID3D12GraphicsCommandList *cmd;
 
 	//コピーコンストラクタ、代入演算子無効化
 	SpriteManager &operator=(const SpriteManager &obj) = delete;

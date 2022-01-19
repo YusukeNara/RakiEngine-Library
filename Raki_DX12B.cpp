@@ -361,6 +361,9 @@ void Raki_DX12B::EndDraw()
 	ID3D12CommandList *cmdLists[] = { commandList.Get() }; // コマンドリストの配列
 	commandQueue->ExecuteCommandLists(1, cmdLists);
 
+	// バッファをフリップ
+	swapchain->Present(1, 0);
+
 	// コマンドリストの実行完了を待つ
 	commandQueue->Signal(fence.Get(), ++fenceVal);
 	if (fence->GetCompletedValue() != fenceVal) {
@@ -373,8 +376,6 @@ void Raki_DX12B::EndDraw()
 	commandAllocator->Reset(); // キューをクリア
 	commandList->Reset(commandAllocator.Get(), nullptr);	// 再びコマンドリストを貯める準備
 
-	// バッファをフリップ
-	swapchain->Present(1, 0);
 }
 
 void Raki_DX12B::ClearRenderTarget()

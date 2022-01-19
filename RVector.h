@@ -20,6 +20,18 @@ public:
 	RVector3 &operator*=(const RVector3 &other) { this->x *= other.x; this->y *= other.y; this->z *= other.z; return *this; }
 	RVector3 &operator/=(const RVector3 &other) { this->x /= other.x; this->y /= other.y; this->z /= other.z; return *this; }
 
+	RVector3 operator+(const XMFLOAT3 &other)const { return RVector3(x + other.x, y + other.y, z + other.z); }
+	RVector3 operator-(const XMFLOAT3 &other)const { return RVector3(x - other.x, y - other.y, z - other.z); }
+	RVector3 operator*(const XMFLOAT3 &other)const { return RVector3(x * other.x, y * other.y, z * other.z); }
+	RVector3 operator/(const XMFLOAT3 &other)const { return RVector3(x / other.x, y / other.y, z / other.z); }
+	RVector3 &operator+=(const XMFLOAT3 &other) { this->x += other.x; this->y += other.y; this->z += other.z; return *this; }
+	RVector3 &operator-=(const XMFLOAT3 &other) { this->x -= other.x; this->y -= other.y; this->z -= other.z; return *this; }
+	RVector3 &operator*=(const XMFLOAT3 &other) { this->x *= other.x; this->y *= other.y; this->z *= other.z; return *this; }
+	RVector3 &operator/=(const XMFLOAT3 &other) { this->x /= other.x; this->y /= other.y; this->z /= other.z; return *this; }
+
+
+	
+
 	bool operator==(const RVector3 &other) { return this->x == other.x && this->y == other.y && this->z == other.z; }
 	bool operator!=(const RVector3 &other) { return !(*this == other); }
 
@@ -44,6 +56,13 @@ inline float distance(const RVector3 &v1,const RVector3 &v2){return sqrtf(pow(v1
 
 inline RVector3 operator*(const float &sum, const RVector3 &sum2) { return RVector3(sum2.x * sum, sum2.y * sum, sum2.z * sum); }
 inline RVector3 operator/(const float &sum, const RVector3 &sum2) { return RVector3(sum2.x / sum, sum2.y / sum, sum2.z / sum); }
+
+//保管
+inline const RVector3 lerp(const RVector3 &s, const RVector3 &e, const float t) {
+	RVector3 start = s;
+	RVector3 end = e;
+	return start * (1.0f - t) + end * t;
+}
 
 //RVector3型を使用した衝突判定プリミティブ
 namespace RV3Colider {
@@ -157,6 +176,63 @@ namespace RV3Colider {
 	/// <param name="coliPos">衝突点を返す変数</param>
 	/// <returns>衝突判定</returns>
 	bool ColisionSphereToPlane(const Sphere &sphere, const Plane &plane, RVector3 *coliPos = nullptr);
+
+	struct Ray {
+		RVector3 start;
+		RVector3 dir;
+	};
+
+	inline RVector3 CalcScreen2World(XMFLOAT2 &scrPos, float fz,float window_w,float window_h,XMMATRIX &prj,XMMATRIX &view) {
+		XMVECTOR pos;
+		//射影変換行列とビューポート行列の逆行列を格納する変数
+		XMMATRIX InvPrj, InvVP,InvV;
+		//各行列の逆行列を出す
+		InvPrj = XMMatrixInverse(nullptr, prj);
+		//ビューポート行列はもとはない？のでここで定義して逆行列を出す
+		InvVP = XMMatrixIdentity();
+		InvVP.r[0].m128_f32[0] = window_w / 2.0f;
+		InvVP.r[1].m128_f32[1] = -window_h / 2.0f;
+		InvVP.r[3].m128_f32[0] = window_w / 2.0f;
+		InvVP.r[3].m128_f32[1] = window_h / 2.0f;
+		InvVP = XMMatrixInverse(nullptr, InvVP);
+
+		InvV = XMMatrixInverse(nullptr, view);
+
+		XMMATRIX inverce = InvVP * InvPrj * InvV;
+		XMVECTOR scr = { scrPos.x,scrPos.y,fz };
+
+		pos = XMVector3TransformCoord(scr, inverce);
+
+		RVector3 returnpos = { pos.m128_f32[0],pos.m128_f32[1],pos.m128_f32[2] };
+		return returnpos;
+	}
+
+	inline Ray CalcScreen2WorldRay(XMFLOAT2 &scrPos, float window_w, float window_h, XMMATRIX &prj,XMMATRIX &view) {
+
+		Ray result;
+		result.start = CalcScreen2World(scrPos, 0, window_w, window_h, prj, view);
+		result.dir = CalcScreen2World(scrPos, 1, window_w, window_h, prj, view);
+		return result;
+	}
+
+	inline bool ColisionRay2Plane(const Ray &ray, const Plane &plane, float *distance = nullptr, RVector3 *inter = nullptr) {
+		const float epsilon = 1.0e-5f;
+		RVector3 n = ray.dir;
+		n.norm();
+		RVector3 pn = plane.normal;
+		pn.norm();
+		float d1 = dot(pn, n);
+		if (d1 > -epsilon) { return false; }
+		float d2 = dot(pn, ray.start);
+		float dist = d2 - plane.distance;
+		float t = dist / -d1;
+		if (t < 0) { return false; }
+		if (distance) { *distance = t; }
+		if (inter) {
+			*inter = ray.start + t * n;
+		}
+		return true;
+	}
 
 	//三角形
 	struct Triangle {

@@ -1,9 +1,9 @@
 #include "Sprite.h"
 #include "NY_Camera.h"
 
+#include "TexManager.h"
 
-
-void Sprite::CreateSprite(ID3D12Device *dev, XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool adjustResourceFlag)
+void Sprite::CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool adjustResourceFlag)
 {
 	HRESULT result;
 
@@ -21,17 +21,6 @@ void Sprite::CreateSprite(ID3D12Device *dev, XMFLOAT2 size, XMFLOAT2 anchor, UIN
 		{{0.0f,0.0f,0.0f},{1.0f,0.0f}},
 	};
 
-    //アンカーポイントに合わせた設定
-    //float left   = (0.0f - spdata.anchorPoint.x) * spdata.size.x;
-    //float right  = (1.0f - spdata.anchorPoint.x) * spdata.size.x;
-    //float top    = (0.0f - spdata.anchorPoint.y) * spdata.size.y;
-    //float bottom = (1.0f - spdata.anchorPoint.y) * spdata.size.y;
-
-    //vertices[0].pos = { left,bottom,0.0f };
-    //vertices[1].pos = { left,   top,0.0f };
-    //vertices[2].pos = { right,bottom,0.0f };
-    //vertices[3].pos = { right,  top,0.0f };
-
 	//頂点データ全体のサイズ = 頂点データ一つ分のサイズ * 頂点データの要素数
 	UINT sizeVB = static_cast<UINT>(sizeof(SpriteVertex) * _countof(vertices));
 
@@ -48,7 +37,7 @@ void Sprite::CreateSprite(ID3D12Device *dev, XMFLOAT2 size, XMFLOAT2 anchor, UIN
     resdesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
     //頂点バッファの生成
-    result = dev->CreateCommittedResource(
+    result = SpriteManager::Get()->dev->CreateCommittedResource(
         &heapprop, //ヒープ設定
         D3D12_HEAP_FLAG_NONE,
         &resdesc, //リソース設定
@@ -75,7 +64,7 @@ void Sprite::CreateSprite(ID3D12Device *dev, XMFLOAT2 size, XMFLOAT2 anchor, UIN
     auto HEAP_PROP = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
     auto RESDESC = CD3DX12_RESOURCE_DESC::Buffer((sizeof(SpConstBufferData) + 0xff) & ~0xff);
     //定数バッファ生成
-    result = dev->CreateCommittedResource(
+    result = SpriteManager::Get()->dev->CreateCommittedResource(
         &HEAP_PROP,
         D3D12_HEAP_FLAG_NONE,
         &RESDESC,
@@ -92,14 +81,12 @@ void Sprite::CreateSprite(ID3D12Device *dev, XMFLOAT2 size, XMFLOAT2 anchor, UIN
     spdata.constBuff->Unmap(0, nullptr);
 
     //リソースに合わせて調整する場合
-    if (adjustResourceFlag == true && SpriteManager::Get()->texbuff[resourceID])
+    if (adjustResourceFlag == true)
     {
         //テクスチャ情報取得
-        D3D12_RESOURCE_DESC resDesc = SpriteManager::Get()->texbuff[spdata.texNumber]->GetDesc();
+        D3D12_RESOURCE_DESC resDesc = TexManager::textureData[resourceID].texBuff->GetDesc();
         //リソースに合わせてサイズ調整
         spdata.size = { (float)resDesc.Width,(float)resDesc.Height };
-        //アンカーポイントに応じた調整
-
     }
     else//しない場合
     {
@@ -159,23 +146,19 @@ void Sprite::UpdateSprite()
     constMap->mat = spdata.matWorld * SpriteManager::Get()->matProjection;
     spdata.constBuff->Unmap(0, nullptr);
 
-    /*constMap->mat = XMMatrixIdentity();
-    constMap->mat = spdata.matWorld * cam._matView * spmgr->matProjection;
-
-    spdata.screenPos = { constMap->mat.r[3].m128_f32[0],constMap->mat.r[3].m128_f32[1] };*/
 }
 
-void Sprite::Draw(ID3D12GraphicsCommandList *cmd,ID3D12Device *dev)
+void Sprite::Draw()
 {
     //頂点バッファセット
-    cmd->IASetVertexBuffers(0, 1, &spdata.vbView);
+    SpriteManager::Get()->cmd->IASetVertexBuffers(0, 1, &spdata.vbView);
     //定数バッファセット
-    cmd->SetGraphicsRootConstantBufferView(0, spdata.constBuff->GetGPUVirtualAddress());
+    SpriteManager::Get()->cmd->SetGraphicsRootConstantBufferView(0, spdata.constBuff->GetGPUVirtualAddress());
     //シェーダーリソースビューをセット
-    cmd->SetGraphicsRootDescriptorTable(1, 
-        CD3DX12_GPU_DESCRIPTOR_HANDLE(SpriteManager::Get()->descheap->GetGPUDescriptorHandleForHeapStart(),
-        spdata.texNumber, dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)));
+    SpriteManager::Get()->cmd->SetGraphicsRootDescriptorTable(1,
+        CD3DX12_GPU_DESCRIPTOR_HANDLE(TexManager::texDsvHeap->GetGPUDescriptorHandleForHeapStart(),
+        spdata.texNumber, SpriteManager::Get()->dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)));
     //描画
-    cmd->DrawInstanced(4, 1, 0, 0);
+    SpriteManager::Get()->cmd->DrawInstanced(4, 1, 0, 0);
 
 }

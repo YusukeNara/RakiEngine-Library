@@ -1,7 +1,7 @@
 #include "NY_Model.h"
 #include "TexManager.h"
 
-void NY_Model3D::LoadObjModel(const char *modelName, ID3D12Device *dev, NY_Object3DManager *mgr)
+void NY_Model3D::LoadObjModel(const char *modelName)
 {
 	//FileStream
 	ifstream file;
@@ -97,7 +97,7 @@ void NY_Model3D::LoadObjModel(const char *modelName, ID3D12Device *dev, NY_Objec
 		if (key == "mtllib") {
 			string filename;
 			line_stream >> filename;
-			LoadMatarial(filename, matarialpath, dev, mgr);
+			LoadMatarial(filename, matarialpath);
 		}
 
 	}
@@ -113,7 +113,7 @@ void NY_Model3D::LoadObjModel(const char *modelName, ID3D12Device *dev, NY_Objec
 	auto RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeVB);
 
 	//頂点バッファ生成
-	result = dev->CreateCommittedResource(
+	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -128,7 +128,7 @@ void NY_Model3D::LoadObjModel(const char *modelName, ID3D12Device *dev, NY_Objec
 
 	RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeIB);
 	//インデックスバッファ生成
-	result = dev->CreateCommittedResource(
+	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -155,7 +155,7 @@ void NY_Model3D::LoadObjModel(const char *modelName, ID3D12Device *dev, NY_Objec
 
 }
 
-void NY_Model3D::LoadMatarial(string fileName, string filepath, ID3D12Device *dev, NY_Object3DManager *mgr)
+void NY_Model3D::LoadMatarial(string fileName, string filepath)
 {
 	ifstream file;
 	//マテリアルファイルオープン
@@ -215,7 +215,7 @@ void NY_Model3D::LoadMatarial(string fileName, string filepath, ID3D12Device *de
 
 }
 
-void NY_Model3D::CreatePlaneModelXY(float x_size, float y_size, float uv_x, float uv_y, UINT useTexNum, ID3D12Device *dev)
+void NY_Model3D::CreatePlaneModelXY(float x_size, float y_size, float uv_x, float uv_y, UINT useTexNum)
 {
 	//頂点データ作成
 	Vertex plane[4] = {
@@ -248,7 +248,7 @@ void NY_Model3D::CreatePlaneModelXY(float x_size, float y_size, float uv_x, floa
 	const auto HEAP_PROP = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeVB);
 	//頂点バッファ生成
-	result = dev->CreateCommittedResource(
+	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -263,7 +263,7 @@ void NY_Model3D::CreatePlaneModelXY(float x_size, float y_size, float uv_x, floa
 
 	RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeIB);
 	//インデックスバッファ生成
-	result = dev->CreateCommittedResource(
+	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -293,7 +293,7 @@ void NY_Model3D::CreatePlaneModelXY(float x_size, float y_size, float uv_x, floa
 
 }
 
-void NY_Model3D::CreatePlaneModelXZ(float x_size, float z_size, float uv_x, float uv_y, UINT useTexNum, ID3D12Device *dev)
+void NY_Model3D::CreatePlaneModelXZ(float x_size, float z_size, float uv_x, float uv_y, UINT useTexNum)
 {
 	//頂点データ作成
 	Vertex plane[4] = {
@@ -326,7 +326,7 @@ void NY_Model3D::CreatePlaneModelXZ(float x_size, float z_size, float uv_x, floa
 	const auto HEAP_PROP = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeVB);
 	//頂点バッファ生成
-	result = dev->CreateCommittedResource(
+	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -341,7 +341,7 @@ void NY_Model3D::CreatePlaneModelXZ(float x_size, float z_size, float uv_x, floa
 
 	RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeIB);
 	//インデックスバッファ生成
-	result = dev->CreateCommittedResource(
+	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -370,7 +370,7 @@ void NY_Model3D::CreatePlaneModelXZ(float x_size, float z_size, float uv_x, floa
 	material.texNumber = useTexNum;
 }
 
-void NY_Model3D::CreatePlaneModelYZ(float y_size, float z_size, float uv_x, float uv_y, UINT useTexNum, ID3D12Device *dev)
+void NY_Model3D::CreatePlaneModelYZ(float y_size, float z_size, float uv_x, float uv_y, UINT useTexNum)
 {
 	//頂点データ作成
 	Vertex plane[4] = {
@@ -403,7 +403,7 @@ void NY_Model3D::CreatePlaneModelYZ(float y_size, float z_size, float uv_x, floa
 	const auto HEAP_PROP = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeVB);
 	//頂点バッファ生成
-	result = dev->CreateCommittedResource(
+	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -418,7 +418,7 @@ void NY_Model3D::CreatePlaneModelYZ(float y_size, float z_size, float uv_x, floa
 
 	RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeIB);
 	//インデックスバッファ生成
-	result = dev->CreateCommittedResource(
+	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -447,40 +447,41 @@ void NY_Model3D::CreatePlaneModelYZ(float y_size, float z_size, float uv_x, floa
 	material.texNumber = useTexNum;
 }
 
-void NY_Model3D::CreateBoxModel(float size, float uv_x, float uv_y, UINT useTexNum, ID3D12Device *dev)
+void NY_Model3D::CreateBoxModel(float size, float uv_x, float uv_y, UINT useTexNum)
 {
+
 	//頂点データ作成
 	Vertex box[] = {
 		//後
-		{{-size,-size,-size},{}, {0.0f,1.0f}},//左下
-		{{-size, size,-size},{}, {0.0f,0.0f}},//左上
-		{{ size,-size,-size},{}, {1.0f,1.0f}},//右下
-		{{ size, size,-size},{}, {1.0f,0.0f}},//右上
+		{{-size,-size,-size},{0,0,1}, {0.0f,1.0f}},//左下
+		{{-size, size,-size},{0,0,1}, {0.0f,0.0f}},//左上
+		{{ size,-size,-size},{0,0,1}, {1.0f,1.0f}},//右下
+		{{ size, size,-size},{0,0,1}, {1.0f,0.0f}},//右上
 		//前
-		{{-size,-size, size},{},{0.0f,1.0f}},//左下
-		{{-size, size, size},{},{0.0f,0.0f}},//左上
-		{{ size,-size, size},{},{1.0f,1.0f}},//右下
-		{{ size, size, size},{},{1.0f,0.0f}},//右上
+		{{-size,-size, size},{0,0,-1},{0.0f,1.0f}},//左下
+		{{-size, size, size},{0,0,-1},{0.0f,0.0f}},//左上
+		{{ size,-size, size},{0,0,-1},{1.0f,1.0f}},//右下
+		{{ size, size, size},{0,0,-1},{1.0f,0.0f}},//右上
 		//左
-		{{-size,-size,-size},{},{0.0f,1.0f}},//左下
-		{{-size,-size, size},{},{0.0f,0.0f}},//左上
-		{{-size, size,-size},{},{1.0f,1.0f}},//右下
-		{{-size, size, size},{},{1.0f,0.0f}},//右上
+		{{-size,-size,-size},{-1,0,0},{0.0f,1.0f}},//左下
+		{{-size,-size, size},{-1,0,0},{0.0f,0.0f}},//左上
+		{{-size, size,-size},{-1,0,0},{1.0f,1.0f}},//右下
+		{{-size, size, size},{-1,0,0},{1.0f,0.0f}},//右上
 		//右
-		{{ size,-size,-size},{},{0.0f,1.0f}},//左下
-		{{ size,-size, size},{},{0.0f,0.0f}},//左上
-		{{ size, size,-size},{},{1.0f,1.0f}},//右下
-		{{ size, size, size},{},{1.0f,0.0f}},//右上
+		{{ size,-size,-size},{1,0,0},{0.0f,1.0f}},//左下
+		{{ size,-size, size},{1,0,0},{0.0f,0.0f}},//左上
+		{{ size, size,-size},{1,0,0},{1.0f,1.0f}},//右下
+		{{ size, size, size},{1,0,0},{1.0f,0.0f}},//右上
 		//上
-		{{-size, size,-size},{},{1.0f,1.0f}},//右下
-		{{-size, size, size},{},{1.0f,0.0f}},//右上
-		{{ size, size,-size},{},{0.0f,1.0f}},//左下
-		{{ size, size, size},{},{0.0f,0.0f}},//左上
+		{{-size, size,-size},{0,1,0},{1.0f,1.0f}},//右下
+		{{-size, size, size},{0,1,0},{1.0f,0.0f}},//右上
+		{{ size, size,-size},{0,1,0},{0.0f,1.0f}},//左下
+		{{ size, size, size},{0,1,0},{0.0f,0.0f}},//左上
 		//下
-		{{ size,-size,-size},{},{0.0f,1.0f}},//左下
-		{{ size,-size, size},{},{0.0f,0.0f}},//左上
-		{{-size,-size,-size},{},{1.0f,1.0f}},//右下
-		{{-size,-size, size},{},{1.0f,0.0f}},//右上
+		{{ size,-size,-size},{0,-1,0},{0.0f,1.0f}},//左下
+		{{ size,-size, size},{0,-1,0},{0.0f,0.0f}},//左上
+		{{-size,-size,-size},{0,-1,0},{1.0f,1.0f}},//右下
+		{{-size,-size, size},{0,-1,0},{1.0f,0.0f}},//右上
 
 	};
 	//頂点データ格納
@@ -523,7 +524,7 @@ void NY_Model3D::CreateBoxModel(float size, float uv_x, float uv_y, UINT useTexN
 	const auto HEAP_PROP = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeVB);
 	//頂点バッファ生成
-	result = dev->CreateCommittedResource(
+	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -538,7 +539,7 @@ void NY_Model3D::CreateBoxModel(float size, float uv_x, float uv_y, UINT useTexN
 
 	RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeIB);
 	//インデックスバッファ生成
-	result = dev->CreateCommittedResource(
+	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -566,81 +567,3 @@ void NY_Model3D::CreateBoxModel(float size, float uv_x, float uv_y, UINT useTexN
 	//マテリアルの番号設定
 	material.texNumber = useTexNum;
 }
-
-
-
-//void NY_Model3D::CreateTriangleGeometoryTest(UINT usetexnum, ID3D12Device *dev)
-//{
-//	//頂点データ作成
-//	ParticleVertex plane[] = {
-//		{{0.0f,0.0f,0.0f}},
-//	};
-//	//頂点データ格納
-//	for (int i = 0; i < 4; i++)
-//	{
-//		pvert.push_back(plane[i]);
-//	}
-//
-//	HRESULT result;
-//
-//	UINT sizeVB = static_cast<UINT>(sizeof(Vertex) * pvert.size());
-//
-//	//頂点バッファ生成
-//	result = dev->CreateCommittedResource(
-//		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-//		D3D12_HEAP_FLAG_NONE,
-//		&CD3DX12_RESOURCE_DESC::Buffer(sizeVB),
-//		D3D12_RESOURCE_STATE_GENERIC_READ,
-//		nullptr,
-//		IID_PPV_ARGS(&vertBuff)
-//	);
-//
-//	//頂点バッファビュー設定
-//	vbView.BufferLocation = vertBuff->GetGPUVirtualAddress();
-//	vbView.SizeInBytes = sizeVB;
-//	vbView.StrideInBytes = sizeof(Vertex);
-//
-//	//頂点バッファデータ転送
-//	ParticleVertex *vertMap = nullptr;
-//	result = vertBuff->Map(0, nullptr, (void **)&vertMap);
-//	copy(pvert.begin(), pvert.end(), vertMap);
-//	vertBuff->Unmap(0, nullptr);
-//
-//	//テクスチャロード
-//	material.texNumber = usetexnum;
-//
-//}
-
-//SingleVertex NY_Model3D::GetSingleVertexData(ID3D12Device *dev)
-//{
-//	SingleVertex rv;
-//
-//	rv.v = { {0,0,0},{},{0,0} };
-//
-//	HRESULT result;
-//
-//	UINT sizeVB = static_cast<UINT>(sizeof(Vertex));
-//
-//	//頂点バッファ生成
-//	result = dev->CreateCommittedResource(
-//		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-//		D3D12_HEAP_FLAG_NONE,
-//		&CD3DX12_RESOURCE_DESC::Buffer(sizeVB),
-//		D3D12_RESOURCE_STATE_GENERIC_READ,
-//		nullptr,
-//		IID_PPV_ARGS(&rv.vb)
-//	);
-//
-//	//頂点バッファビュー設定
-//	rv.vbview.BufferLocation = rv.vb->GetGPUVirtualAddress();
-//	rv.vbview.SizeInBytes = sizeVB;
-//	rv.vbview.StrideInBytes = sizeof(Vertex);
-//
-//	//頂点バッファデータ転送
-//	Vertex *vertMap = nullptr;
-//	result = rv.vb->Map(0, nullptr, (void **)&vertMap);
-//	vertMap = &rv.v;
-//	rv.vb->Unmap(0, nullptr);
-//
-//	return rv;
-//}

@@ -34,9 +34,9 @@ struct Material
 	UINT     texNumber;    //テクスチャ番号(使用する場合必ず必要)
 	//コンストラクタ
 	Material() {
-		ambient = { 0.3f,0.3f,0.3f };
-		diffuse = { 0.0f,0.0f,0.0f };
-		specurar = { 0.0f,0.0f,0.0f };
+		ambient = { 1.0f,1.0f,1.0f };
+		diffuse = { 0.8f,0.8f,0.8f };
+		specurar = { 0.8f,0.8f,0.8f };
 		alpha = 1.0f;
 	}
 };
@@ -68,9 +68,9 @@ public:
 	//----------ファイルを読み込んでモデルデータを作る関数群----------//
 
 	//objファイル読み込み。読み込んだ後のバッファ関連の処理も行う。テクスチャが絡むため、Object3Dマネージャを引数で取得
-	void LoadObjModel(const char *filename, ID3D12Device *dev, NY_Object3DManager *mgr);
+	void LoadObjModel(const char *filename);
 	//マテリアル読み込み。LoadObjModel内で実行され、materialにデータを格納
-	void LoadMatarial(string fileName,string filepath, ID3D12Device *dev, NY_Object3DManager *mgr);
+	void LoadMatarial(string fileName,string filepath);
 
 	//----------モデルデータを1から作成する関数群----------//
 
@@ -78,22 +78,16 @@ public:
 	//void CreatePlaneModelXY(float x_size, float y_size, string useTexFileName, ID3D12Device *dev, NY_Object3DManager *mgr);
 
 	//xy平面を作成。ロード済テクスチャを使用。テクスチャバッファの番号を指定すること（空のバッファを指定するとあとで死ぬ）
-	void CreatePlaneModelXY(float x_size, float y_size, float uv_x, float uv_y, UINT useTexNum, ID3D12Device *dev);
+	void CreatePlaneModelXY(float x_size, float y_size, float uv_x, float uv_y, UINT useTexNum);
 	//xz平面
-	void CreatePlaneModelXZ(float x_size, float z_size, float uv_x, float uv_y, UINT useTexNum, ID3D12Device *dev);
+	void CreatePlaneModelXZ(float x_size, float z_size, float uv_x, float uv_y, UINT useTexNum);
 	//yz平面
-	void CreatePlaneModelYZ(float y_size, float z_size, float uv_x, float uv_y, UINT useTexNum, ID3D12Device *dev);
+	void CreatePlaneModelYZ(float y_size, float z_size, float uv_x, float uv_y, UINT useTexNum);
 
 	//立方体モデルデータ作成
-	void CreateBoxModel(float size, float uv_x, float uv_y, UINT useTexNum, ID3D12Device *dev);
-
-	//object3Dで使用する頂点データを作成(製作中)
-	//static SingleVertex GetSingleVertexData(ID3D12Device *dev);
+	void CreateBoxModel(float size, float uv_x, float uv_y, UINT useTexNum);
 
 private:
-
-	//ジオメトリ用三角形生成（製作中）
-	//void CreateTriangleGeometoryTest(UINT usetexnum, ID3D12Device *dev);
 
 };
 

@@ -94,7 +94,7 @@ private:
 	//DirectX12要素のメンバ変数
 
 	// ウィンドウズアプリケーション管理
-	Raki_WinAPI *winApp;
+	Raki_WinAPI *winApp = nullptr;
 
 	// Direct3D関連
 	ComPtr<IDXGIFactory6>				dxgiFactory;

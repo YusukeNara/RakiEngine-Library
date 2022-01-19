@@ -20,6 +20,7 @@ using namespace Microsoft::WRL;
 struct ConstBufferDataB0
 {
 	XMMATRIX mat;
+	XMFLOAT4 color;
 };
 
 //定数バッファデータ構造体B1
@@ -76,6 +77,9 @@ public:
 
 	//親子(親要素へのポインタ)
 	Object3d *parent = nullptr;
+
+	//色情報
+	XMFLOAT4 color = { 1,1,1,1 };
 
 	//ビルボードフラグ
 	bool isBillBoard;
