@@ -79,19 +79,34 @@ namespace RV3Colider {
 		Rv3AABB()	= default;
 		~Rv3AABB()	= default;
 
-		//値指定コンストラクタ
+		/// <summary>
+		/// AABBデータのコンストラクタ
+		/// </summary>
+		/// <param name="min">中心点からの距離A</param>
+		/// <param name="max">中心点からの距離B</param>
+		/// <param name="pos">判定の中心点</param>
 		Rv3AABB(RVector3 min, RVector3 max, RVector3 pos) {
-			this->min = min;
-			this->max = max;
+			this->min = pos + min;
+			this->max = pos + max;
 			this->oldPos = pos;
 		}
 
+		/// <summary>
+		/// AABBデータ設定
+		/// </summary>
+		/// <param name="pos">判定の中心点</param>
+		/// <param name="min">中心点からの距離A</param>
+		/// <param name="max">中心点からの距離B</param>
 		inline void Set(RVector3 pos, RVector3 min, RVector3 max) {
-			this->min = min;
-			this->max = max;
+			this->min = pos + min;
+			this->max = pos + max;
 			this->oldPos = pos;
 		}
 
+		/// <summary>
+		/// AABBのデータ更新
+		/// </summary>
+		/// <param name="actpos">その時点でのAABBの中心座標（RVector3）</param>
 		inline void Update(RVector3 actpos) {
 			RVector3 diff = actpos - oldPos;
 			min += diff;
