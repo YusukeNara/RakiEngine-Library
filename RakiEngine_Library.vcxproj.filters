@@ -61,6 +61,9 @@
     <Filter Include="リソース ファイル\Particle">
       <UniqueIdentifier>{0dc3c0d4-ac2e-4113-9340-a9a4689145a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="utility">
+      <UniqueIdentifier>{370fd596-cc5e-4219-abc2-f30d23e9165f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Raki_imguiMgr.cpp">
@@ -137,6 +140,9 @@
     </ClCompile>
     <ClCompile Include="ParticleManager.cpp">
       <Filter>Graphic\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="NY_random.cpp">
+      <Filter>utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -223,6 +229,9 @@
     </ClInclude>
     <ClInclude Include="ParticleManager.h">
       <Filter>Graphic\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="NY_random.h">
+      <Filter>utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

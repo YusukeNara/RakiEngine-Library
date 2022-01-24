@@ -8,13 +8,12 @@
 
 const int ParticleManager::MAX_VERTEX;
 
-ParticleManager *ParticleManager::Create(NY_Camera *camera) {
+ParticleManager *ParticleManager::Create() {
 
 	//パーティクルマネージャー生成
 	ParticleManager *pm = new ParticleManager(
 		Raki_DX12B::Get()->GetDevice(),
-		Raki_DX12B::Get()->GetGCommandList(),
-		camera
+		Raki_DX12B::Get()->GetGCommandList()
 	);
 
 	//生成したものを初期化
@@ -25,9 +24,6 @@ ParticleManager *ParticleManager::Create(NY_Camera *camera) {
 
 void ParticleManager::Initialize() {
 	//nullチェック
-	assert(dev == nullptr);
-	assert(cmd == nullptr);
-	assert(cam == nullptr);
 
 	HRESULT result;
 
@@ -66,6 +62,7 @@ void ParticleManager::Update() {
 
 		//フレーム数カウント
 		itr->nowFrame++;
+
 		//進行度を0~1の割合に
 		float rate = (float)itr->nowFrame / itr->endFrame;
 
@@ -100,7 +97,7 @@ void ParticleManager::Update() {
 			vertMap->scale = it->scale;
 			// 次の頂点へ
 			vertMap++;
-			if (++vcount >= vcount) {
+			if (++vcount >= MAX_VERTEX) {
 				break;
 			}
 		}
@@ -110,11 +107,17 @@ void ParticleManager::Update() {
 	//定数バッファデータ転送
 	ConstBufferData *constMap = nullptr;
 	result = constBuff->Map(0, nullptr, (void **)&constMap);
-	constMap->mat = cam->_matView;
+	if (result == S_OK) {
+		//ビュープロジェクション行列
+		constMap->mat = camera->GetMatrixViewProjection();
+		//全方向ビルボード
+		constMap->matBillBoard = camera->GetMatrixBillBoardAll();
+		constBuff->Unmap(0, nullptr);
+	}
 
 }
 
-void ParticleManager::Draw()
+void ParticleManager::Draw(UINT drawTexNum)
 {
 	UINT drawNum = (UINT)std::distance(grains.begin(), grains.end());
 	if (drawNum > MAX_VERTEX) {
@@ -125,9 +128,6 @@ void ParticleManager::Draw()
 	if (drawNum == 0) {
 		return;
 	}
-
-	// nullptrチェック
-	assert(cmdList);
 
 	// パイプラインステートの設定
 	cmd->SetPipelineState(pipeline.Get());
@@ -146,13 +146,34 @@ void ParticleManager::Draw()
 	// 定数バッファビューをセット
 	cmd->SetGraphicsRootConstantBufferView(0, constBuff->GetGPUVirtualAddress());
 	// シェーダリソースビューをセット
-	cmd->SetGraphicsRootDescriptorTable(1, gpuDeschandleSRV);
+	cmd->SetGraphicsRootDescriptorTable(1,
+		CD3DX12_GPU_DESCRIPTOR_HANDLE(TexManager::texDsvHeap.Get()->GetGPUDescriptorHandleForHeapStart(),
+			drawTexNum, Raki_DX12B::Get()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)));
+
 	// 描画コマンド
 	cmd->DrawInstanced(drawNum, 1, 0, 0);
 }
 
+void ParticleManager::Add(int life, RVector3 pos, RVector3 vel, RVector3 acc, float startScale, float endScale)
+{
+	//要素追加
+	grains.emplace_front();
+	//追加した要素の参照
+	Particle &p = grains.front();
+	p.pos = pos;			//初期位置
+	p.vel = vel;			//速度
+	p.acc = acc;			//加速度
+	p.s_scale = startScale; //開始時のスケールサイズ
+	p.e_scale = endScale;	//終了時のスケールサイズ
+	p.endFrame = life;		//生存時間
+
+}
+
+
+
 void ParticleManager::InitializeGraphicsPipeline() {
-	HRESULT result = S_FALSE;
+
+	result = S_FALSE;
 	ComPtr<ID3DBlob> vsBlob; // 頂点シェーダオブジェクト
 	ComPtr<ID3DBlob> psBlob;	// ピクセルシェーダオブジェクト
 	ComPtr<ID3DBlob> gsBlob;	// ジオメトリシェーダオブジェクト
@@ -160,7 +181,7 @@ void ParticleManager::InitializeGraphicsPipeline() {
 
 	// 頂点シェーダの読み込みとコンパイル
 	result = D3DCompileFromFile(
-		L"Resources/shaders/ParticleVS.hlsl",	// シェーダファイル名
+		L"Resources/Shaders/ParticleVS.hlsl",	// シェーダファイル名
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
 		"main", "vs_5_0",	// エントリーポイント名、シェーダーモデル指定
@@ -183,7 +204,7 @@ void ParticleManager::InitializeGraphicsPipeline() {
 
 	// ピクセルシェーダの読み込みとコンパイル
 	result = D3DCompileFromFile(
-		L"Resources/shaders/ParticlePS.hlsl",	// シェーダファイル名
+		L"Resources/Shaders/ParticlePS.hlsl",	// シェーダファイル名
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
 		"main", "ps_5_0",	// エントリーポイント名、シェーダーモデル指定
@@ -206,7 +227,7 @@ void ParticleManager::InitializeGraphicsPipeline() {
 
 	// ジオメトリシェーダの読み込みとコンパイル
 	result = D3DCompileFromFile(
-		L"Resources/shaders/ParticleGS.hlsl",	// シェーダファイル名
+		L"Resources/Shaders/ParticleGS.hlsl",	// シェーダファイル名
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
 		"main", "gs_5_0",	// エントリーポイント名、シェーダーモデル指定
@@ -227,7 +248,7 @@ void ParticleManager::InitializeGraphicsPipeline() {
 		exit(1);
 	}
 
-	//// 頂点レイアウト
+	// 頂点レイアウト
 	D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
 		{ // xy座標(1行で書いたほうが見やすい)
 			"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,
@@ -285,7 +306,7 @@ void ParticleManager::InitializeGraphicsPipeline() {
 	gpipeline.InputLayout.pInputElementDescs = inputLayout;
 	gpipeline.InputLayout.NumElements = _countof(inputLayout);
 
-	// 図形の形状設定（三角形）
+	// 図形の形状設定（点）
 	gpipeline.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
 
 	gpipeline.NumRenderTargets = 1;	// 描画対象は1つ
@@ -320,7 +341,7 @@ void ParticleManager::InitializeGraphicsPipeline() {
 	gpipeline.pRootSignature = rootsig.Get();
 
 	// グラフィックスパイプラインの生成
-	result = dev->CreateGraphicsPipelineState(&gpipeline, IID_PPV_ARGS(&pipeline));
+	result = Raki_DX12B::Get()->GetDevice()->CreateGraphicsPipelineState(&gpipeline, IID_PPV_ARGS(&pipeline));
 
 	if (FAILED(result)) {
 		assert(0);

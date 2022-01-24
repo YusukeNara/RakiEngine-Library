@@ -28,8 +28,6 @@ public:
 	RVector3 &operator-=(const XMFLOAT3 &other) { this->x -= other.x; this->y -= other.y; this->z -= other.z; return *this; }
 	RVector3 &operator*=(const XMFLOAT3 &other) { this->x *= other.x; this->y *= other.y; this->z *= other.z; return *this; }
 	RVector3 &operator/=(const XMFLOAT3 &other) { this->x /= other.x; this->y /= other.y; this->z /= other.z; return *this; }
-
-
 	
 
 	bool operator==(const RVector3 &other) { return this->x == other.x && this->y == other.y && this->z == other.z; }
@@ -47,6 +45,9 @@ public:
 	void zero() { x = 0, y = 0, z = 0; }
 
 	RVector3 operator-() const { return RVector3(-x, -y, -z); }
+
+	//XMFLOAT3 operator=(const RVector3 &other) { return XMFLOAT3(other.x, other.y, other.z); }
+	//RVector3 operator=(const XMFLOAT3 &other) { return RVector3(other.x, other.y, other.z); }
 };
 
 inline float dot(const RVector3 &a, const RVector3 &b) { return a.x * b.x + a.y * b.y + a.z * b.z; }

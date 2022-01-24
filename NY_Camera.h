@@ -3,9 +3,12 @@
 
 using namespace DirectX;
 
-class NY_Camera
+class NY_Camera final
 {
-public:
+private:
+
+
+private:
 	//ビュー変換情報
 	XMFLOAT3 _eye;//視点
 	XMFLOAT3 _target;//注視点
@@ -13,53 +16,105 @@ public:
 
 	//ビュー行列
 	XMMATRIX _matView;
-
 	//射影変換行列
 	XMMATRIX _matProjection;
-
-	//アフィン変換情報
-	XMFLOAT3 _scale{ 1,1,1 };
-	XMFLOAT3 _rotation{ 0,0,0 };
-	XMFLOAT3 _position{ 0,0,0 };
+	//ビュープロジェクション
+	XMMATRIX _matViewProj;
+	//ビルボード行列
+	XMMATRIX _matBillBoard;
 	//カメラローカル
 	XMMATRIX _camRocal;
 	//カメラワールド
 	XMMATRIX _camWorld;
 
-	//追従オブジェクトのワールド行列アドレス
-	//NY_Object3D *_matFollowObject;
-
-public:
 	//コンストラクタ
 	NY_Camera(XMFLOAT3 eye_, XMFLOAT3 target_, XMFLOAT3 up_);
 	NY_Camera() {
+		_eye = XMFLOAT3(0, 45, -45);
+		_target = XMFLOAT3(0, 0, 0);
+		_up = XMFLOAT3(0, 1, 0);
 
+		SetProjecion();
+
+		UpdateViewMat();
 	};
+	//デストラクタ
+	~NY_Camera() {};
 
-	//カメラが追従するオブジェクトの設定
-	//void SetFollowingObject(NY_Object3D *followObjWorld) { _matFollowObject = followObjWorld; }
+public:
+	/// インスタンス取得
+	static NY_Camera *Get() {
+		static NY_Camera ins;
+		return &ins;
+	}
 
-	//カメラの更新(全方向、全角度追従、挙動は要改善)
-	void UpdateFollowing(XMMATRIX followTarget);
+
+	///セッタ
+
+	/// <summary>
+	/// プロジェクション行列生成
+	/// </summary>
+	void SetProjecion();
+
+	/// <summary>
+	/// ビュー行列設定
+	/// </summary>
+	/// <param name="eye">視点座標</param>
+	/// <param name="target">注視点座標</param>
+	/// <param name="up">上方向ベクトル</param>
+	void SetViewStatusEyeTargetUp(XMFLOAT3 &eye, XMFLOAT3 &target, XMFLOAT3 &up);
+
+	/// <summary>
+	/// ビュー行列設定
+	/// </summary>
+	/// <param name="eye">視点座標</param>
+	void SetViewStatusEye(XMFLOAT3 &eye);
+
+	/// <summary>
+	/// ビュー行列設定
+	/// </summary>
+	/// <param name="target">注視点座標</param>
+	void SetViewStatusTarget(XMFLOAT3 &target);
+
+	/// <summary>
+	/// ビュー行列設定
+	/// </summary>
+	/// <param name="up">上方向ベクトル設定</param>
+	void SetViewStatusUp(XMFLOAT3 &up);
 
 
-	//カメラ更新関数群（今はz方向,XYをどれくらい追従するかの指定も可能） 
-	
-	//Z軸座標のみ追従。追跡距離指定可能。XY方向への微追従もできる（挙動は強引）
-	void UpdateFollowingOnlyZ(XMFLOAT3 followTargetPos,XMFLOAT3 followRange,float XfollowPower = 0, float YfollowPower = 0);
-	//資料に合わせた追従カメラ。
-	void UpdateFollowingOnlyZVer2(XMFLOAT3 followTarget,XMFLOAT3 followRange,float followRad);
-	//さらに改変を加えた実験カメラ。違いは、ワールド変換を行い、ビュー行列を再定義すること
-	void UpdateFollowingOnlyZWorldMat(XMMATRIX targetWorld);
-	/*
-	これまでの処理の問題点
-	・World変換バージョンは、ビュー行列の構成要素自体は変わらないため、ビュー構成要素を用いた処理（ビルボード）が出来ない
-	・ビュー変換バージョンは、ビュー構成要素による処理は可能だが、ワールド座標系での管理ができないので、カメラアングルの変更が不自由
-	ではこれらを合わせた場合どうなるか？
-	*/
-	void UpdateFollowingViewAndWorld(XMMATRIX target, XMFLOAT3 range);
-	void UpdateFollowingViewAndWorld(XMMATRIX target);
+	/// 各種ゲッタ
 
+	/// <summary>
+	/// ビュー行列取得
+	/// </summary>
+	/// <returns>ビュー行列返却</returns>
+	XMMATRIX GetMatrixView();
+
+	/// <summary>
+	/// 射影変換行列取得
+	/// </summary>
+	/// <returns>射影変換（プロジェクション）行列</returns>
+	XMMATRIX GetMatrixProjection();
+
+	/// <summary>
+	/// ビルボード行列取得
+	/// </summary>
+	/// <returns>全方向ビルボード行列返却</returns>
+	XMMATRIX GetMatrixBillBoardAll();
+
+	/// <summary>
+	/// ビュープロジェクション行列取得
+	/// </summary>
+	/// <returns>ビューと射影を合成した行列</returns>
+	XMMATRIX GetMatrixViewProjection();
+
+
+	/// <summary>
+	/// ビュー行列更新（セッタ実行時に自動で実行するのでユーザーが呼び出さなくてよい）
+	/// </summary>
 	void UpdateViewMat();
 };
+
+#define camera (NY_Camera::Get())
 
