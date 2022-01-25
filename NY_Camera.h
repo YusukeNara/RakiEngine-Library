@@ -118,4 +118,3 @@ public:
 
 //ƒQƒbƒ^‚ğÈ—ª
 #define camera (NY_Camera::Get())
-

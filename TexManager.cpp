@@ -105,3 +105,4 @@ UINT TexManager::LoadTexture(std::string filename)
     UINT texNumber = LoadTexture(filename.c_str());
     return texNumber;
 }
+
