@@ -413,6 +413,19 @@ void NY_Object3DManager::SetCommonBeginDrawObject3D()
     Raki_DX12B::Get()->GetGCommandList()->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 }
 
+void NY_Object3DManager::SetCommonBeginDrawObject3D2MultiPassRenderResource()
+{
+    //パイプラインステートをセット
+    Raki_DX12B::Get()->GetGCommandList()->SetPipelineState(object3dPipelineSet.pipelinestate.Get());
+    //ルートシグネチャをセット
+    Raki_DX12B::Get()->GetGCommandList()->SetGraphicsRootSignature(object3dPipelineSet.rootsignature.Get());
+    //プリミティブ形状設定
+    Raki_DX12B::Get()->GetGCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    //デスクリプタヒープ設定
+    ID3D12DescriptorHeap *ppHeaps[] = { RAKI_DX12B_GET->GetMuliPassSrvDescHeap() };
+    Raki_DX12B::Get()->GetGCommandList()->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+}
+
 Object3d *CreateObject3d(NY_Model3D *modelData, RVector3 pos)
 {
     //返却用のポインタ変数にObject3Dを作成

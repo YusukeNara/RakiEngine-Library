@@ -7,6 +7,7 @@
 #pragma comment(lib, "d3d12.lib")
 
 //マルチパスレンダリングをするときにあると今後が楽だと思って作った
+//けど
 class TexManager
 {
 private:
@@ -32,6 +33,10 @@ public:
 	static ComPtr<ID3D12DescriptorHeap> texDsvHeap;
 	//テクスチャ最大数
 	static const int MAX_TEXNUM;
+
+
+
+
 
 public:
 	/// <summary>

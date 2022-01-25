@@ -200,6 +200,82 @@ bool Raki_DX12B::CreateRenderTargetView()
 	return true;
 }
 
+bool Raki_DX12B::CreateSecondRenderTargetAndResource()
+{
+	///ペラポリゴンリソースを作成
+
+	//作成済みのヒープ情報からもう一枚作成
+	auto heapDesc = rtvHeaps.Get()->GetDesc();
+	//バックバッファの情報を利用
+	auto &bbuff = backBuffers[0];
+	auto resDesc = bbuff->GetDesc();
+
+	D3D12_HEAP_PROPERTIES heapprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+
+	//クリアカラー（既存のものと同じ値）
+	float clearColor[] = { clearColor_r,clearColor_g, clearColor_b,clearColor_a };
+	D3D12_CLEAR_VALUE clearValue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R8G8B8A8_UNORM, clearColor);
+
+	//リソース生成
+	auto result = device->CreateCommittedResource(
+		&heapprop,
+		D3D12_HEAP_FLAG_NONE,
+		&resDesc,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		&clearValue,
+		IID_PPV_ARGS(mpResource.ReleaseAndGetAddressOf())
+	);
+	//失敗時終了
+	if (FAILED(result)) { return false; }
+
+
+	///ビューを作成（RTV,SRV）
+
+	//RTV用ヒープ作成
+	heapDesc.NumDescriptors = 1;
+	result = device->CreateDescriptorHeap(
+		&heapDesc,
+		IID_PPV_ARGS(mpRtvHeap.ReleaseAndGetAddressOf())
+	);
+	if (FAILED(result)) { return false; }
+
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+	rtvDesc.ViewDimension	= D3D12_RTV_DIMENSION_TEXTURE2D;
+	rtvDesc.Format			= DXGI_FORMAT_R8G8B8A8_UNORM;
+	//RTV作成
+	device->CreateRenderTargetView(
+		mpResource.Get(),
+		&rtvDesc,
+		mpRtvHeap->GetCPUDescriptorHandleForHeapStart()
+	);
+
+	//SRV用ヒープ作成
+	heapDesc.NumDescriptors = 1;
+	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+
+	result = device->CreateDescriptorHeap(
+		&heapDesc,
+		IID_PPV_ARGS(mpSrvHeap.ReleaseAndGetAddressOf())
+	);
+	if (FAILED(result)) { return false; }
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Format = rtvDesc.Format;
+	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	//SRV作成
+	device->CreateShaderResourceView(
+		mpResource.Get(),
+		&srvDesc,
+		mpSrvHeap->GetCPUDescriptorHandleForHeapStart()
+	);
+
+
+	return true;
+}
+
 bool Raki_DX12B::CreateDepthBuffer()
 {
 	HRESULT result = S_FALSE;
@@ -305,6 +381,11 @@ void Raki_DX12B::Initialize(Raki_WinAPI *win)
 		assert(0);
 	}
 
+	//2つ目のレンダーターゲットとリソースを生成
+	if (!CreateSecondRenderTargetAndResource()) {
+		assert(0);
+	}
+
 	//キー入力系
 	if (!InitInput(win)) {
 		assert(0);
@@ -318,23 +399,41 @@ void Raki_DX12B::Initialize(Raki_WinAPI *win)
 
 void Raki_DX12B::StartDraw()
 {
-	// バックバッファの番号を取得（2つなので0番か1番）
+	// バックバッファのリソースバリアを変更（描画対象→表示状態）
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
-
 	//&CD3DX12~::Transitionが使えなくなったので、一時オブジェクト作成
 	auto temp = CD3DX12_RESOURCE_BARRIER::Transition(backBuffers[bbIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	// リソースバリアを変更（表示状態→描画対象）
 	commandList->ResourceBarrier(1, &temp);
 
-	// レンダーターゲットビュー用ディスクリプタヒープのハンドルを取得
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvH = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvHeaps->GetCPUDescriptorHandleForHeapStart(), bbIndex, device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
+	//// レンダーターゲットビュー用ディスクリプタヒープのハンドルを取得
+	//CD3DX12_CPU_DESCRIPTOR_HANDLE rtvH = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvHeaps->GetCPUDescriptorHandleForHeapStart(), bbIndex, device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
 	// 深度ステンシルビュー用デスクリプタヒープのハンドルを取得
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvH = CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvHeap->GetCPUDescriptorHandleForHeapStart());
-	// レンダーターゲットをセット
-	commandList->OMSetRenderTargets(1, &rtvH, false, &dsvH);
+	//// 1つめのレンダーターゲットをセット
+	//commandList->OMSetRenderTargets(1, &rtvH, false, &dsvH);
+
+	//1パス目レンダーターゲットディスクリプタヒープのハンドル
+	auto rtvH1 = mpRtvHeap->GetCPUDescriptorHandleForHeapStart();
+
+	//マルチパス用ペラポリゴンリソースをレンダーターゲットに変更
+	auto changeState = CD3DX12_RESOURCE_BARRIER::Transition(
+		mpResource.Get(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+	commandList->ResourceBarrier(1, &changeState);
+	//描画終了時にシェーダーリソースに戻す
+
+	//1パス目レンダーターゲットセット
+	commandList->OMSetRenderTargets(1, &rtvH1, false, &dsvH);
 
 	// 全画面クリア
 	ClearRenderTarget();
+	// 1パス目クリア
+	float clearColor[] = { clearColor_r,clearColor_g,clearColor_b,clearColor_a };
+	commandList->ClearRenderTargetView(rtvH1, clearColor, 0, nullptr);
+
 	// 深度バッファクリア
 	ClearDepthBuffer();
 
@@ -349,9 +448,10 @@ void Raki_DX12B::StartDraw()
 
 void Raki_DX12B::EndDraw()
 {
-	// リソースバリアを変更（描画対象→表示状態）
+	// バックバッファのリソースバリアを変更（描画対象→表示状態）
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 	auto barrier_temp = CD3DX12_RESOURCE_BARRIER::Transition(backBuffers[bbIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+
 	commandList->ResourceBarrier(1, &barrier_temp);
 
 	// 命令のクローズ
@@ -378,6 +478,46 @@ void Raki_DX12B::EndDraw()
 
 }
 
+void Raki_DX12B::StartDraw2()
+{
+	//StartDraw1の描画を終了
+	
+	//1パス用リソースをシェーダーリソースに戻す
+	auto changeState = CD3DX12_RESOURCE_BARRIER::Transition(
+		mpResource.Get(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	commandList->ResourceBarrier(1, &changeState);
+
+
+	//従来の描画開始コマンドを実行
+
+	// バックバッファの番号を取得（2つなので0番か1番）
+	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
+
+	// レンダーターゲットビュー用ディスクリプタヒープのハンドルを取得
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvH = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+		rtvHeaps->GetCPUDescriptorHandleForHeapStart(), 
+		bbIndex, 
+		device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
+	);
+	// 深度ステンシルビュー用デスクリプタヒープのハンドルを取得
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvH = CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvHeap->GetCPUDescriptorHandleForHeapStart());
+	//レンダーターゲットをセット
+	commandList->OMSetRenderTargets(1, &rtvH, false, &dsvH);
+
+	ClearRenderTarget();
+	ClearDepthBuffer();
+
+	//ビュー、シザリングも設定済
+
+}
+
+void Raki_DX12B::EndDraw2()
+{
+}
+
 void Raki_DX12B::ClearRenderTarget()
 {
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
@@ -386,7 +526,7 @@ void Raki_DX12B::ClearRenderTarget()
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvH = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvHeaps->GetCPUDescriptorHandleForHeapStart(), bbIndex, device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
 
 	// 全画面クリア        Red   Green Blue  Alpha
-	float clearColor[] = { 0.1f,0.25f, 0.5f,0.0f }; // 青っぽい色
+	float clearColor[] = { clearColor_r,clearColor_g, clearColor_b,clearColor_a }; // 青っぽい色
 	commandList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
 }
 

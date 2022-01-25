@@ -162,6 +162,8 @@ public:
 	/// <param name="cmd">ID3D12GraphicsCommandList‚Ìƒ|ƒCƒ“ƒ^</param>
 	void SetCommonBeginDrawObject3D();
 
+	void SetCommonBeginDrawObject3D2MultiPassRenderResource();
+
 	static ID3D12Device *GetDev() {
 		return dev;
 	}

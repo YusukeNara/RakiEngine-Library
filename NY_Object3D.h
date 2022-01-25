@@ -114,6 +114,8 @@ public:
 	static void DrawModel3D(Object3d *obj, ID3D12GraphicsCommandList *cmd,ID3D12Device *dev);
 	void DrawModel3D(ID3D12GraphicsCommandList *cmd, ID3D12Device *dev);
 
+	//マルチパスレンダリングを使用した描画（マルチパスで作ったリソースを使って描画）
+	void DrawMultiPassResource();
 
 private:
 	/// プライベートメンバ変数

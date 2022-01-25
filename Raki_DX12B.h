@@ -39,14 +39,24 @@ public:
 	void Initialize(Raki_WinAPI *win);
 
 	/// <summary>
-	/// 描画開始
+	/// 1パス目描画開始
 	/// </summary>
 	void StartDraw();
 
 	/// <summary>
-	/// 描画終了
+	/// 1パス目描画終了
 	/// </summary>
 	void EndDraw();
+
+	/// <summary>
+	/// 従来の描画開始
+	/// </summary>
+	void StartDraw2();
+
+	/// <summary>
+	/// 従来の描画終了
+	/// </summary>
+	void EndDraw2();
 
 	/// <summary>
 	/// レンダーターゲットのクリア
@@ -75,6 +85,12 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	ComPtr<ID3D12DescriptorHeap> GetDsvHeapForImgui() { return dsvHeapForImgui; }
+
+	/// <summary>
+	/// マルチパス用ディスクリプタヒープ
+	/// </summary>
+	/// <returns></returns>
+	ID3D12DescriptorHeap *GetMuliPassSrvDescHeap() { return mpSrvHeap.Get(); }
 
 
 	void ManualRelease() {
@@ -110,8 +126,22 @@ private:
 	ComPtr<ID3D12Fence>					fence;
 	UINT64								fenceVal = 0;
 
+	//オプション
+
+	//クリアカラー
+	float clearColor_r = 0.1f;
+	float clearColor_g = 0.25f;
+	float clearColor_b = 0.5f;
+	float clearColor_a = 0.0f;
+
 	//imgui関連
 	ComPtr<ID3D12DescriptorHeap>		dsvHeapForImgui;
+
+	//マルチパス関連
+
+	ComPtr<ID3D12Resource>				mpResource;	//ペラポリゴンリソース
+	ComPtr<ID3D12DescriptorHeap>		mpRtvHeap;	//レンダーターゲット用
+	ComPtr<ID3D12DescriptorHeap>		mpSrvHeap;	//テクスチャ用
 
 private:
 	//DirectX12の初期化関数群
@@ -140,6 +170,8 @@ private:
 	/// <returns>成否</returns>
 	bool CreateRenderTargetView();
 
+	bool CreateSecondRenderTargetAndResource();
+
 	/// <summary>
 	/// 深度バッファー生成
 	/// </summary>
@@ -165,3 +197,7 @@ private:
 
 };
 
+
+#define RAKI_DX12B_DEV (Raki_DX12B::Get()->GetDevice())
+#define RAKI_DX12B_CMD (Raki_DX12B::Get()->GetGCommandList())
+#define RAKI_DX12B_GET (Raki_DX12B::Get())
