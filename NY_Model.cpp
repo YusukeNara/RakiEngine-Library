@@ -567,3 +567,24 @@ void NY_Model3D::CreateBoxModel(float size, float uv_x, float uv_y, UINT useTexN
 	//マテリアルの番号設定
 	material.texNumber = useTexNum;
 }
+
+void NY_Model3D::ChangeTexAnimationNumber(int useAnimNum)
+{
+	//範囲外参照を検知
+	if (useAnimNum < 0) { return; }
+	if (useAnimNum > TexManager::textureData[material.texNumber].uv_offsets.size()) { return; }
+
+	int vposNumber = 0;
+	//UV値を該当オフセットの値に変更
+	for (int i = 0; i < vertices.size(); i++) {
+
+
+
+		vposNumber++;
+		if (vposNumber >= 3) {
+			vposNumber == 0;
+		}
+	}
+
+
+}

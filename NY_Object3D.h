@@ -113,6 +113,7 @@ public:
 	//モデルデータを使用したオブジェクト描画
 	static void DrawModel3D(Object3d *obj, ID3D12GraphicsCommandList *cmd,ID3D12Device *dev);
 	void DrawModel3D(ID3D12GraphicsCommandList *cmd, ID3D12Device *dev);
+	void DrawModel3DSelectTexture(UINT useTexNum);
 
 
 private:

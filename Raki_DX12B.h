@@ -165,3 +165,6 @@ private:
 
 };
 
+#define RAKI_DX12B_DEV (Raki_DX12B::Get()->GetDevice())
+#define RAKI_DX12B_CMD (Raki_DX12B::Get()->GetGCommandList())
+#define RAKI_DX12B_GET (Raki_DX12B::Get())

@@ -336,3 +336,22 @@ void Object3d::DrawModel3D(ID3D12GraphicsCommandList *cmd, ID3D12Device *dev)
 	cmd->DrawIndexedInstanced(model->indices.size(), 1, 0, 0, 0);
 }
 
+void Object3d::DrawModel3DSelectTexture(UINT useTexNum)
+{
+	if (TexManager::textureData[useTexNum].texBuff == nullptr) {
+
+		return;
+	}
+
+	RAKI_DX12B_CMD->IASetVertexBuffers(0, 1, &model->vbView);
+	RAKI_DX12B_CMD->IASetIndexBuffer(&model->ibview);
+	RAKI_DX12B_CMD->SetGraphicsRootConstantBufferView(0, constBuffB0->GetGPUVirtualAddress());
+	RAKI_DX12B_CMD->SetGraphicsRootConstantBufferView(1, constBuffB1->GetGPUVirtualAddress());
+	RAKI_DX12B_CMD->SetGraphicsRootDescriptorTable(2,
+		CD3DX12_GPU_DESCRIPTOR_HANDLE(TexManager::texDsvHeap.Get()->GetGPUDescriptorHandleForHeapStart(),
+			useTexNum, RAKI_DX12B_DEV->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)));
+
+	//•`‰æ
+	RAKI_DX12B_CMD->DrawIndexedInstanced(model->indices.size(), 1, 0, 0, 0);
+}
+

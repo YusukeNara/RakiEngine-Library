@@ -25,6 +25,8 @@ public:
 		const DirectX::Image					*img;		
 		DirectX::TexMetadata					metaData;
 		DirectX::ScratchImage					scratchImg;
+		//アニメーション用uv管理
+		std::vector<DirectX::XMFLOAT2>			uv_offsets;	//uv値オフセット配列
 	};
 	//テクスチャデータ配列
 	static texture textureData[1024];
@@ -47,6 +49,16 @@ public:
 	static UINT LoadTexture(const char *filename);
 
 	static UINT LoadTexture(std::string filename);
+
+	/// <summary>
+	/// テクスチャの分割読み込み
+	/// </summary>
+	/// <param name="filename">画像ファイルの名前</param>
+	/// <param name="numDivTex">分割数（右方向）</param>
+	/// <param name="sizeX">1枚のサイズ</param>
+	/// <returns>格納したテクスチャの場所を配列で</returns>
+	static UINT LoadDivTextureTest(const char *filename, const int numDivTex, int sizeX);
+
 
 };
 

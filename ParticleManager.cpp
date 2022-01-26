@@ -51,8 +51,6 @@ void ParticleManager::Initialize() {
 
 void ParticleManager::Update() {
 
-	HRESULT result;
-
 	//寿命が切れたパーティクルを削除
 	grains.remove_if([](Particle &p) {return p.nowFrame >= p.endFrame; });
 
