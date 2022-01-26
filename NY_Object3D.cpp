@@ -61,6 +61,7 @@ void Object3d::InitObject3D(ID3D12Device *dev)
 		nullptr,
 		IID_PPV_ARGS(&constBuffB1)
 	);
+
 }
 
 //void Object3d::SetLoadedModelData(Object3d *obj, NY_Model3D *loadedModel)
