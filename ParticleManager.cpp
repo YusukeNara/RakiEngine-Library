@@ -8,6 +8,50 @@
 
 const int ParticleManager::MAX_VERTEX;
 
+const DirectX::XMFLOAT4 operator+(const DirectX::XMFLOAT4 &lhs, const DirectX::XMFLOAT4 &rhs) {
+	XMFLOAT4 result;
+	result.x = lhs.x + rhs.x;
+	result.y = lhs.y + rhs.y;
+	result.z = lhs.z + rhs.z;
+	result.w = lhs.w + rhs.w;
+	return result;
+}
+
+static void operator+=(DirectX::XMFLOAT4 &lhs, const DirectX::XMFLOAT4 &rhs) {
+	lhs.x += rhs.x;
+	lhs.y += rhs.y;
+	lhs.z += rhs.z;
+	lhs.w += rhs.w;
+}
+
+const DirectX::XMFLOAT4 operator-(DirectX::XMFLOAT4 &lhs, const DirectX::XMFLOAT4 &rhs) {
+	XMFLOAT4 result;
+	result.x = lhs.x - rhs.x;
+	result.y = lhs.y - rhs.y;
+	result.z = lhs.z - rhs.z;
+	result.w = lhs.w - rhs.w;
+	return result;
+}
+
+const DirectX::XMFLOAT4 operator/(const DirectX::XMFLOAT4 &lhs, const float a) {
+	XMFLOAT4 result;
+	result.x = lhs.x / a;
+	result.y = lhs.y / a;
+	result.z = lhs.z / a;
+	result.w = lhs.w / a;
+	return result;
+}
+
+const DirectX::XMFLOAT4 operator*(const DirectX::XMFLOAT4 &lhs, const float a) {
+	XMFLOAT4 result;
+	result.x = lhs.x * a;
+	result.y = lhs.y * a;
+	result.z = lhs.z * a;
+	result.w = lhs.w * a;
+	return result;
+}
+
+
 ParticleManager *ParticleManager::Create() {
 
 	//パーティクルマネージャー生成
@@ -93,6 +137,8 @@ void ParticleManager::Update() {
 			vertMap->pos = it->pos;
 			// スケール
 			vertMap->scale = it->scale;
+			//色
+			vertMap->color = it->color;
 			// 次の頂点へ
 			vertMap++;
 			if (++vcount >= MAX_VERTEX) {
@@ -110,6 +156,7 @@ void ParticleManager::Update() {
 		constMap->mat = camera->GetMatrixViewProjection();
 		//全方向ビルボード
 		constMap->matBillBoard = camera->GetMatrixBillBoardAll();
+		//色
 		constBuff->Unmap(0, nullptr);
 	}
 
@@ -152,7 +199,8 @@ void ParticleManager::Draw(UINT drawTexNum)
 	cmd->DrawInstanced(drawNum, 1, 0, 0);
 }
 
-void ParticleManager::Add(int life, RVector3 pos, RVector3 vel, RVector3 acc, float startScale, float endScale)
+void ParticleManager::Add(int life, RVector3 pos, RVector3 vel, RVector3 acc, 
+	float startScale, float endScale, XMFLOAT4 s_color, XMFLOAT4 e_color)
 {
 	//要素追加
 	grains.emplace_front();
@@ -164,7 +212,8 @@ void ParticleManager::Add(int life, RVector3 pos, RVector3 vel, RVector3 acc, fl
 	p.s_scale = startScale; //開始時のスケールサイズ
 	p.e_scale = endScale;	//終了時のスケールサイズ
 	p.endFrame = life;		//生存時間
-
+	p.s_color = s_color;
+	p.e_color = e_color;
 }
 
 
@@ -258,6 +307,11 @@ void ParticleManager::InitializeGraphicsPipeline() {
 			D3D12_APPEND_ALIGNED_ELEMENT,
 			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
 		},
+		{
+			"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
 	};
 
 	// グラフィックスパイプラインの流れを設定
@@ -282,9 +336,9 @@ void ParticleManager::InitializeGraphicsPipeline() {
 	blenddesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;	// RBGA全てのチャンネルを描画
 	blenddesc.BlendEnable = true;
 	// 加算ブレンディング
-	blenddesc.BlendOp = D3D12_BLEND_OP_ADD;
-	blenddesc.SrcBlend = D3D12_BLEND_ONE;
-	blenddesc.DestBlend = D3D12_BLEND_ONE;
+	blenddesc.BlendOp = D3D12_BLEND_OP_ADD;//加算
+	blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;//ソースの値を100%使用
+	blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;//デストの値を100%使用
 	//// 減算ブレンディング
 	//blenddesc.BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;
 	//blenddesc.SrcBlend = D3D12_BLEND_ONE;

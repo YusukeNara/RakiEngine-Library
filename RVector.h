@@ -198,7 +198,7 @@ namespace RV3Colider {
 		RVector3 dir;
 	};
 
-	inline RVector3 CalcScreen2World(XMFLOAT2 &scrPos, float fz,float window_w,float window_h,XMMATRIX &prj,XMMATRIX &view) {
+	inline RVector3 CalcScreen2World(const XMFLOAT2 &scrPos, float fz,float window_w,float window_h,const XMMATRIX &prj,const XMMATRIX &view) {
 		XMVECTOR pos;
 		//射影変換行列とビューポート行列の逆行列を格納する変数
 		XMMATRIX InvPrj, InvVP,InvV;
