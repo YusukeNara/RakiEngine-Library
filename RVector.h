@@ -28,6 +28,11 @@ public:
 	RVector3 &operator-=(const XMFLOAT3 &other) { this->x -= other.x; this->y -= other.y; this->z -= other.z; return *this; }
 	RVector3 &operator*=(const XMFLOAT3 &other) { this->x *= other.x; this->y *= other.y; this->z *= other.z; return *this; }
 	RVector3 &operator/=(const XMFLOAT3 &other) { this->x /= other.x; this->y /= other.y; this->z /= other.z; return *this; }
+
+	RVector3 &operator=(const XMFLOAT3 &other) { 
+		RVector3 result = RVector3(other.x, other.y, other.z);
+		return result; 
+	}
 	
 
 	bool operator==(const RVector3 &other) { return this->x == other.x && this->y == other.y && this->z == other.z; }
@@ -64,6 +69,28 @@ inline const RVector3 lerp(const RVector3 &s, const RVector3 &e, const float t) 
 	RVector3 end = e;
 	return start * (1.0f - t) + end * t;
 }
+
+
+//RVector3を使用した、3次元線形補間
+namespace Rv3Ease {
+
+	/// <summary>
+	/// 線形補間（引数は基本全部この形）
+	/// </summary>
+	/// <param name="s">開始点</param>
+	/// <param name="e">終了点</param>
+	/// <param name="t">進行時間（1.0 ~ 0.0）の範囲</param>
+	/// <returns>RVector3型でtのときの座標を返す</returns>
+	const RVector3 lerp(const RVector3 &s, const RVector3 &e, const float t);
+
+	const RVector3 InQuad(const RVector3 &s, const RVector3 &e, const float t);
+
+	const RVector3 OutQuad(const RVector3 &s, const RVector3 &e, const float t);
+
+	const RVector3 InOutQuad(const RVector3 &s, const RVector3 &e, const float t);
+
+}
+
 
 //RVector3型を使用した衝突判定プリミティブ
 namespace RV3Colider {
