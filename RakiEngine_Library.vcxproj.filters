@@ -64,6 +64,9 @@
     <Filter Include="utility">
       <UniqueIdentifier>{370fd596-cc5e-4219-abc2-f30d23e9165f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Render">
+      <UniqueIdentifier>{2aa34d2c-548d-4402-9fe2-169899bb7593}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Raki_imguiMgr.cpp">
