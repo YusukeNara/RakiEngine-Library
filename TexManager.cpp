@@ -22,6 +22,9 @@ void TexManager::InitTexManager()
 
 UINT TexManager::LoadTexture(const char *filename)
 {
+    //ヌルチェック
+    assert(filename != nullptr);
+
     HRESULT result;
     // 使用するテクスチャの番号を設定
     UINT useTexIndexNum = 0;
@@ -106,3 +109,22 @@ UINT TexManager::LoadTexture(std::string filename)
     return texNumber;
 }
 
+UINT TexManager::LoadDivTextureTest(const char *filename, const int numDivTex, int sizeX)
+{
+    //テクスチャ読み込み
+    UINT useNo = LoadTexture(filename);
+
+    //該当テクスチャのuvオフセットを用意
+
+    XMFLOAT2 offset_temp;
+    //分割数分のオフセットを用意（x方向）
+    for (int i = 0; i < numDivTex; i++) {
+        offset_temp.x = (float)sizeX / textureData[useNo].metaData.width;
+        offset_temp.y = textureData[useNo].metaData.height / textureData[useNo].metaData.height;
+
+        //オフセットをコンテナに格納
+        textureData[useNo].uv_offsets.push_back(offset_temp);
+    }
+
+    return useNo;
+}

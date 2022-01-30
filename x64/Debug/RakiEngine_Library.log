@@ -1,1 +1,60 @@
-﻿  RakiEngine_Library.vcxproj -> C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\RakiEngine_Library.lib
+﻿  NY_Model.cpp
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(48,85): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(61,117): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3D.h(43,24): warning C4091: 'extern ': 変数が何も宣言されていないときは、'NY_Model3D' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3D.h(44,23): warning C4091: 'extern ': 変数が何も宣言されていないときは、'NY_Camera' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3D.h(45,32): warning C4091: 'extern ': 変数が何も宣言されていないときは、'NY_Object3DManager' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3DMgr.h(43,22): warning C4091: 'extern ': 変数が何も宣言されていないときは、'Object3d' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3DMgr.h(44,23): warning C4091: 'extern ': 変数が何も宣言されていないときは、'NY_Camera' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Model.cpp(585,15): warning C4553: '==': 式の結果が使用されていません。'=' を意図していますか?
+  NY_Object3D.cpp
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(48,85): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(61,117): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3DMgr.h(43,22): warning C4091: 'extern ': 変数が何も宣言されていないときは、'Object3d' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3DMgr.h(44,23): warning C4091: 'extern ': 変数が何も宣言されていないときは、'NY_Camera' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3D.h(43,24): warning C4091: 'extern ': 変数が何も宣言されていないときは、'NY_Model3D' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3D.h(44,23): warning C4091: 'extern ': 変数が何も宣言されていないときは、'NY_Camera' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3D.h(45,32): warning C4091: 'extern ': 変数が何も宣言されていないときは、'NY_Object3DManager' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3D.cpp(317,66): warning C4267: '引数': 'size_t' から 'UINT' に変換しました。データが失われているかもしれません。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3D.cpp(337,61): warning C4267: '引数': 'size_t' から 'UINT' に変換しました。データが失われているかもしれません。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3D.cpp(356,72): warning C4267: '引数': 'size_t' から 'UINT' に変換しました。データが失われているかもしれません。
+  NY_Object3DMgr.cpp
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(48,85): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(61,117): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3D.h(43,24): warning C4091: 'extern ': 変数が何も宣言されていないときは、'NY_Model3D' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3D.h(44,23): warning C4091: 'extern ': 変数が何も宣言されていないときは、'NY_Camera' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3D.h(45,32): warning C4091: 'extern ': 変数が何も宣言されていないときは、'NY_Object3DManager' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3DMgr.h(43,22): warning C4091: 'extern ': 変数が何も宣言されていないときは、'Object3d' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3DMgr.h(44,23): warning C4091: 'extern ': 変数が何も宣言されていないときは、'NY_Camera' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3DMgr.cpp(13,49): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3DMgr.cpp(14,51): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3DMgr.cpp(15,49): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3DMgr.cpp(16,50): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
+  ParticleManager.cpp
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(48,85): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(61,117): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+  RVector.cpp
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(48,85): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(61,117): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+  Raki_DX12B.cpp
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(48,85): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(61,117): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_DX12B.cpp(342,92): warning C4244: '引数': 'int' から 'FLOAT' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_DX12B.cpp(342,65): warning C4244: '引数': 'int' から 'FLOAT' への変換です。データが失われる可能性があります。
+  Raki_Input.cpp
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(48,85): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(61,117): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_Input.cpp(104,28): warning C4244: '引数': 'LONG' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_Input.cpp(104,21): warning C4244: '引数': 'LONG' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_Input.cpp(112,23): warning C4244: '=': 'LONG' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_Input.cpp(113,23): warning C4244: '=': 'LONG' から 'float' への変換です。データが失われる可能性があります。
+  Raki_imguiMgr.cpp
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(48,85): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(61,117): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_imguiMgr.cpp(62,36): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_imguiMgr.cpp(62,30): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+  TexManager.cpp
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(48,85): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(61,117): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\TexManager.cpp(123,60): warning C4244: '=': 'size_t' から 'float' への変換です。データが失われる可能性があります。
+  RakiEngine_Library.vcxproj -> C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\RakiEngine_Library.lib
