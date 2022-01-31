@@ -4,6 +4,8 @@ float4 main(Output input) : SV_TARGET
 {
     //return tex.Sample(smp, input.uv);
     
+    //2022/02/01 評価課題　バックアップ
+    
     
     //簡単なぼかし処理のやり方
     
