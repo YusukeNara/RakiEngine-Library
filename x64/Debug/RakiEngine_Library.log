@@ -1,6 +1,2 @@
-﻿  Raki_DX12B.cpp
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(48,85): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(61,117): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_DX12B.cpp(612,92): warning C4244: '引数': 'int' から 'FLOAT' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_DX12B.cpp(612,65): warning C4244: '引数': 'int' から 'FLOAT' への変換です。データが失われる可能性があります。
+﻿  compilation object save succeeded; see C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\mpPixelShader.cso
   RakiEngine_Library.vcxproj -> C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\RakiEngine_Library.lib
