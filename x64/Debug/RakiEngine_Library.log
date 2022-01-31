@@ -1,2 +1,4 @@
-﻿  compilation object save succeeded; see C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\mpPixelShader.cso
+﻿C:\K020G1188\CG\Project1 - �R�s?E (3) - �R�s?E\RakiEngine_Library\Shaders\mpPixelShader.hlsl(47,9-28): warning X3571: pow(f, e) will not work for negative f, use abs(f) or conditionally handle negative values if you expect them
+  
+  compilation object save succeeded; see C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\mpPixelShader.cso
   RakiEngine_Library.vcxproj -> C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\RakiEngine_Library.lib
