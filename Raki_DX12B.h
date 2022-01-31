@@ -10,6 +10,12 @@
 #include "Raki_WinAPI.h"
 #include "Raki_Input.h"
 
+//マルチパス結果描画用ポリゴン頂点データ
+struct mpVertex {
+	DirectX::XMFLOAT3 pos;
+	DirectX::XMFLOAT2 uv;
+};
+
 class Raki_DX12B
 {
 private: // エイリアス
@@ -142,6 +148,11 @@ private:
 	ComPtr<ID3D12Resource>				mpResource;	//ペラポリゴンリソース
 	ComPtr<ID3D12DescriptorHeap>		mpRtvHeap;	//レンダーターゲット用
 	ComPtr<ID3D12DescriptorHeap>		mpSrvHeap;	//テクスチャ用
+	ComPtr<ID3D12Resource>				mpVertBuff; //結果描画用頂点バッファ
+	D3D12_VERTEX_BUFFER_VIEW			mpvbView;	//結果描画用頂点バッファビュー
+	ComPtr<ID3D12PipelineState>			mpPipeline;	//ペラポリゴン用パイプライン
+	ComPtr<ID3D12RootSignature>			mpRootsig;	//ペラポリゴン用ルートシグネチャ
+
 
 private:
 	//DirectX12の初期化関数群
@@ -197,10 +208,10 @@ private:
 
 };
 
-<<<<<<< HEAD
-
-=======
->>>>>>> master
+//<<<<<<< HEAD
+//
+//=======
+//>>>>>>> master
 #define RAKI_DX12B_DEV (Raki_DX12B::Get()->GetDevice())
 #define RAKI_DX12B_CMD (Raki_DX12B::Get()->GetGCommandList())
 #define RAKI_DX12B_GET (Raki_DX12B::Get())

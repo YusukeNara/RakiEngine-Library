@@ -64,6 +64,9 @@
     <Filter Include="utility">
       <UniqueIdentifier>{370fd596-cc5e-4219-abc2-f30d23e9165f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\mpShaders">
+      <UniqueIdentifier>{dddaede9-d7b2-4cd4-ae63-aab3df568d71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Raki_imguiMgr.cpp">
@@ -250,6 +253,12 @@
     <FxCompile Include="Shaders\SpriteVS.hlsl">
       <Filter>リソース ファイル\Sprite</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\mpVertexShader.hlsl">
+      <Filter>リソース ファイル\mpShaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\mpPixelShader.hlsl">
+      <Filter>リソース ファイル\mpShaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\OBJShaderHeader.hlsli">
@@ -257,6 +266,9 @@
     </None>
     <None Include="Shaders\Sprite.hlsli">
       <Filter>リソース ファイル\Sprite</Filter>
+    </None>
+    <None Include="Shaders\mpShaderHeader.hlsli">
+      <Filter>リソース ファイル\mpShaders</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -1,12 +1,15 @@
 #include "Raki_DX12B.h"
 #include "Raki_imguiMgr.h"
 
+#include <iostream>
 #include <vector>
 #include <cassert>
+#include <d3dcompiler.h>
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "d3dcompiler.lib")
 
 using namespace Microsoft::WRL;
 
@@ -202,7 +205,175 @@ bool Raki_DX12B::CreateRenderTargetView()
 
 bool Raki_DX12B::CreateSecondRenderTargetAndResource()
 {
+	//マルチパス結果描画用板ポリ
+#pragma region mpVertex
 	///ペラポリゴンリソースを作成
+	mpVertex vertices[] = {
+		{{-1,-1,0},{0,1}},
+		{{-1, 1,0},{0,0}},
+		{{ 1,-1,0},{1,1}},
+		{{ 1, 1,0},{1,0}},
+	};
+	auto heapprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	auto resdesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(vertices));
+	//頂点バッファー作成
+	HRESULT result = device->CreateCommittedResource(
+		&heapprop,
+		D3D12_HEAP_FLAG_NONE,
+		&resdesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&mpVertBuff)
+	);
+	//頂点バッファビュー作成
+	mpvbView.BufferLocation = mpVertBuff->GetGPUVirtualAddress();
+	mpvbView.SizeInBytes = sizeof(vertices);
+	mpvbView.StrideInBytes = sizeof(mpVertex);
+	//データ転送
+	mpVertex *vertMap = nullptr;
+	result = mpVertBuff->Map(0, nullptr, (void **)&vertMap);
+	std::copy(std::begin(vertices), std::end(vertices), vertMap);
+	mpVertBuff->Unmap(0, nullptr);
+
+#pragma endregion mpVertex
+
+	//マルチパス結果描画ポリゴン用のグラフィックスパイプラインとルートシグネチャ生成
+#pragma region mpGraphicspipeline
+
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC gpstate = {};
+
+	//シェーダーコンパイル
+	ComPtr<ID3DBlob> vsblob;
+	ComPtr<ID3DBlob> psblob;
+	ID3DBlob *errorblob = nullptr;
+
+	result = D3DCompileFromFile(
+		L"Resources/Shaders/mpVertexShader.hlsl",
+		nullptr,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE,
+		"main", "vs_5_0", 0, 0,
+		vsblob.ReleaseAndGetAddressOf(),
+		&errorblob
+	);
+	//シェーダーのエラー内容を表示
+	if (FAILED(result))
+	{
+		std::string errstr;
+		errstr.resize(errorblob->GetBufferSize());
+
+		std::copy_n((char *)errorblob->GetBufferPointer(),
+			errorblob->GetBufferSize(),
+			errstr.begin());
+		errstr += "\n";
+		//エラー内容を出力ウインドウに表示
+		OutputDebugStringA(errstr.c_str());
+		exit(1);
+	}
+
+	result = D3DCompileFromFile(
+		L"Resources/Shaders/mpPixelShader.hlsl",
+		nullptr,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE,
+		"main", "ps_5_0", 0, 0,
+		psblob.ReleaseAndGetAddressOf(),
+		&errorblob
+	);
+	//シェーダーのエラー内容を表示
+	if (FAILED(result))
+	{
+		std::string errstr;
+		errstr.resize(errorblob->GetBufferSize());
+
+		std::copy_n((char *)errorblob->GetBufferPointer(),
+			errorblob->GetBufferSize(),
+			errstr.begin());
+		errstr += "\n";
+		//エラー内容を出力ウインドウに表示
+		OutputDebugStringA(errstr.c_str());
+		exit(1);
+	}
+
+	gpstate.VS = CD3DX12_SHADER_BYTECODE(vsblob.Get());
+	gpstate.PS = CD3DX12_SHADER_BYTECODE(psblob.Get());
+
+	//頂点レイアウト
+	D3D12_INPUT_ELEMENT_DESC layout[] =
+	{
+		{
+			"POSITION",
+			0,
+			DXGI_FORMAT_R32G32B32_FLOAT,
+			0,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+			0
+		},
+		{
+			"TEXCOORD",
+			0,
+			DXGI_FORMAT_R32G32_FLOAT,
+			0,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+			0
+		},
+	};
+
+	gpstate.InputLayout.NumElements = _countof(layout);
+	gpstate.InputLayout.pInputElementDescs = layout;
+
+	//その他
+	gpstate.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	gpstate.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	gpstate.NumRenderTargets = 1;
+	gpstate.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	gpstate.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	gpstate.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+	gpstate.SampleDesc.Count = 1;
+	gpstate.SampleDesc.Quality = 0;
+	gpstate.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
+	//ディスクリプタレンジ
+	D3D12_DESCRIPTOR_RANGE range = {};
+	range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;// t
+	range.BaseShaderRegister = 0;// 0
+	range.NumDescriptors = 1;
+	//ルートパラメータ
+	D3D12_ROOT_PARAMETER rp = {};
+	rp.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rp.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	rp.DescriptorTable.pDescriptorRanges = &range;
+	rp.DescriptorTable.NumDescriptorRanges = 1;
+	//サンプラー設定
+	D3D12_STATIC_SAMPLER_DESC sampler = CD3DX12_STATIC_SAMPLER_DESC(0);//s0
+	//ルートシグネチャ生成
+	D3D12_ROOT_SIGNATURE_DESC rsDesc = {};
+	rsDesc.pParameters = &rp;
+	rsDesc.NumParameters = 1;
+	rsDesc.NumStaticSamplers = 1;
+	rsDesc.pStaticSamplers = &sampler;
+	rsDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	ComPtr<ID3DBlob> rsblob;
+	result = D3D12SerializeRootSignature(
+		&rsDesc,
+		D3D_ROOT_SIGNATURE_VERSION_1,
+		rsblob.ReleaseAndGetAddressOf(),
+		&errorblob
+	);
+	device->CreateRootSignature(0, rsblob->GetBufferPointer(), rsblob->GetBufferSize(), IID_PPV_ARGS(&mpRootsig));
+
+	//パイプラインステート生成
+	gpstate.pRootSignature = mpRootsig.Get();
+	result = device->CreateGraphicsPipelineState(
+		&gpstate,
+		IID_PPV_ARGS(&mpPipeline)
+	);
+
+	if (FAILED(result)) {
+		assert(0);
+	}
+
+
+#pragma endregion mpGraphicspipeline
 
 	//作成済みのヒープ情報からもう一枚作成
 	auto heapDesc = rtvHeaps.Get()->GetDesc();
@@ -210,14 +381,14 @@ bool Raki_DX12B::CreateSecondRenderTargetAndResource()
 	auto &bbuff = backBuffers[0];
 	auto resDesc = bbuff->GetDesc();
 
-	D3D12_HEAP_PROPERTIES heapprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	heapprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
 	//クリアカラー（既存のものと同じ値）
 	float clearColor[] = { clearColor_r,clearColor_g, clearColor_b,clearColor_a };
 	D3D12_CLEAR_VALUE clearValue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R8G8B8A8_UNORM, clearColor);
 
 	//リソース生成
-	auto result = device->CreateCommittedResource(
+	result = device->CreateCommittedResource(
 		&heapprop,
 		D3D12_HEAP_FLAG_NONE,
 		&resDesc,
@@ -448,6 +619,21 @@ void Raki_DX12B::StartDraw()
 
 void Raki_DX12B::EndDraw()
 {
+	//1パス目の描画終了
+	StartDraw2();
+
+	//1パス目の結果を描画する準備
+	commandList->SetGraphicsRootSignature(mpRootsig.Get());	//ルートシグネチャセット
+	commandList->SetPipelineState(mpPipeline.Get());		//パイプラインステートセット
+	commandList->SetDescriptorHeaps(1, mpSrvHeap.GetAddressOf());//ディスクリプタヒープセット
+	auto handle = mpSrvHeap->GetGPUDescriptorHandleForHeapStart();
+	commandList->SetGraphicsRootDescriptorTable(0, handle);
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	commandList->IASetVertexBuffers(0, 1, &mpvbView);
+	//1パス目の結果を描画
+	commandList->DrawInstanced(4, 1, 0, 0);
+
+
 	// バックバッファのリソースバリアを変更（描画対象→表示状態）
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 	auto barrier_temp = CD3DX12_RESOURCE_BARRIER::Transition(backBuffers[bbIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
