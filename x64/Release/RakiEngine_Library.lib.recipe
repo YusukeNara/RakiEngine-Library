@@ -3,6 +3,12 @@
   <ProjectOutputs />
   <ContentFiles>
     <ContentFile>
+      <FullPath>C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Release\mpPixelShader.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Release\mpVertexShader.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
       <FullPath>C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Release\OBJGeometryShader.cso</FullPath>
     </ContentFile>
     <ContentFile>

@@ -88,6 +88,8 @@
     <ClCompile Include="Raki_Input.cpp" />
     <ClCompile Include="Raki_SceneManager.cpp" />
     <ClCompile Include="Raki_WinAPI.cpp" />
+    <ClCompile Include="RenderingManager.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="RVector.cpp" />
     <ClCompile Include="SceneChanger.cpp" />
     <ClCompile Include="Sprite.cpp" />
@@ -117,6 +119,8 @@
     <ClInclude Include="Raki_Input.h" />
     <ClInclude Include="Raki_SceneManager.h" />
     <ClInclude Include="Raki_WinAPI.h" />
+    <ClInclude Include="RenderingManager.h" />
+    <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="RVector.h" />
     <ClInclude Include="SceneBase.h" />
     <ClInclude Include="SceneChanger.h" />

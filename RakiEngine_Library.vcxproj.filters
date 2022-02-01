@@ -67,6 +67,9 @@
     <Filter Include="リソース ファイル\mpShaders">
       <UniqueIdentifier>{dddaede9-d7b2-4cd4-ae63-aab3df568d71}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphic\Render">
+      <UniqueIdentifier>{4cb57401-2670-456c-8bac-7825aec80bed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Raki_imguiMgr.cpp">
@@ -146,6 +149,12 @@
     </ClCompile>
     <ClCompile Include="NY_random.cpp">
       <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingManager.cpp">
+      <Filter>Graphic\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTarget.cpp">
+      <Filter>Graphic\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -235,6 +244,12 @@
     </ClInclude>
     <ClInclude Include="NY_random.h">
       <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingManager.h">
+      <Filter>Graphic\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTarget.h">
+      <Filter>Graphic\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
