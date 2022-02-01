@@ -1,4 +1,6 @@
-﻿  ParticleManager.cpp
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(45,85): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(55,117): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+﻿C:\K020G1188\CG\Project1 - �R�s?E (3) - �R�s?E\RakiEngine_Library\Shaders\mpPixelShader.hlsl(47,9-28): warning X3571: pow(f, e) will not work for negative f, use abs(f) or conditionally handle negative values if you expect them
+  
+  compilation object save succeeded; see C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Release\mpPixelShader.cso
+  compilation object save succeeded; see C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Release\mpVertexShader.cso
+  NY_random.cpp
   RakiEngine_Library.vcxproj -> C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Release\RakiEngine_Library.lib
