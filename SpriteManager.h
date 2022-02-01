@@ -31,6 +31,7 @@ typedef struct SpConstBufferData
 //スプライト一枚分のデータ
 typedef struct SpriteData
 {
+	SpriteVertex vertices[4] = {};
 	ComPtr<ID3D12Resource> vertBuff;//頂点バッファ
 	D3D12_VERTEX_BUFFER_VIEW vbView;//頂点バッファビュー
 	ComPtr<ID3D12Resource> constBuff;//定数バッファ

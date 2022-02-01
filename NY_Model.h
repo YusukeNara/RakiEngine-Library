@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "TexManager.h"
+
 using namespace std;
 using namespace DirectX;
 using namespace Microsoft::WRL;
-
-#include "NY_Object3DMgr.h"
 
 //頂点データ
 struct Vertex
@@ -60,6 +60,8 @@ public:
 	D3D12_INDEX_BUFFER_VIEW ibview{};
 	//マテリアル
 	Material material;
+	//uvアニメーションデータ
+	uvAnimData *animData;
 
 public:
 
@@ -78,11 +80,11 @@ public:
 	//void CreatePlaneModelXY(float x_size, float y_size, string useTexFileName, ID3D12Device *dev, NY_Object3DManager *mgr);
 
 	//xy平面を作成。ロード済テクスチャを使用。テクスチャバッファの番号を指定すること（空のバッファを指定するとあとで死ぬ）
-	void CreatePlaneModelXY(float x_size, float y_size, float uv_x, float uv_y, UINT useTexNum);
+	void CreatePlaneModelXY(float x_size, float y_size, float uv_x, float uv_y, UINT useTexNum, uvAnimData *uvanimdata);
 	//xz平面
-	void CreatePlaneModelXZ(float x_size, float z_size, float uv_x, float uv_y, UINT useTexNum);
+	void CreatePlaneModelXZ(float x_size, float z_size, float uv_x, float uv_y, UINT useTexNum, uvAnimData *uvanimdata);
 	//yz平面
-	void CreatePlaneModelYZ(float y_size, float z_size, float uv_x, float uv_y, UINT useTexNum);
+	void CreatePlaneModelYZ(float y_size, float z_size, float uv_x, float uv_y, UINT useTexNum, uvAnimData *uvanimdata);
 
 	//立方体モデルデータ作成
 	void CreateBoxModel(float size, float uv_x, float uv_y, UINT useTexNum);
@@ -90,6 +92,8 @@ public:
 	//アニメーションテクスチャの使用するアニメーションの番号を変更（uv制御）
 	void ChangeTexAnimationNumber(int useAnimNum);
 
+	//モデルデータ更新（実質アニメーション専用）
+	void Update();
 
 private:
 

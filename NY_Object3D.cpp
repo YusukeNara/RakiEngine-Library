@@ -182,6 +182,8 @@ void Object3d::UpdateObject3D()
 
 		isDirty = false;
 	}
+
+	model->Update();
 }
 
 //void Object3d::UpdateBillBoard3D(Object3d *obj, NY_Camera cam)
@@ -295,6 +297,8 @@ void Object3d::UpdateBillBoard3D()
 		ConstMapB1->alpha		= model->material.alpha;
 		constBuffB1->Unmap(0, nullptr);
 	}
+
+	model->Update();
 }
 
 void Object3d::DrawModel3D(Object3d *obj, ID3D12GraphicsCommandList *cmd, ID3D12Device *dev)

@@ -1,5 +1,5 @@
 #include "NY_Model.h"
-#include "TexManager.h"
+#include "Raki_DX12B.h"
 
 void NY_Model3D::LoadObjModel(const char *modelName)
 {
@@ -113,7 +113,7 @@ void NY_Model3D::LoadObjModel(const char *modelName)
 	auto RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeVB);
 
 	//頂点バッファ生成
-	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
+	result = RAKI_DX12B_DEV->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -128,7 +128,7 @@ void NY_Model3D::LoadObjModel(const char *modelName)
 
 	RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeIB);
 	//インデックスバッファ生成
-	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
+	result = RAKI_DX12B_DEV->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -215,20 +215,39 @@ void NY_Model3D::LoadMatarial(string fileName, string filepath)
 
 }
 
-void NY_Model3D::CreatePlaneModelXY(float x_size, float y_size, float uv_x, float uv_y, UINT useTexNum)
+void NY_Model3D::CreatePlaneModelXY(float x_size, float y_size, float uv_x, float uv_y, UINT useTexNum,uvAnimData *uvanimdata)
 {
-	//頂点データ作成
-	Vertex plane[4] = {
-		{{-x_size,-y_size,0},{},{0.0f,0.0f}},
-		{{ x_size,-y_size,0},{},{uv_x,0.0f}},
-		{{-x_size, y_size,0},{},{0.0f,uv_y}},
-		{{ x_size, y_size,0},{},{uv_x,uv_y}},
-	};
-	//頂点データ格納
-	for (int i = 0; i < 4; i++)
-	{
-		vertices.push_back(plane[i]);
+	//アニメーションデータがある場合
+	if (uvanimdata != nullptr) {
+		animData = uvanimdata;
+		//頂点データのuv値をアニメーションデータのオフセットで作成
+		Vertex plane[4] = {
+			{{-x_size,-y_size,0},{},animData->GetOffset().offsetLT},//左上
+			{{ x_size,-y_size,0},{},animData->GetOffset().offsetRT},//右上
+			{{-x_size, y_size,0},{},animData->GetOffset().offsetLB},//左下
+			{{ x_size, y_size,0},{},animData->GetOffset().offsetRB},//右下
+		};
+		//頂点データ格納
+		for (int i = 0; i < 4; i++)
+		{
+			vertices.push_back(plane[i]);
+		}
 	}
+	else {
+		//決め打ちで作成
+		Vertex plane[4] = {
+			{{-x_size,-y_size,0},{},{0.0f,0.0f}},
+			{{ x_size,-y_size,0},{},{uv_x,0.0f}},
+			{{-x_size, y_size,0},{},{0.0f,uv_y}},
+			{{ x_size, y_size,0},{},{uv_x,uv_y}},
+		};
+		//頂点データ格納
+		for (int i = 0; i < 4; i++)
+		{
+			vertices.push_back(plane[i]);
+		}
+	}
+
 	//インデックスデータ作成
 	unsigned short index[] = {
 		0,2,1,
@@ -248,7 +267,7 @@ void NY_Model3D::CreatePlaneModelXY(float x_size, float y_size, float uv_x, floa
 	const auto HEAP_PROP = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeVB);
 	//頂点バッファ生成
-	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
+	result = RAKI_DX12B_DEV->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -263,7 +282,7 @@ void NY_Model3D::CreatePlaneModelXY(float x_size, float y_size, float uv_x, floa
 
 	RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeIB);
 	//インデックスバッファ生成
-	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
+	result = RAKI_DX12B_DEV->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -293,20 +312,38 @@ void NY_Model3D::CreatePlaneModelXY(float x_size, float y_size, float uv_x, floa
 
 }
 
-void NY_Model3D::CreatePlaneModelXZ(float x_size, float z_size, float uv_x, float uv_y, UINT useTexNum)
+void NY_Model3D::CreatePlaneModelXZ(float x_size, float z_size, float uv_x, float uv_y, UINT useTexNum, uvAnimData *uvanimdata)
 {
-	//頂点データ作成
-	Vertex plane[4] = {
-		{{-x_size,0,-z_size},{},{0.0f,0.0f}},
-		{{ x_size,0,-z_size},{},{uv_x,0.0f}},
-		{{-x_size,0, z_size},{},{0.0f,uv_y}},
-		{{ x_size,0, z_size},{},{uv_x,uv_y}},
-	};
-	//頂点データ格納
-	for (int i = 0; i < 4; i++)
-	{
-		vertices.push_back(plane[i]);
+	if (uvanimdata != nullptr) {
+		//頂点データ作成
+		Vertex plane[4] = {
+			{{-x_size,0,-z_size},{},uvanimdata->GetOffset().offsetLT},
+			{{ x_size,0,-z_size},{},uvanimdata->GetOffset().offsetRT},
+			{{-x_size,0, z_size},{},uvanimdata->GetOffset().offsetLB},
+			{{ x_size,0, z_size},{},uvanimdata->GetOffset().offsetRB},
+		};
+		//頂点データ格納
+		for (int i = 0; i < 4; i++)
+		{
+			vertices.push_back(plane[i]);
+		}
 	}
+	else {
+		//頂点データ作成
+		Vertex plane[4] = {
+			{{-x_size,0,-z_size},{},{0.0f,0.0f}},
+			{{ x_size,0,-z_size},{},{uv_x,0.0f}},
+			{{-x_size,0, z_size},{},{0.0f,uv_y}},
+			{{ x_size,0, z_size},{},{uv_x,uv_y}},
+		};
+		//頂点データ格納
+		for (int i = 0; i < 4; i++)
+		{
+			vertices.push_back(plane[i]);
+		}
+	}
+
+
 	//インデックスデータ作成
 	unsigned short index[] = {
 		0,2,1,
@@ -326,7 +363,7 @@ void NY_Model3D::CreatePlaneModelXZ(float x_size, float z_size, float uv_x, floa
 	const auto HEAP_PROP = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeVB);
 	//頂点バッファ生成
-	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
+	result = RAKI_DX12B_DEV->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -341,7 +378,7 @@ void NY_Model3D::CreatePlaneModelXZ(float x_size, float z_size, float uv_x, floa
 
 	RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeIB);
 	//インデックスバッファ生成
-	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
+	result = RAKI_DX12B_DEV->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -370,20 +407,37 @@ void NY_Model3D::CreatePlaneModelXZ(float x_size, float z_size, float uv_x, floa
 	material.texNumber = useTexNum;
 }
 
-void NY_Model3D::CreatePlaneModelYZ(float y_size, float z_size, float uv_x, float uv_y, UINT useTexNum)
+void NY_Model3D::CreatePlaneModelYZ(float y_size, float z_size, float uv_x, float uv_y, UINT useTexNum, uvAnimData *uvanimdata)
 {
-	//頂点データ作成
-	Vertex plane[4] = {
-		{{ 0,-y_size,-z_size},{},{0.0f,0.0f}},
-		{{ 0, y_size,-z_size},{},{uv_x,0.0f}},
-		{{ 0,-y_size, z_size},{},{0.0f,uv_y}},
-		{{ 0, y_size, z_size},{},{uv_x,uv_y}},
-	};
-	//頂点データ格納
-	for (int i = 0; i < 4; i++)
-	{
-		vertices.push_back(plane[i]);
+	if (uvanimdata != nullptr) {
+		//頂点データ作成
+		Vertex plane[4] = {
+			{{ 0,-y_size,-z_size},{},uvanimdata->GetOffset().offsetLT},
+			{{ 0, y_size,-z_size},{},uvanimdata->GetOffset().offsetRT},
+			{{ 0,-y_size, z_size},{},uvanimdata->GetOffset().offsetLB},
+			{{ 0, y_size, z_size},{},uvanimdata->GetOffset().offsetRB},
+		};
+		//頂点データ格納
+		for (int i = 0; i < 4; i++)
+		{
+			vertices.push_back(plane[i]);
+		}
 	}
+	else {
+		//頂点データ作成
+		Vertex plane[4] = {
+			{{ 0,-y_size,-z_size},{},{0.0f,0.0f}},
+			{{ 0, y_size,-z_size},{},{uv_x,0.0f}},
+			{{ 0,-y_size, z_size},{},{0.0f,uv_y}},
+			{{ 0, y_size, z_size},{},{uv_x,uv_y}},
+		};
+		//頂点データ格納
+		for (int i = 0; i < 4; i++)
+		{
+			vertices.push_back(plane[i]);
+		}
+	}
+
 	//インデックスデータ作成
 	unsigned short index[] = {
 		0,2,1,
@@ -403,7 +457,7 @@ void NY_Model3D::CreatePlaneModelYZ(float y_size, float z_size, float uv_x, floa
 	const auto HEAP_PROP = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeVB);
 	//頂点バッファ生成
-	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
+	result = RAKI_DX12B_DEV->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -418,7 +472,7 @@ void NY_Model3D::CreatePlaneModelYZ(float y_size, float z_size, float uv_x, floa
 
 	RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeIB);
 	//インデックスバッファ生成
-	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
+	result = RAKI_DX12B_DEV->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -524,7 +578,7 @@ void NY_Model3D::CreateBoxModel(float size, float uv_x, float uv_y, UINT useTexN
 	const auto HEAP_PROP = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeVB);
 	//頂点バッファ生成
-	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
+	result = RAKI_DX12B_DEV->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -539,7 +593,7 @@ void NY_Model3D::CreateBoxModel(float size, float uv_x, float uv_y, UINT useTexN
 
 	RESDESC = CD3DX12_RESOURCE_DESC::Buffer(sizeIB);
 	//インデックスバッファ生成
-	result = NY_Object3DManager::GetDev()->CreateCommittedResource(
+	result = RAKI_DX12B_DEV->CreateCommittedResource(
 		&HEAP_PROP,
 		D3D12_HEAP_FLAG_NONE,
 		&RESDESC,
@@ -585,6 +639,49 @@ void NY_Model3D::ChangeTexAnimationNumber(int useAnimNum)
 			vposNumber == 0;
 		}
 	}
+
+
+}
+
+void NY_Model3D::Update()
+{
+	//アニメーションデータによるuv更新
+	if (animData != nullptr) {
+		//uv格納先識別（4頂点で1枚の板ポリ->4回回すたびにuvのオフセットを置く位置が最初からになる）
+		int count = 0;
+		//頂点データの終端まで回す
+		for (int i = 0; i < vertices.size(); i++) {
+			switch (count)
+			{
+			case 0:
+				//左上
+				vertices[i].uv = animData->GetOffset().offsetLT;
+				break;
+			case 1:
+				//左下
+				vertices[i].uv = animData->GetOffset().offsetRT;
+				break;
+			case 2:
+				//右上
+				vertices[i].uv = animData->GetOffset().offsetLB;
+				break;
+			case 3:
+				//右下
+				vertices[i].uv = animData->GetOffset().offsetRB;
+				break;
+			default:
+				break;
+			}
+			count++;
+			if (count > 3) { count = 0; }
+		}
+		//頂点バッファデータ転送
+		Vertex *vertMap = nullptr;
+		HRESULT result = vertBuff->Map(0, nullptr, (void **)&vertMap);
+		copy(vertices.begin(), vertices.end(), vertMap);
+		vertBuff->Unmap(0, nullptr);
+	}
+
 
 
 }

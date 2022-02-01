@@ -48,7 +48,7 @@ UINT TexManager::LoadTexture(const char *filename)
 
     // WICテクスチャのロード
     result = LoadFromWICFile(FileName,
-        WIC_FLAGS_NONE,
+        WIC_FLAGS_IGNORE_SRGB,
         &textureData[useTexIndexNum].metaData,
         textureData[useTexIndexNum].scratchImg);
     textureData[useTexIndexNum].img = textureData[useTexIndexNum].scratchImg.GetImage(0, 0, 0);
@@ -109,22 +109,50 @@ UINT TexManager::LoadTexture(std::string filename)
     return texNumber;
 }
 
-UINT TexManager::LoadDivTextureTest(const char *filename, const int numDivTex, int sizeX)
+UINT TexManager::LoadDivTextureTest(uvAnimData *data,const char *filename, const int numDivTex, int sizeX)
 {
     //テクスチャ読み込み
     UINT useNo = LoadTexture(filename);
 
     //該当テクスチャのuvオフセットを用意
 
-    XMFLOAT2 offset_temp;
-    //分割数分のオフセットを用意（x方向）
+    //アニメーション1枚の画像サイズを算出
+    float animTexSizeX = float(textureData[useNo].metaData.width) / float(numDivTex);
+    //1枚のサイズ / 全体のサイズ = 1枚あたりのuvのオフセット値
+    float uvoffSetParam = animTexSizeX / float(textureData[useNo].metaData.width);
+    //uvのオフセット値を元にuvオフセットを設定
     for (int i = 0; i < numDivTex; i++) {
-        offset_temp.x = (float)sizeX / textureData[useNo].metaData.width;
-        offset_temp.y = textureData[useNo].metaData.height / textureData[useNo].metaData.height;
+        UVOFFSETS offset = {
+            {uvoffSetParam * float(i),0 * -1},//左上
+            {uvoffSetParam * float(i) + uvoffSetParam,0 * -1},//右上
+            {uvoffSetParam * float(i),1 * -1},//左下
+            {uvoffSetParam * float(i) + uvoffSetParam,1 * -1},//右下
+        };
 
-        //オフセットをコンテナに格納
-        textureData[useNo].uv_offsets.push_back(offset_temp);
+        data->AddOffsets(offset);
     }
 
+    data->usingNo = 0;
+
     return useNo;
+}
+
+void uvAnimData::AddOffsets(UVOFFSETS offset)
+{
+    //オフセット格納
+    uvOffsets.push_back(offset);
+}
+
+UVOFFSETS uvAnimData::GetOffset()
+{
+    if (usingNo < 0 || usingNo > uvOffsets.size()) {
+        return uvOffsets[0];
+    }
+
+    return uvOffsets[usingNo];
+}
+
+int uvAnimData::Getsize()
+{
+    return int(uvOffsets.size());
 }

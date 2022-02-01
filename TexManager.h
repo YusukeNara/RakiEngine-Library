@@ -6,6 +6,39 @@
 
 #pragma comment(lib, "d3d12.lib")
 
+//uvオフセット格納コンテナ
+struct UVOFFSETS {
+	DirectX::XMFLOAT2 offsetLT;	//左上
+	DirectX::XMFLOAT2 offsetRT;	//右上
+	DirectX::XMFLOAT2 offsetLB;	//左下
+	DirectX::XMFLOAT2 offsetRB;	//右下
+};
+
+//uvアニメーション用データ
+class uvAnimData {
+private:
+	//uvオフセット格納コンテナ
+	std::vector<UVOFFSETS> uvOffsets;
+
+public:
+	//コンスタラクタ、デストラクタ
+	uvAnimData() {
+		usingNo = 0;
+	};
+	~uvAnimData() {};
+
+	//使用中のアニメーション番号
+	int usingNo;
+
+	//オフセット作成
+	void AddOffsets(UVOFFSETS offset);
+	//オフセット取得
+	UVOFFSETS GetOffset();
+
+	int Getsize();
+
+};
+
 //マルチパスレンダリングをするときにあると今後が楽だと思って作った
 //けど
 class TexManager
@@ -37,9 +70,6 @@ public:
 	static const int MAX_TEXNUM;
 
 
-
-
-
 public:
 	/// <summary>
 	/// TexManagerの初期化、ディスクリプタヒープ生成
@@ -62,7 +92,7 @@ public:
 	/// <param name="numDivTex">分割数（右方向）</param>
 	/// <param name="sizeX">1枚のサイズ</param>
 	/// <returns>格納したテクスチャの場所を配列で</returns>
-	static UINT LoadDivTextureTest(const char *filename, const int numDivTex, int sizeX);
+	static UINT LoadDivTextureTest(uvAnimData *data, const char *filename, const int numDivTex, int sizeX);
 
 
 };
