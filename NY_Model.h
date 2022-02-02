@@ -89,9 +89,6 @@ public:
 	//立方体モデルデータ作成
 	void CreateBoxModel(float size, float uv_x, float uv_y, UINT useTexNum);
 
-	//アニメーションテクスチャの使用するアニメーションの番号を変更（uv制御）
-	void ChangeTexAnimationNumber(int useAnimNum);
-
 	//モデルデータ更新（実質アニメーション専用）
 	void Update();
 

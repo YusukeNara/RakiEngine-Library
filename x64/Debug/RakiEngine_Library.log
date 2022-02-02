@@ -1,8 +1,6 @@
-﻿  Sprite.cpp
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(78,47): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(79,49): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(80,47): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(81,48): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Sprite.cpp(104,115): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Sprite.cpp(104,79): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+﻿  RVector.cpp
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(48,85): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(61,117): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.cpp(26,43): warning C4244: '引数': 'double' から 'const float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.cpp(40,89): warning C4244: '引数': 'double' から 'const float' への変換です。データが失われる可能性があります。
   RakiEngine_Library.vcxproj -> C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\RakiEngine_Library.lib

@@ -23,6 +23,8 @@ void Sprite::CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool 
         spdata.vertices[3] = vertices[3];
     }
     else {
+        //引数がヌルならヌルを直接入れる
+        this->animData = nullptr;
         //頂点データ
         SpriteVertex vertices[] = {
             {{0.0f,0.0f,0.0f},{0.0f,0.0f}},
