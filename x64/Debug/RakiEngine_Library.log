@@ -1,14 +1,8 @@
-﻿  NY_Model.cpp
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(48,85): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(61,117): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
-  Raki_Input.cpp
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(48,85): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\RVector.h(61,117): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_Input.cpp(121,28): warning C4244: '引数': 'LONG' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_Input.cpp(121,21): warning C4244: '引数': 'LONG' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_Input.cpp(129,23): warning C4244: '=': 'LONG' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_Input.cpp(130,23): warning C4244: '=': 'LONG' から 'float' への変換です。データが失われる可能性があります。
-  Raki_WinAPI.cpp
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_WinAPI.cpp(70,66): warning C4311: '型キャスト': ポインターを 'HANDLE' から 'long' へ切り詰めます。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Raki_WinAPI.cpp(70,66): warning C4302: '型キャスト': 'HANDLE' から 'long' へ切り詰めます。
+﻿  compilation object save succeeded; see C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\mpEffectPixelShader.cso
+C:\K020G1188\CG\Project1 - �R�s?E (3) - �R�s?E\RakiEngine_Library\Shaders\mpPixelShader.hlsl(46,9-28): warning X3571: pow(f, e) will not work for negative f, use abs(f) or conditionally handle negative values if you expect them
+  
+  compilation object save succeeded; see C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\mpPixelShader.cso
+  compilation object save succeeded; see C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\mpVertexShader.cso
+  compilation object save succeeded; see C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\SpritePS.cso
+  compilation object save succeeded; see C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\SpriteVS.cso
   RakiEngine_Library.vcxproj -> C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\RakiEngine_Library.lib
