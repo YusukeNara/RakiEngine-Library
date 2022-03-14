@@ -59,6 +59,15 @@ public:
 	/// </summary>
 	void StartDraw2();
 
+	//バックバッファ描画開始
+	void StartDrawBackbuffer();
+
+	//レンダーターゲット描画開始（ここにレンダリングした結果を画像として使える）
+	void StartDrawRenderTarget();
+
+	//描画処理終了
+	void CloseDraw();
+
 	/// <summary>
 	/// 従来の描画終了
 	/// </summary>
@@ -145,13 +154,18 @@ private:
 
 	//マルチパス関連
 
+	//リソース
 	ComPtr<ID3D12Resource>				mpResource;	//ペラポリゴンリソース
 	ComPtr<ID3D12DescriptorHeap>		mpRtvHeap;	//レンダーターゲット用
 	ComPtr<ID3D12DescriptorHeap>		mpSrvHeap;	//テクスチャ用
+
 	ComPtr<ID3D12Resource>				mpVertBuff; //結果描画用頂点バッファ
 	D3D12_VERTEX_BUFFER_VIEW			mpvbView;	//結果描画用頂点バッファビュー
 	ComPtr<ID3D12PipelineState>			mpPipeline;	//ペラポリゴン用パイプライン
 	ComPtr<ID3D12RootSignature>			mpRootsig;	//ペラポリゴン用ルートシグネチャ
+
+	bool isRenderTarget = false;
+	bool isBackBuffer = false;
 
 
 private:

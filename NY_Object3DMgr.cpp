@@ -223,7 +223,6 @@ Pipeline3D NY_Object3DManager::Create3DPipelineState(ID3D12Device *dev)
     //テクスチャ用
     rootparams[2].InitAsDescriptorTable(1, &descRangeSRV, D3D12_SHADER_VISIBILITY_ALL);//標準
 
-
     //テクスチャサンプラー設定
     D3D12_STATIC_SAMPLER_DESC samplerDesc{};
 
@@ -352,7 +351,7 @@ void NY_Object3DManager::LoadObject3DTexture(UINT &texNumber, string filename, I
 
 
 
-Object3d *NY_Object3DManager::CreateObject3d(NY_Model3D *modelData)
+Object3d *NY_Object3DManager::CreateObject3d(Model3D *modelData)
 {
     if (modelData == nullptr) {
         assert(modelData == nullptr);
@@ -426,7 +425,7 @@ void NY_Object3DManager::SetCommonBeginDrawObject3D2MultiPassRenderResource()
     Raki_DX12B::Get()->GetGCommandList()->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 }
 
-Object3d *CreateObject3d(NY_Model3D *modelData, RVector3 pos)
+Object3d *CreateObject3d(Model3D *modelData, RVector3 pos)
 {
     //返却用のポインタ変数にObject3Dを作成
     Object3d *result = NY_Object3DManager::Get()->CreateObject3d(modelData);

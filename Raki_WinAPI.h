@@ -1,5 +1,7 @@
 #pragma once
 #include <Windows.h>
+#include <io.h>
+#include <fcntl.h>
 
 #include "imgui/imgui_impl_win32.h"
 
@@ -13,6 +15,9 @@ public:
 	static int window_width; //縦幅
 	static int window_height;//横幅
 	static wchar_t window_name[];//ウィンドウの名前
+	//コンソールハンドル
+	static int hConsole;
+
 public:
 	//---------------------メンバ関数--------------------//
 
@@ -36,9 +41,19 @@ public:
 	void CreateGameWindow();
 
 	/// <summary>
+	/// コンソールウィンドウの表示
+	/// </summary>
+	void CreateConsoleWindow();
+
+	/// <summary>
 	/// ゲームウィンドウの破棄
 	/// </summary>
 	void DeleteGameWindow();
+
+	/// <summary>
+	/// コンソールウィンドウを閉じる
+	/// </summary>
+	void CloseConsoleWindow();
 
 	/// <summary>
 	/// メッセージ処理（終了かどうか）

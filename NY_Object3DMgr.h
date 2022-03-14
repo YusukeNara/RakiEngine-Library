@@ -143,7 +143,7 @@ public:
 	/// <summary>
 	/// object3dの作成、コンテナに格納
 	/// </summary>
-	Object3d *CreateObject3d(NY_Model3D *modelData);
+	Object3d *CreateObject3d(Model3D *modelData);
 
 	/// <summary>
 	/// オブジェクトの削除
@@ -213,7 +213,7 @@ inline void InitializeObject3DManager(ID3D12Device *dev, int window_w, int windo
 /// <param name="modelData">NY_Model3Dのモデルデータ</param>
 /// <param name="pos">初期位置を設定する</param>
 /// <returns>生成されたObject3dを示すポインタ</returns>
-Object3d *CreateObject3d(NY_Model3D *modelData, RVector3 pos = { 0,0,0 });
+Object3d *CreateObject3d(Model3D *modelData, RVector3 pos = { 0,0,0 });
 
 /// <summary>
 /// Object3dデータの削除

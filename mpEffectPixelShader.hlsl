@@ -2,5 +2,5 @@
 
 float4 main(VSOutput input) : SV_TARGET
 {
-	return tex.Sample(smp,input.uv) * color;
+    return tex.Sample(smp, input.uv) * color;
 }

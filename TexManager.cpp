@@ -1,6 +1,9 @@
 #include "TexManager.h"
 #include "Raki_DX12B.h"
 
+#include <fstream>
+#include <sstream>
+
 TexManager::texture								TexManager::textureData[1024];
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>	TexManager::texDsvHeap;
 const int										TexManager::MAX_TEXNUM = 1024;
@@ -53,6 +56,12 @@ UINT TexManager::LoadTexture(const char *filename)
         textureData[useTexIndexNum].scratchImg);
     textureData[useTexIndexNum].img = textureData[useTexIndexNum].scratchImg.GetImage(0, 0, 0);
 
+    if (FAILED(result)) {
+        std::wstringstream stream;
+        stream << std::system_category().message(result).c_str() << std::endl;
+        OutputDebugString(stream.str().c_str());
+    }
+
     // テクスチャバッファ生成
     D3D12_HEAP_PROPERTIES texHeapProp{};//テクスチャヒープ設定
     texHeapProp.Type                    = D3D12_HEAP_TYPE_CUSTOM;
@@ -77,6 +86,12 @@ UINT TexManager::LoadTexture(const char *filename)
         IID_PPV_ARGS(&textureData[useTexIndexNum].texBuff)
     );
 
+    if (FAILED(result)) {
+        std::wstringstream stream;
+        stream << std::system_category().message(result).c_str() << std::endl;
+        OutputDebugString(stream.str().c_str());
+    }
+
     //テクスチャバッファへのデータ転送
     result = textureData[useTexIndexNum].texBuff->WriteToSubresource(
         0,
@@ -85,6 +100,12 @@ UINT TexManager::LoadTexture(const char *filename)
         (UINT)textureData[useTexIndexNum].img->rowPitch,
         (UINT)textureData[useTexIndexNum].img->slicePitch
     );
+
+    if (FAILED(result)) {
+        std::wstringstream stream;
+        stream << std::system_category().message(result).c_str() << std::endl;
+        OutputDebugString(stream.str().c_str());
+    }
 
     //シェーダーリソースビュー設定
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};

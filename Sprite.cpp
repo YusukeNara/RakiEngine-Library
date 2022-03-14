@@ -3,6 +3,8 @@
 
 #include "TexManager.h"
 
+#include "Raki_DX12B.h"
+
 void Sprite::CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool adjustResourceFlag, uvAnimData *animData)
 {
 	HRESULT result;
@@ -167,7 +169,6 @@ void Sprite::UpdateSprite()
         spdata.vertBuff->Unmap(0, nullptr);
     }
 
-
     spdata.matWorld = XMMatrixIdentity();
 
     spdata.matWorld *= XMMatrixRotationZ(XMConvertToRadians(spdata.rotation));
@@ -178,6 +179,7 @@ void Sprite::UpdateSprite()
     SpConstBufferData *constMap = nullptr;
     HRESULT result = spdata.constBuff->Map(0, nullptr, (void **)&constMap);
     constMap->mat = spdata.matWorld * SpriteManager::Get()->matProjection;
+    constMap->color = spdata.color;
     spdata.constBuff->Unmap(0, nullptr);
 
 }
@@ -195,4 +197,19 @@ void Sprite::Draw()
     //描画
     SpriteManager::Get()->cmd->DrawInstanced(4, 1, 0, 0);
 
+}
+
+void Sprite::DrawMPRender()
+{
+    SpriteManager::Get()->SetCommonBeginDrawmpResource();
+    //頂点バッファセット
+    SpriteManager::Get()->cmd->IASetVertexBuffers(0, 1, &spdata.vbView);
+    //定数バッファセット
+    SpriteManager::Get()->cmd->SetGraphicsRootConstantBufferView(0, spdata.constBuff->GetGPUVirtualAddress());
+    //シェーダーリソースビューをセット
+    SpriteManager::Get()->cmd->SetGraphicsRootDescriptorTable(1,
+        CD3DX12_GPU_DESCRIPTOR_HANDLE(RAKI_DX12B_GET->GetMuliPassSrvDescHeap()->GetGPUDescriptorHandleForHeapStart(),
+            0, RAKI_DX12B_DEV->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)));
+    //描画
+    SpriteManager::Get()->cmd->DrawInstanced(4, 1, 0, 0);
 }

@@ -1,7 +1,9 @@
 #include "NY_Model.h"
 #include "Raki_DX12B.h"
 
-void NY_Model3D::LoadObjModel(const char *modelName)
+#include <iostream>
+
+void Model3D::LoadObjModel(const char *modelName)
 {
 	//FileStream
 	ifstream file;
@@ -16,11 +18,14 @@ void NY_Model3D::LoadObjModel(const char *modelName)
 	//オープン失敗をチェック
 	if (file.fail() == true)
 	{
+		std::cout << "ERROR : LoadObjModel : File not found.Pleace check " << modelName << std::endl;
+
 		std::wstringstream stream;
 		stream << "ERROR : LoadObjModel : File not found.Pleace check " << modelName << std::endl;
 		OutputDebugStringW(stream.str().c_str());
 		assert(0);
 	}
+	std::cout << "LOAD SUCCESS : LoadObjModel : " << modelName << std::endl;
 	std::wstringstream stream;
 	stream << "LOAD SUCCESS : LoadObjModel : " << modelName << std::endl;
 	OutputDebugStringW(stream.str().c_str());
@@ -161,7 +166,7 @@ void NY_Model3D::LoadObjModel(const char *modelName)
 
 }
 
-void NY_Model3D::LoadMatarial(string fileName, string filepath)
+void Model3D::LoadMatarial(string fileName, string filepath)
 {
 	ifstream file;
 	//マテリアルファイルオープン
@@ -221,7 +226,7 @@ void NY_Model3D::LoadMatarial(string fileName, string filepath)
 
 }
 
-void NY_Model3D::CreatePlaneModelXY(float x_size, float y_size, float uv_x, float uv_y, UINT useTexNum,uvAnimData *uvanimdata)
+void Model3D::CreatePlaneModelXY(float x_size, float y_size, float uv_x, float uv_y, UINT useTexNum,uvAnimData *uvanimdata)
 {
 	//アニメーションデータがある場合
 	if (uvanimdata != nullptr) {
@@ -318,7 +323,7 @@ void NY_Model3D::CreatePlaneModelXY(float x_size, float y_size, float uv_x, floa
 
 }
 
-void NY_Model3D::CreatePlaneModelXZ(float x_size, float z_size, float uv_x, float uv_y, UINT useTexNum, uvAnimData *uvanimdata)
+void Model3D::CreatePlaneModelXZ(float x_size, float z_size, float uv_x, float uv_y, UINT useTexNum, uvAnimData *uvanimdata)
 {
 	if (uvanimdata != nullptr) {
 		//頂点データ作成
@@ -413,7 +418,7 @@ void NY_Model3D::CreatePlaneModelXZ(float x_size, float z_size, float uv_x, floa
 	material.texNumber = useTexNum;
 }
 
-void NY_Model3D::CreatePlaneModelYZ(float y_size, float z_size, float uv_x, float uv_y, UINT useTexNum, uvAnimData *uvanimdata)
+void Model3D::CreatePlaneModelYZ(float y_size, float z_size, float uv_x, float uv_y, UINT useTexNum, uvAnimData *uvanimdata)
 {
 	if (uvanimdata != nullptr) {
 		//頂点データ作成
@@ -507,7 +512,7 @@ void NY_Model3D::CreatePlaneModelYZ(float y_size, float z_size, float uv_x, floa
 	material.texNumber = useTexNum;
 }
 
-void NY_Model3D::CreateBoxModel(float size, float uv_x, float uv_y, UINT useTexNum)
+void Model3D::CreateBoxModel(float size, float uv_x, float uv_y, UINT useTexNum)
 {
 
 	//頂点データ作成
@@ -628,7 +633,7 @@ void NY_Model3D::CreateBoxModel(float size, float uv_x, float uv_y, UINT useTexN
 	material.texNumber = useTexNum;
 }
 
-void NY_Model3D::Update()
+void Model3D::Update()
 {
 	//アニメーションデータによるuv更新
 	if (animData != nullptr) {

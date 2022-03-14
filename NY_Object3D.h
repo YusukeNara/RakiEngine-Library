@@ -40,7 +40,7 @@ struct ParticleVertex
 	XMFLOAT3 pos;
 };
 
-extern class NY_Model3D;
+extern class Model3D;
 extern class NY_Camera;
 extern class NY_Object3DManager;
 
@@ -55,7 +55,7 @@ public:
 	UINT resourceNumber;
 
 	//モデルデータ
-	NY_Model3D *model;
+	Model3D *model;
 
 	//定数バッファ
 	ComPtr<ID3D12Resource> constBuffB0;
@@ -100,7 +100,7 @@ public:
 
 	//ロード済モデルデータの設定
 	//static void SetLoadedModelData(Object3d *obj, NY_Model3D *loadedModel);
-	void SetLoadedModelData(NY_Model3D *loadedModel);
+	void SetLoadedModelData(Model3D *loadedModel);
 
 	//オブジェクト更新
 	//static void UpdateObject3D(Object3d *obj, XMMATRIX &matview);

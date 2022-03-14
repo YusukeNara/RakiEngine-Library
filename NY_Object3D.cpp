@@ -69,7 +69,7 @@ void Object3d::InitObject3D(ID3D12Device *dev)
 //	obj->model = loadedModel;
 //}
 
-void Object3d::SetLoadedModelData(NY_Model3D *loadedModel)
+void Object3d::SetLoadedModelData(Model3D *loadedModel)
 {
 	model = loadedModel;
 

@@ -43,7 +43,7 @@ struct Material
 
 class NY_Object3DManager;
 
-class NY_Model3D
+class Model3D
 {
 public:
 	//頂点データ
@@ -65,7 +65,7 @@ public:
 
 public:
 
-	NY_Model3D() {};
+	Model3D() {};
 
 	//----------ファイルを読み込んでモデルデータを作る関数群----------//
 

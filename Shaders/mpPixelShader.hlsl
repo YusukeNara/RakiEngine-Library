@@ -6,7 +6,6 @@ float4 main(Output input) : SV_TARGET
     
     
     //簡単なぼかし処理のやり方
-    
     float w, h, levels;
     //この関数でテクスチャのサイズ情報が取れる
     tex.GetDimensions(0, w, h, levels);

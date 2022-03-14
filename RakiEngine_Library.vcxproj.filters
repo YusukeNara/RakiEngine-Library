@@ -67,6 +67,9 @@
     <Filter Include="リソース ファイル\mpShaders">
       <UniqueIdentifier>{dddaede9-d7b2-4cd4-ae63-aab3df568d71}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\SceneFactory">
+      <UniqueIdentifier>{34f70541-4181-43c6-8ae0-b6ee3ee72892}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Raki_imguiMgr.cpp">
@@ -132,20 +135,17 @@
     <ClCompile Include="RVector.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="SceneChanger.cpp">
-      <Filter>Scene\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="ISceneManager.cpp">
-      <Filter>Scene\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="Raki_SceneManager.cpp">
-      <Filter>Scene\Manager</Filter>
-    </ClCompile>
     <ClCompile Include="ParticleManager.cpp">
       <Filter>Graphic\Particle</Filter>
     </ClCompile>
     <ClCompile Include="NY_random.cpp">
       <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstructSceneFactory.cpp">
+      <Filter>Scene\SceneFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneFactory.cpp">
+      <Filter>Scene\SceneFactory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -218,23 +218,20 @@
     <ClInclude Include="SceneBase.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="SceneChanger.h">
-      <Filter>Scene\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="Task.h">
       <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="ISceneManager.h">
-      <Filter>Scene\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="Raki_SceneManager.h">
-      <Filter>Scene\Manager</Filter>
     </ClInclude>
     <ClInclude Include="ParticleManager.h">
       <Filter>Graphic\Particle</Filter>
     </ClInclude>
     <ClInclude Include="NY_random.h">
       <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstructSceneFactory.h">
+      <Filter>Scene\SceneFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneFactory.h">
+      <Filter>Scene\SceneFactory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -258,6 +255,9 @@
     </FxCompile>
     <FxCompile Include="Shaders\mpPixelShader.hlsl">
       <Filter>リソース ファイル\mpShaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\mpEffectPixelShader.hlsl">
+      <Filter>リソース ファイル\Sprite</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

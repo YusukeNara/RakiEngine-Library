@@ -47,6 +47,8 @@ typedef struct SpriteData
 
 	XMFLOAT2 screenPos = { 0.0f,0.0f };//スクリーン座標
 
+	XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f };
+
 }SPData;
 
 //スプライト共通管理クラス
@@ -69,6 +71,10 @@ private:
 	//スプライト用グラフィックスパイプラインセット
 	ComPtr<ID3D12PipelineState> pipelinestate;
 	ComPtr<ID3D12RootSignature> rootsignature;
+
+	//マルチパスエフェクト用グラフィクスパイプラインセット
+	ComPtr<ID3D12PipelineState> mpPipeline;
+	ComPtr<ID3D12RootSignature> mpRootsig;
 
 	SpriteManager(ID3D12Device *dev, int window_width, int window_height) {
 		//ウィンドウサイズ設定
@@ -104,6 +110,8 @@ public:
 	void CreateSpritePipeline();
 	//スプライト共通のグラフィックスコマンドをセット
 	void SetCommonBeginDraw();
+	//マルチパスリソース描画用グラフィクスコマンド
+	void SetCommonBeginDrawmpResource();
 
 	//インスタンス取得
 	static SpriteManager *Get() {

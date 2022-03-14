@@ -1,11 +1,14 @@
 #include "Raki_Input.h"
 #include "Raki_WinAPI.h"
 
+#include <stdio.h>
+
 BYTE Input::keys[256]    = {};
 BYTE Input::oldkeys[256] = {};
 DIMOUSESTATE Input::mouseState;
 DIMOUSESTATE Input::oldMouseState;
 POINT        Input::pos;
+XINPUT_STATE Input::xInputState;
 
 IDirectInput8       *Input::dinput      = nullptr;
 IDirectInputDevice8 *Input::devkeyBoard = nullptr;
@@ -37,6 +40,15 @@ bool Input::Init(WNDCLASSEX w, HWND hwnd)
 	result = devMouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 	if (result != S_OK) { return false; }
 
+	//xinputの入力状態のクリア
+	ZeroMemory(&xInputState, sizeof(xInputState));
+	//xinputの入力状態のテスト取得
+	auto xresult = XInputGetState(0, &xInputState);
+	//取得失敗時、メッセージ出力
+	if (xresult != ERROR_SUCCESS) {
+		printf("FAILED : xInput : Failed to get input from xInput.\n");
+	}
+
 	return true;
 }
 
@@ -57,6 +69,11 @@ void Input::StartGetInputState()
 	devMouse->Acquire();
 	//マウスの入力状態を取得
 	devMouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseState);
+
+	//xinputの入力状態のクリア
+	ZeroMemory(&xInputState, sizeof(xInputState));
+	//xinputの入力状態の取得開始
+	auto result = XInputGetState(0, &xInputState);
 }
 
 bool Input::isKey(int key)

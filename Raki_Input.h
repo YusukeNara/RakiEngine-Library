@@ -1,11 +1,13 @@
 #pragma once
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
+#include <xinput.h>
 #include <wrl.h>
 
 #include "RVector.h"
 
 #pragma comment(lib,"dinput8.lib")
+#pragma comment(lib,"xinput.lib")
 #pragma comment(lib,"dxguid.lib")
 
 
@@ -47,6 +49,8 @@ private:
 	static DIMOUSESTATE mouseState;		//マウス入力情報
 	static DIMOUSESTATE oldMouseState;	//1F前のマウス入力情報
 	static POINT		pos;			//マウス座標
+	//xinput
+	static XINPUT_STATE xInputState;	//xinputの入力状態
 
 	//コンストラクタ、デストラクタを隠蔽
 	Input() {}
@@ -85,6 +89,10 @@ public:
 	static XMFLOAT2 getMousePos();
 
 	static XMFLOAT2 getMouseVelocity();
+
+	//----------- xinputコントローラー入力 ----------//
+
+	
 
 	//インスタンス取得
 	static Input *Get();

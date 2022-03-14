@@ -33,5 +33,8 @@ public:
 	//スプライト描画
 	void Draw();
 
+	//マルチパス結果描画
+	void DrawMPRender();
+
 };
 

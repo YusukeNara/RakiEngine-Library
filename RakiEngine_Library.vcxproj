@@ -67,6 +67,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AbstructSceneFactory.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="FPS.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -80,21 +81,20 @@
     <ClCompile Include="NY_Model.cpp" />
     <ClCompile Include="NY_Object3D.cpp" />
     <ClCompile Include="NY_Object3DMgr.cpp" />
-    <ClCompile Include="ISceneManager.cpp" />
     <ClCompile Include="NY_random.cpp" />
     <ClCompile Include="ParticleManager.cpp" />
     <ClCompile Include="Raki_DX12B.cpp" />
     <ClCompile Include="Raki_imguiMgr.cpp" />
     <ClCompile Include="Raki_Input.cpp" />
-    <ClCompile Include="Raki_SceneManager.cpp" />
     <ClCompile Include="Raki_WinAPI.cpp" />
     <ClCompile Include="RVector.cpp" />
-    <ClCompile Include="SceneChanger.cpp" />
+    <ClCompile Include="SceneFactory.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteManager.cpp" />
     <ClCompile Include="TexManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AbstructSceneFactory.h" />
     <ClInclude Include="Audio.h" />
     <ClInclude Include="FPS.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -109,17 +109,15 @@
     <ClInclude Include="NY_Model.h" />
     <ClInclude Include="NY_Object3D.h" />
     <ClInclude Include="NY_Object3DMgr.h" />
-    <ClInclude Include="ISceneManager.h" />
     <ClInclude Include="NY_random.h" />
     <ClInclude Include="ParticleManager.h" />
     <ClInclude Include="Raki_DX12B.h" />
     <ClInclude Include="Raki_imguiMgr.h" />
     <ClInclude Include="Raki_Input.h" />
-    <ClInclude Include="Raki_SceneManager.h" />
     <ClInclude Include="Raki_WinAPI.h" />
     <ClInclude Include="RVector.h" />
     <ClInclude Include="SceneBase.h" />
-    <ClInclude Include="SceneChanger.h" />
+    <ClInclude Include="SceneFactory.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SpriteManager.h" />
     <ClInclude Include="Task.h" />
@@ -131,6 +129,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Shaders\mpEffectPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Shaders\mpPixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
