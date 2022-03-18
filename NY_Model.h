@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "TexManager.h"
 
@@ -41,7 +42,6 @@ struct Material
 	}
 };
 
-class NY_Object3DManager;
 
 class Model3D
 {
@@ -61,7 +61,7 @@ public:
 	//マテリアル
 	Material material;
 	//uvアニメーションデータ
-	uvAnimData *animData;
+	uvAnimData *animData = nullptr;
 
 public:
 
@@ -93,6 +93,5 @@ public:
 	void Update();
 
 private:
-
 };
 

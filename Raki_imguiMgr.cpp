@@ -50,7 +50,7 @@ bool ImguiMgr::InitImgui(ID3D12Device *dev, HWND hwnd)
 	return true;
 }
 
-void ImguiMgr::StartDrawImgui(const char *windowTitle, int posX, int posY)
+void ImguiMgr::StartDrawImgui(const char *windowTitle, float posX, float posY)
 {
 	//imgui•`‰æŠJŽn
 	ImGui_ImplDX12_NewFrame();
@@ -91,7 +91,7 @@ bool myImgui::InitializeImGui(ID3D12Device *dev, HWND hwnd)
 	return result;
 }
 
-void myImgui::StartDrawImGui(const char *windowTitle, int sizeX, int sizeY)
+void myImgui::StartDrawImGui(const char *windowTitle, float sizeX, float sizeY)
 {
 	ImguiMgr::Get()->StartDrawImgui(windowTitle, sizeX, sizeY);
 }

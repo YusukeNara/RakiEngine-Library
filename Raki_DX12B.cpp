@@ -609,8 +609,8 @@ void Raki_DX12B::StartDraw()
 	ClearDepthBuffer();
 
 	//上と同じエラーに対処
-	auto viewport_temp = CD3DX12_VIEWPORT(0.0f, 0.0f, Raki_WinAPI::window_width, Raki_WinAPI::window_height);
-	auto rect_temp = CD3DX12_RECT(0, 0, Raki_WinAPI::window_width, Raki_WinAPI::window_height);
+	auto viewport_temp = CD3DX12_VIEWPORT(0.0f, 0.0f, (FLOAT)Raki_WinAPI::window_width, (FLOAT)Raki_WinAPI::window_height);
+	auto rect_temp = CD3DX12_RECT(0, 0, (LONG)Raki_WinAPI::window_width, (LONG)Raki_WinAPI::window_height);
 	// ビューポートの設定
 	commandList->RSSetViewports(1, &viewport_temp);
 	// シザリング矩形の設定
@@ -732,7 +732,6 @@ void Raki_DX12B::StartDrawBackbuffer()
 
 	//クリア
 	ClearRenderTarget();
-
 }
 
 void Raki_DX12B::StartDrawRenderTarget()
@@ -761,10 +760,9 @@ void Raki_DX12B::StartDrawRenderTarget()
 	float clearColor[] = { clearColor_r,clearColor_g,clearColor_b,clearColor_a };
 	commandList->ClearRenderTargetView(rtvH1, clearColor, 0, nullptr);
 
-
 	//上と同じエラーに対処
-	auto viewport_temp = CD3DX12_VIEWPORT(0.0f, 0.0f, Raki_WinAPI::window_width, Raki_WinAPI::window_height);
-	auto rect_temp = CD3DX12_RECT(0, 0, Raki_WinAPI::window_width, Raki_WinAPI::window_height);
+	auto viewport_temp = CD3DX12_VIEWPORT(0.0f, 0.0f, (FLOAT)Raki_WinAPI::window_width, (FLOAT)Raki_WinAPI::window_height);
+	auto rect_temp = CD3DX12_RECT(0, 0, (LONG)Raki_WinAPI::window_width, (LONG)Raki_WinAPI::window_height);
 	// ビューポートの設定
 	commandList->RSSetViewports(1, &viewport_temp);
 	// シザリング矩形の設定

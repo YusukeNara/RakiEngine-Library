@@ -164,6 +164,9 @@ void Model3D::LoadObjModel(const char *modelName)
 	copy(indices.begin(), indices.end(), indexMap);
 	indexBuff->Unmap(0, nullptr);
 
+	//オブジェクトデータ作成
+	//object->InitObject3D(RAKI_DX12B_DEV);
+	
 }
 
 void Model3D::LoadMatarial(string fileName, string filepath)
@@ -665,13 +668,12 @@ void Model3D::Update()
 			count++;
 			if (count > 3) { count = 0; }
 		}
-		//頂点バッファデータ転送
-		Vertex *vertMap = nullptr;
-		HRESULT result = vertBuff->Map(0, nullptr, (void **)&vertMap);
-		copy(vertices.begin(), vertices.end(), vertMap);
-		vertBuff->Unmap(0, nullptr);
 	}
 
-
+	//頂点バッファデータ転送
+	Vertex *vertMap = nullptr;
+	HRESULT result = vertBuff->Map(0, nullptr, (void **)&vertMap);
+	copy(vertices.begin(), vertices.end(), vertMap);
+	vertBuff->Unmap(0, nullptr);
 
 }

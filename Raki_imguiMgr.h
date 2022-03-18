@@ -29,7 +29,7 @@ public:
 	/// <returns>bool型で成否</returns>
 	bool InitImgui(ID3D12Device *dev, HWND hwnd);
 
-	void StartDrawImgui(const char *windowTitle, int posX, int posY);
+	void StartDrawImgui(const char *windowTitle, float posX, float posY);
 
 	void EndDrawImgui();
 
@@ -51,7 +51,7 @@ namespace myImgui {
 	/// <param name="windowTitle">表示するimguiウィンドウのタイトル</param>
 	/// <param name="posX">初期の横幅</param>
 	/// <param name="posY">初期の縦幅</param>
-	void StartDrawImGui(const char *windowTitle, int sizeX, int sizeY);
+	void StartDrawImGui(const char *windowTitle, float sizeX, float sizeY);
 
 	/// <summary>
 	/// Imguiのウィンドウ描画の終了。ウィンドウに表示する内容はこの関数の実行より上に書くこと。

@@ -1,29 +1,34 @@
 #pragma once
+
+//これをインクルードするだけで、3d描画関連を使用可能にする
+
+//c++関係
 #include <iostream>
 #include <vector>
+#include <memory>
+
+//DirectX機能関係
 #include <d3d12.h>
 #include <d3dx12.h>
 #include <DirectXTex.h>
 #include <DirectXMath.h>
 #include <d3dcompiler.h>
 #include <wrl.h>
-#include <vector>
-#include <memory>
 
+// 名前空間（良くないから後で消す）
 using namespace Microsoft::WRL;
 using namespace std;
 using namespace DirectX;
 
+//ライブラリコンパイル
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-
-#include "NY_Camera.h"
+//使用する自作エンジンの機能のインクルード
 #include "NY_Object3D.h"
-#include "NY_Model.h"
 #include "RVector.h"
 
-
+//3Dパイプライン
 typedef struct Pipeline3D
 {
 	//パイプラインステートオブジェクト
@@ -38,14 +43,15 @@ typedef struct Pipeline3D
 ///NY_Object3dを構造体化し、マネージャーがコンテナで管理できるようにする
 /// 
 /// テクスチャデータをtexManagerで管理するように変更
+/// 
+/// 2022/3/16
+/// クラスの関係性を変更
+/// mgr -> object3d -> model3d
+/// このクラスは3d関係の上側に位置し、object3dと、簡易描画クラスを管理する
 
-
-extern class Object3d;
-extern class NY_Camera;
 
 /// <summary>
 /// 一つだけ使えればいいのでシングルトンパターン
-/// 
 /// </summary>
 class NY_Object3DManager
 {
@@ -54,19 +60,17 @@ class NY_Object3DManager
 private:
 	//----------パイプラインステートオブジェクト----------//
 
-	//標準パイプラインステート
+	//モデル描画用パイプラインステート
 	Pipeline3D object3dPipelineSet;
 	//即時描画用パイプライン
 	Pipeline3D quickDrawPipelineSet;
-
 
 	//----------パイプラインステート構造体--------------//
 
 	//パイプラインステート構造体を複数作って、適宜割り当てる形でもいいのか？
 
-	//グラフィックスパイプラインステート構造体
+	//モデル用グラフィックスパイプラインステート構造体
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC gpipelineStateDesc;
-
 
 	//----------シェーダーオブジェクト----------//
 
@@ -78,13 +82,8 @@ private:
 	//シェーダーオブジェクト（即時描画用）
 	ComPtr<ID3DBlob> qd_BoxGS;
 
-
 	//----------object3dコンテナ----------//
 	vector<Object3d*> objects;
-
-
-	//----------NY_Cameraクラスのポインタ----------//
-
 
 	//----------その他----------//
 
@@ -107,38 +106,23 @@ public:
 		return &obj;
 	}
 
-	//共通射影行列
-	XMMATRIX matProjection{};
+	////共通射影行列
+	//XMMATRIX matProjection{};
+	
 	//共通ビューポート行列
 	XMMATRIX matViewport{};
-	//テクスチャ用デスクリプタヒープ
-	ComPtr<ID3D12DescriptorHeap> descheap;
-	//テクスチャリソース配列
-	ComPtr<ID3D12Resource> texbuff[256];
-	//ウィンドウサイズ
-	int window_width, window_height;
+	////テクスチャ用デスクリプタヒープ
+	//ComPtr<ID3D12DescriptorHeap> descheap;
+	////テクスチャリソース配列
+	//ComPtr<ID3D12Resource> texbuff[256];
+	////ウィンドウサイズ
+	//int window_width, window_height;
 
 	/// <summary>
 	/// <para>NY_Object3DManagerの生成</para>
 	/// </summary>
-	/// <param name="dev">ID3D12Deviceのポインタ</param>
-	/// <param name="window_width">ウィンドウ横幅</param>
-	/// <param name="window_height">ウィンドウ縦幅</param>
 	/// <returns>成否</returns>
-	bool CreateObject3DManager(ID3D12Device *dev, int window_w, int window_h);
-
-	/// <summary>
-	/// 貼り付けるテクスチャの読み込み
-	/// </summary>
-	/// <param name="texNumber">テクスチャ番号を取得する変数</param>
-	/// <param name="filename">ロードするテクスチャのパス（）</param>
-	/// <param name="dev"></param>
-	void LoadObject3DTexture(UINT &texNumber, string filename, ID3D12Device *dev);
-
-	/// <summary>
-	/// カメラのセット
-	/// </summary>
-	/// <param name="cam">NY_Camera変数</param>
+	bool CreateObject3DManager();
 
 	/// <summary>
 	/// object3dの作成、コンテナに格納
@@ -176,7 +160,6 @@ private:
 	//デバイスのポインタ
 	static ID3D12Device *dev;
 
-
 	/// <summary>
 	/// 即時描画用ジオメトリシェーダーのコンパイル（生成関数で実行）
 	/// </summary>
@@ -190,7 +173,6 @@ private:
 	/// <returns>作成したPipeline3D構造体</returns>
 	Pipeline3D Create3DPipelineState(ID3D12Device *dev);
 
-
 };
 
 /// ----------- 記述量の削減のためのラップ関数群 ---------- ///
@@ -201,10 +183,10 @@ private:
 /// <param name="dev">ID3D12Deviceのポインタ</param>
 /// <param name="window_w">ウィンドウ横幅</param>
 /// <param name="window_h">ウィンドウ縦幅</param>
-inline void InitializeObject3DManager(ID3D12Device *dev, int window_w, int window_h) {
+inline void InitializeObject3DManager() {
 
 	//NY_Object3DManagerを生成、初期化
-	NY_Object3DManager::Get()->CreateObject3DManager(dev, window_w, window_h);
+	NY_Object3DManager::Get()->CreateObject3DManager();
 }
 
 /// <summary>
@@ -213,7 +195,14 @@ inline void InitializeObject3DManager(ID3D12Device *dev, int window_w, int windo
 /// <param name="modelData">NY_Model3Dのモデルデータ</param>
 /// <param name="pos">初期位置を設定する</param>
 /// <returns>生成されたObject3dを示すポインタ</returns>
-Object3d *CreateObject3d(Model3D *modelData, RVector3 pos = { 0,0,0 });
+//Object3d *CreateObject3d(Model3D *modelData, RVector3 pos = { 0,0,0 });
+
+/// <summary>
+/// Objファイルからのデータ読み込み
+/// </summary>
+/// <param name="modelname">ロードする.objのファイル名</param>
+/// <returns>生成したobject3dのポインタ</returns>
+Object3d *LoadModel_ObjFile(string modelname);
 
 /// <summary>
 /// Object3dデータの削除

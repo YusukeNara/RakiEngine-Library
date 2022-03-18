@@ -45,7 +45,7 @@ public:
 
 	float length() { return sqrtf(x * x + y * y + z * z); }
 	RVector3 norm() { return RVector3(x / length(), y / length(), z / length()); }
-	float distance(const RVector3 &v) { return sqrtf(pow(v.x - x, 2) + pow(v.y - y, 2) + pow(v.z - z, 2)); }
+	float distance(const RVector3 &v) { return sqrtf((float)pow(v.x - x, 2) + (float)pow(v.y - y, 2) + (float)pow(v.z - z, 2)); }
 
 	void zero() { x = 0, y = 0, z = 0; }
 
@@ -58,7 +58,7 @@ public:
 inline float dot(const RVector3 &a, const RVector3 &b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
 inline RVector3 cross(const RVector3 &a, const RVector3 &b) { return RVector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); }
 
-inline float distance(const RVector3 &v1,const RVector3 &v2){return sqrtf(pow(v1.x - v2.x, 2) + pow(v1.y - v2.y, 2) + pow(v1.z - v2.z, 2));}
+inline float distance(const RVector3 &v1,const RVector3 &v2){return sqrtf((float)pow(v1.x - v2.x, 2) + (float)pow(v1.y - v2.y, 2) + (float)pow(v1.z - v2.z, 2));}
 
 inline RVector3 operator*(const float &sum, const RVector3 &sum2) { return RVector3(sum2.x * sum, sum2.y * sum, sum2.z * sum); }
 inline RVector3 operator/(const float &sum, const RVector3 &sum2) { return RVector3(sum2.x / sum, sum2.y / sum, sum2.z / sum); }

@@ -118,7 +118,7 @@ XMFLOAT2 Input::getMousePos()
 	//クライアント領域座標変換
 	ScreenToClient(Raki_WinAPI::GetHWND(), &pos);
 	//戻り値に格納
-	XMFLOAT2 result(pos.x, pos.y);
+	XMFLOAT2 result((float)pos.x, (float)pos.y);
 	//返却
 	return result;
 }
@@ -126,8 +126,8 @@ XMFLOAT2 Input::getMousePos()
 XMFLOAT2 Input::getMouseVelocity()
 {
 	XMFLOAT2 result;
-	result.x = mouseState.lX;
-	result.y = mouseState.lY;
+	result.x = (float)mouseState.lX;
+	result.y = (float)mouseState.lY;
 
 	return result;
 }

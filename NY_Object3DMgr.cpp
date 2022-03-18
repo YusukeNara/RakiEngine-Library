@@ -1,30 +1,19 @@
 #include "NY_Object3DMgr.h"
+
+#include "Raki_WinAPI.h"
 #include "Raki_DX12B.h"
 #include "TexManager.h"
+#include "NY_Model.h"
 
 ID3D12Device *NY_Object3DManager::dev = nullptr;
 
-bool NY_Object3DManager::CreateObject3DManager(ID3D12Device *dev, int window_w, int window_h)
+bool NY_Object3DManager::CreateObject3DManager()
 {
-    //ウィンドウサイズ設定
-    window_width = window_w;
-    window_height = window_h;
-    //ビューポート行列初期化
-    matViewport.r[0].m128_f32[0] = window_width / 2;
-    matViewport.r[1].m128_f32[1] = -window_height / 2;
-    matViewport.r[3].m128_f32[0] = window_width / 2;
-    matViewport.r[3].m128_f32[1] = window_height / 2;
     //Object3D用パイプライン生成
-    object3dPipelineSet = Create3DPipelineState(dev);
-    //射影行列初期化
-    matProjection = XMMatrixPerspectiveFovLH(
-        XMConvertToRadians(60.0f),
-        (float)window_width / (float)window_height,
-        0.1f, 1000.0f
-    );
+    object3dPipelineSet = Create3DPipelineState(RAKI_DX12B_DEV);
 
     //デバイスのポインタを格納
-    this->dev = dev;
+    this->dev = RAKI_DX12B_DEV;
 
     return true;
 }
@@ -257,98 +246,14 @@ Pipeline3D NY_Object3DManager::Create3DPipelineState(ID3D12Device *dev)
 #pragma endregion GraphicsPipeline
 
     //デスクリプタヒープ生成
-    D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc{};
-    descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    descHeapDesc.NumDescriptors = 256;
-    result = dev->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descheap));
+    //D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc{};
+    //descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+    //descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    //descHeapDesc.NumDescriptors = 256;
+    //result = dev->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descheap));
 
     return pipelineset;
 }
-
-
-void NY_Object3DManager::LoadObject3DTexture(UINT &texNumber, string filename, ID3D12Device *dev)
-{
-    //参照引数バッファがすでにテクスチャの読み込み済（重複ロード防止）
-    //if (texbuff[texNumber] != nullptr) {
-    //    return;
-    //}
-
-    for (int i = 0; i < _countof(texbuff); i++) {
-        if (texbuff[i] == nullptr) {
-            //リザルト
-            HRESULT result;
-
-            string pathname = filename;
-            //ユニコード文字列に変換
-            wchar_t wfilename[128];
-            int iBufferSize = MultiByteToWideChar(CP_ACP, 0, pathname.c_str(), -1, wfilename, _countof(wfilename));
-
-            //WICテクスチャのロード
-            TexMetadata metadata{};
-            ScratchImage scratchImg{};
-            //読み込み
-            result = LoadFromWICFile(wfilename,
-                WIC_FLAGS_NONE,
-                &metadata, scratchImg
-            );
-            const Image *img = scratchImg.GetImage(0, 0, 0);
-
-            // テクスチャバッファ生成
-            D3D12_HEAP_PROPERTIES texHeapProp{};//テクスチャヒープ設定
-            texHeapProp.Type = D3D12_HEAP_TYPE_CUSTOM;
-            texHeapProp.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;
-            texHeapProp.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;
-
-            D3D12_RESOURCE_DESC texresDesc{};//リソース設定
-            texresDesc.Dimension = static_cast<D3D12_RESOURCE_DIMENSION>(metadata.dimension);//2Dテクスチャ用
-            texresDesc.Format = metadata.format;//RGBAフォーマット
-            texresDesc.Width = metadata.width;//横
-            texresDesc.Height = (UINT)metadata.height;//縦
-            texresDesc.DepthOrArraySize = (UINT16)metadata.arraySize;
-            texresDesc.MipLevels = (UINT16)metadata.mipLevels;
-            texresDesc.SampleDesc.Count = 1;
-
-            result = dev->CreateCommittedResource(//GPUリソース生成
-                &texHeapProp,
-                D3D12_HEAP_FLAG_NONE,
-                &texresDesc,
-                D3D12_RESOURCE_STATE_GENERIC_READ,
-                nullptr,
-                IID_PPV_ARGS(&texbuff[i])
-            );
-
-            //テクスチャバッファへのデータ転送
-            result = texbuff[i]->WriteToSubresource(
-                0,
-                nullptr,
-                img->pixels,
-                (UINT)img->rowPitch,
-                (UINT)img->slicePitch
-            );
-
-            //シェーダーリソースビュー設定
-            D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-            srvDesc.Format = metadata.format;
-            srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-            srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-            srvDesc.Texture2D.MipLevels = 1;
-
-            //ヒープにシェーダーリソースビュー作成
-            D3D12_CPU_DESCRIPTOR_HANDLE cpuDescHandleSRV = descheap.Get()->GetCPUDescriptorHandleForHeapStart();
-            D3D12_GPU_DESCRIPTOR_HANDLE gpuDescHandleSRV = descheap.Get()->GetGPUDescriptorHandleForHeapStart();
-            
-            dev->CreateShaderResourceView(texbuff[i].Get(), &srvDesc,
-                 CD3DX12_CPU_DESCRIPTOR_HANDLE(descheap.Get()->GetCPUDescriptorHandleForHeapStart(), i,
-                 dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)));
-            
-            texNumber = i;//バッファ番号返却
-            break;//ループから抜ける
-        }
-    }
-
-}
-
 
 
 Object3d *NY_Object3DManager::CreateObject3d(Model3D *modelData)
@@ -431,17 +336,32 @@ Object3d *CreateObject3d(Model3D *modelData, RVector3 pos)
     Object3d *result = NY_Object3DManager::Get()->CreateObject3d(modelData);
 
     //位置を設定
-    result->position = pos;
+    result->SetAffineParamTranslate(pos);
 
     //生成物を返却
     return result;
 }
 
 
+Object3d *LoadModel_ObjFile(string modelname)
+{
+    //オブジェクトデータを新規作成
+    Object3d *object = new Object3d;
+
+    //オブジェクト初期化
+    object->InitObject3D(RAKI_DX12B_DEV);
+
+    //生成したオブジェクトのモデルデータをロードする
+    object->LoadAndSetModelData(modelname);
+
+    //返却
+    return object;
+}
+
 void DrawObject3d(Object3d *obj)
 {
     //描画準備
     NY_Object3DManager::Get()->SetCommonBeginDrawObject3D();
     //オブジェクト描画
-    obj->DrawModel3D(Raki_DX12B::Get()->GetGCommandList(), Raki_DX12B::Get()->GetDevice());
+    //obj->DrawModel3D(Raki_DX12B::Get()->GetGCommandList(), Raki_DX12B::Get()->GetDevice());
 }
