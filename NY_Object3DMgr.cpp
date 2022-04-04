@@ -278,6 +278,19 @@ Object3d *NY_Object3DManager::CreateObject3d(Model3D *modelData)
     return newobj;
 }
 
+Object3d *NY_Object3DManager::CreateModel_Tile(float x_size, float y_size, float x_uv, float y_uv, UINT useTexNum)
+{
+    Object3d *newobj = new Object3d;
+
+    newobj->InitObject3D(RAKI_DX12B_DEV);
+
+    newobj->CreateModel_Tile(x_size, y_size, x_uv, y_uv, useTexNum);
+
+    objects.push_back(newobj);
+
+    return newobj;
+}
+
 
 void NY_Object3DManager::DeleteObject3d(Object3d *obj)
 {

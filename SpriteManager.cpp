@@ -5,20 +5,11 @@
 
 void SpriteManager::CreateSpriteManager(ID3D12Device *dev, ID3D12GraphicsCommandList *cmd, int window_w, int window_h)
 {
-    //ウィンドウサイズ設定
-    window_width = window_width;
-    window_height = window_height;
-    //ビューポート行列初期化
-    matViewport.r[0].m128_f32[0] = window_width / 2;
-    matViewport.r[1].m128_f32[1] = -window_height / 2;
-    matViewport.r[3].m128_f32[0] = window_width / 2;
-    matViewport.r[3].m128_f32[1] = window_height / 2;
     //デバイスとコマンドリストのポインタを格納
     this->dev = dev;
     this->cmd = cmd;
     //パイプライン生成
     CreateSpritePipeline();
-    matProjection = XMMatrixOrthographicOffCenterLH(0.0f, (float)this->window_width, (float)this->window_height, 0.0f, 0.0f, 1.0f);
 }
 
 void SpriteManager::CreateSpritePipeline()

@@ -76,10 +76,7 @@ private:
 	ComPtr<ID3D12PipelineState> mpPipeline;
 	ComPtr<ID3D12RootSignature> mpRootsig;
 
-	SpriteManager(ID3D12Device *dev, int window_width, int window_height) {
-		//ウィンドウサイズ設定
-		this->window_width = window_width;
-		this->window_height = window_height;
+	SpriteManager(int window_width, int window_height) {
 		//ビューポート行列初期化
 		matViewport.r[0].m128_f32[0] = window_width / 2;
 		matViewport.r[1].m128_f32[1] = -window_height / 2;
@@ -87,22 +84,13 @@ private:
 		matViewport.r[3].m128_f32[1] = window_height / 2;
 		//パイプライン生成
 		CreateSpritePipeline();
-		matProjection = XMMatrixOrthographicOffCenterLH(0.0f, (float)this->window_width, (float)this->window_height, 0.0f, 0.0f, 1.0f);
 	};
 	SpriteManager() {};
 	~SpriteManager() {};
 
 public: 
-	//共通射影行列
-	XMMATRIX matProjection{};
 	//共通ビューポート行列
 	XMMATRIX matViewport{};
-	//テクスチャ用デスクリプタヒープ
-	//ComPtr<ID3D12DescriptorHeap> descheap;
-	//テクスチャリソース配列
-	//ComPtr<ID3D12Resource> texbuff[MAX_TEX_NUM];
-	//ウィンドウサイズ
-	int window_width = 1280, window_height = 720;
 
 
 	void CreateSpriteManager(ID3D12Device *dev, ID3D12GraphicsCommandList *cmd, int window_w, int window_h);

@@ -129,6 +129,8 @@ public:
 	/// </summary>
 	Object3d *CreateObject3d(Model3D *modelData);
 
+	Object3d *CreateModel_Tile(float x_size, float y_size, float x_uv, float y_uv, UINT useTexNum);
+
 	/// <summary>
 	/// オブジェクトの削除
 	/// </summary>

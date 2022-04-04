@@ -105,6 +105,8 @@ public:
 	//モデルデータを別オブジェクトから設定する
 	void SetAnotherObjectModelData(Object3d *anotherObj);
 
+	void CreateModel_Tile(float x_size, float y_size, float x_uv, float y_uv, UINT useTexNum);
+
 private:
 	// モデルデータ（ほかのオブジェクトでモデルデータは同一のものを使う場合に備えて、weak_ptrを使用）
 	shared_ptr<Model3D> model;

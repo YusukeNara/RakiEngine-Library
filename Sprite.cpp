@@ -105,7 +105,7 @@ void Sprite::CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool 
     result = spdata.constBuff->Map(0, nullptr, (void **)&constMap);
     constMap->color = XMFLOAT4(1, 1, 1, 1);//色指定
     //平行投影行列
-    constMap->mat = XMMatrixOrthographicOffCenterLH(0.0f, SpriteManager::Get()->window_width, SpriteManager::Get()->window_height, 0.0f, 0.0f, 1.0f);
+    constMap->mat = XMMatrixOrthographicOffCenterLH(0.0f, Raki_WinAPI::window_width, Raki_WinAPI::window_height, 0.0f, 0.0f, 1.0f);
     spdata.constBuff->Unmap(0, nullptr);
 
     //リソースに合わせて調整する場合
@@ -178,7 +178,7 @@ void Sprite::UpdateSprite()
     //定数バッファ転送
     SpConstBufferData *constMap = nullptr;
     HRESULT result = spdata.constBuff->Map(0, nullptr, (void **)&constMap);
-    constMap->mat = spdata.matWorld * SpriteManager::Get()->matProjection;
+    constMap->mat = spdata.matWorld * camera->GetMatrixProjection();
     constMap->color = spdata.color;
     spdata.constBuff->Unmap(0, nullptr);
 

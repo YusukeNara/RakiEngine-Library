@@ -1,3 +1,2 @@
-﻿  NY_Object3D.cpp
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\NY_Object3D.cpp(395,72): warning C4267: '引数': 'size_t' から 'UINT' に変換しました。データが失われているかもしれません。
+﻿  ParticleManager.cpp
   RakiEngine_Library.vcxproj -> C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\RakiEngine_Library.lib

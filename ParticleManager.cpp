@@ -4,6 +4,8 @@
 #include "Raki_DX12B.h"
 #include "TexManager.h"
 
+#include <iostream>
+
 #pragma comment(lib,"d3dcompiler.lib")
 
 const int ParticleManager::MAX_VERTEX;
@@ -214,6 +216,117 @@ void ParticleManager::Add(int life, RVector3 pos, RVector3 vel, RVector3 acc,
 	p.endFrame = life;		//生存時間
 	p.s_color = s_color;
 	p.e_color = e_color;
+}
+
+void ParticleManager::Prototype_Set(ParticlePrototype *proto)
+{
+	prototype_ = proto;
+}
+
+void ParticleManager::Prototype_Add(int addCount, RVector3 startPos)
+{
+	for (int i = 0; i < addCount; i++) {
+		//uniqueポインタで動的生成
+		ParticlePrototype *newp = prototype_->clone(startPos);
+
+		pplist.emplace_front(newp);
+	}
+}
+
+void ParticleManager::Prototype_Update()
+{
+	////寿命切れパーティクルを消去
+	//pplist.erase(std::find_if(pplist.begin(), pplist.end(),
+	//	[](std::unique_ptr<ParticlePrototype> &p) {return p.get()->nowFrame >= p.get()->endFrame; }));
+	//pplist.shrink_to_fit();
+	////全パーティクル更新処理実行
+	//for (std::vector<std::unique_ptr<ParticlePrototype>>::iterator itr = pplist.begin();
+	//	itr != pplist.end(); itr++) {
+	//	(*itr)->nowFrame++;
+	//	(*itr)->Update();
+	//}
+
+   	std::erase_if(pplist, [](std::unique_ptr<ParticlePrototype> &p) {
+		return p->nowFrame >= p->endFrame; });
+
+	//pplist.remove_if([](std::unique_ptr<ParticlePrototype> &p) {
+	//	return p->nowFrame >= p->endFrame;
+	//	});
+
+	//バッファデータ転送
+	int vcount = 0;
+	PVertex *vertMap = nullptr;
+	result = vertbuff->Map(0, nullptr, (void **)&vertMap);
+	if (SUCCEEDED(result)) {
+		// パーティクルの情報を1つずつ反映
+		for (std::forward_list<std::unique_ptr<ParticlePrototype>>::iterator it = pplist.begin();
+			it != pplist.end();
+			it++) {
+			(*it)->Update();
+			// 座標
+			vertMap->pos = (*it)->pos;
+			// スケール
+			vertMap->scale = (*it)->scale;
+			//色
+			vertMap->color = (*it)->color;
+			// 次の頂点へ
+			vertMap++;
+			if (++vcount >= MAX_VERTEX) {
+				break;
+			}
+		}
+		vertbuff->Unmap(0, nullptr);
+	}
+
+	//定数バッファデータ転送
+	ConstBufferData *constMap = nullptr;
+	result = constBuff->Map(0, nullptr, (void **)&constMap);
+	if (result == S_OK) {
+		//ビュープロジェクション行列
+		constMap->mat = camera->GetMatrixViewProjection();
+		//全方向ビルボード
+		constMap->matBillBoard = camera->GetMatrixBillBoardAll();
+		//色
+		constBuff->Unmap(0, nullptr);
+	}
+
+}
+
+void ParticleManager::Prototype_Draw(UINT drawTexNum)
+{
+	UINT drawNum = (UINT)std::distance(pplist.begin(), pplist.end());
+	if (drawNum > MAX_VERTEX) {
+		drawNum = MAX_VERTEX;
+	}
+
+	// パーティクルが1つもない場合
+	if (drawNum == 0) {
+		return;
+	}
+
+	// パイプラインステートの設定
+	cmd->SetPipelineState(pipeline.Get());
+	// ルートシグネチャの設定
+	cmd->SetGraphicsRootSignature(rootsig.Get());
+	// プリミティブ形状を設定
+	cmd->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+	// 頂点バッファの設定
+	cmd->IASetVertexBuffers(0, 1, &vbview);
+
+	// デスクリプタヒープの配列
+	ID3D12DescriptorHeap *ppHeaps[] = { TexManager::texDsvHeap.Get() };
+	cmd->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+
+	// 定数バッファビューをセット
+	cmd->SetGraphicsRootConstantBufferView(0, constBuff->GetGPUVirtualAddress());
+	// シェーダリソースビューをセット
+	cmd->SetGraphicsRootDescriptorTable(1,
+		CD3DX12_GPU_DESCRIPTOR_HANDLE(TexManager::texDsvHeap.Get()->GetGPUDescriptorHandleForHeapStart(),
+			drawTexNum, Raki_DX12B::Get()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)));
+
+	// 描画コマンド
+	cmd->DrawInstanced(drawNum, 1, 0, 0);
 }
 
 
