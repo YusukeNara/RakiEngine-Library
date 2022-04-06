@@ -14,12 +14,18 @@ using namespace std;
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-//スプライト用頂点構造体
+//スプライト用モデル頂点構造体
 typedef struct SpriteVertex
 {
 	XMFLOAT3 pos;
 	XMFLOAT2 uv;
 }SPVertex;
+
+//スプライト用インスタンス構造体描画するものそれぞれの差分データ
+typedef struct SpriteInstance
+{
+	XMMATRIX worldmat;	//ワールド変換行列
+};
 
 //定数バッファデータ構造体
 typedef struct SpConstBufferData
@@ -31,9 +37,17 @@ typedef struct SpConstBufferData
 //スプライト一枚分のデータ
 typedef struct SpriteData
 {
+	//頂点座標（一点のみにして、ジオメトリで細かいコントロールをする）
 	SpriteVertex vertices[4] = {};
-	ComPtr<ID3D12Resource> vertBuff;//頂点バッファ
-	D3D12_VERTEX_BUFFER_VIEW vbView;//頂点バッファビュー
+	//インスタンス行列コンテナ（差分データを格納：アフィン変換もあるし、ここに縦横幅のデータ入れてもいいかも）
+	std::vector<XMMATRIX> insWorldMatrixes;
+
+	ComPtr<ID3D12Resource> vertBuff;//モデル用頂点バッファ
+	D3D12_VERTEX_BUFFER_VIEW vbView;//モデル用頂点バッファビュー
+
+	ComPtr<ID3D12Resource> vertInsBuff;	//インスタンス用頂点バッファ
+	D3D12_VERTEX_BUFFER_VIEW vibView;	//インスタンス用頂点バッファビュー
+
 	ComPtr<ID3D12Resource> constBuff;//定数バッファ
 	UINT texNumber;//マネージャーに保存されたリソースの番号
 

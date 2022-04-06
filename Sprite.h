@@ -22,19 +22,50 @@ public:
 	Sprite() {};
 
 	//スプライト初期化(デバイス、スプライトサイズ、アンカーポイント、使用するリソース番号、リソース調整フラグ)
-	void CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool adjustResourceFlag, uvAnimData *animData);
+	void CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool adjustResourceFlag, uvAnimData *animData = nullptr);
+
+	//生成
+	void Create(UINT resourceID,float sizeX, float sizeY);
 
 	//サイズ変更
 	void ResizeSprite(XMFLOAT2 newsize);
 
-	//スプライト更新
+	//スプライト更新（エンジンで勝手にやる）
 	void UpdateSprite();
+
+	//頂点インスタンスデータを更新
+	void InstanceUpdate();
 
 	//スプライト描画
 	void Draw();
 
+	void DrawSprite(float posX, float posY);
+
+	void DrawExtendSprite(float x1, float y1, float x2, float y2);
+
 	//マルチパス結果描画
 	void DrawMPRender();
 
+private:
+
+	UINT sizeInsVB;
+
+	UINT instanceDrawCount;
+
 };
+
+///新、スプライト生成の仕方
+///
+/// テクスチャ番号を指定して作成
+/// ↓
+/// Updateはしない
+/// ↓
+/// Draw()以外の描画関数を呼ぶ
+/// ↓
+/// これ以上描画しないタイミングでDraw()を実行
+/// 
+/// 描画関数
+/// DrawSprite(x,y); 左上基準、通常描画
+/// 
+
 
