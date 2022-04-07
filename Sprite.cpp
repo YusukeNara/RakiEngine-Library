@@ -252,7 +252,7 @@ void Sprite::Create(UINT resourceID, float sizeX, float sizeY)
     SpriteInstance spins[] = {
         {XMMatrixIdentity()},
     };
-    sizeInsVB = static_cast<UINT>(sizeof(SpriteInstance) * 32);
+    sizeInsVB = static_cast<UINT>(sizeof(SpriteInstance) * 8);
     auto INS_HEAP_PROP = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
     D3D12_RESOURCE_DESC INS_RESDESC{};
     INS_RESDESC.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
@@ -364,7 +364,13 @@ void Sprite::UpdateSprite()
 void Sprite::InstanceUpdate()
 {
     //描画数に合わせて可変させる
-    spdata.vibView.SizeInBytes = spdata.insWorldMatrixes.size() * sizeof(XMMATRIX);
+    spdata.vibView.SizeInBytes = spdata.insWorldMatrixes.size() * sizeof(SpriteInstance);
+    
+    //インスタンシング頂点バッファのサイズを変更する必要がある場合
+    if (isVertexBufferNeedResize()) {
+
+        ResizeVertexInstanceBuffer(spdata.insWorldMatrixes.size() * sizeof(SpriteInstance));
+    }
 
     //バッファデータ転送
     SpriteInstance *insmap = nullptr;
@@ -443,4 +449,36 @@ void Sprite::DrawMPRender()
             0, RAKI_DX12B_DEV->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)));
     //描画
     SpriteManager::Get()->cmd->DrawInstanced(4, 1, 0, 0);
+}
+
+bool Sprite::isVertexBufferNeedResize()
+{
+    return spdata.vertInsBuff.Get()->GetDesc().Width < spdata.insWorldMatrixes.size() * sizeof(SpriteInstance);
+}
+
+void Sprite::ResizeVertexInstanceBuffer(UINT newWidthSize)
+{
+    //頂点バッファの設定
+    auto INS_HEAP_PROP = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+    D3D12_RESOURCE_DESC INS_RESDESC{};
+    INS_RESDESC.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+    INS_RESDESC.Width = newWidthSize; //頂点データ全体のサイズ
+    INS_RESDESC.Height = 1;
+    INS_RESDESC.DepthOrArraySize = 1;
+    INS_RESDESC.MipLevels = 1;
+    INS_RESDESC.SampleDesc.Count = 1;
+    INS_RESDESC.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+    //頂点バッファの再生成
+    auto result = SpriteManager::Get()->dev->CreateCommittedResource(
+        &INS_HEAP_PROP, //ヒープ設定
+        D3D12_HEAP_FLAG_NONE,
+        &INS_RESDESC, //リソース設定
+        D3D12_RESOURCE_STATE_GENERIC_READ,
+        nullptr,
+        IID_PPV_ARGS(&spdata.vertInsBuff));
+
+    spdata.vibView.BufferLocation = spdata.vertInsBuff.Get()->GetGPUVirtualAddress();
+    spdata.vibView.SizeInBytes = newWidthSize;
+
 }

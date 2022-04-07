@@ -24,8 +24,14 @@ public:
 	//スプライト初期化(デバイス、スプライトサイズ、アンカーポイント、使用するリソース番号、リソース調整フラグ)
 	void CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool adjustResourceFlag, uvAnimData *animData = nullptr);
 
-	//生成
-	void Create(UINT resourceID,float sizeX, float sizeY);
+	/// <summary>
+	/// 描画のもとになるスプライトデータ生成
+	/// </summary>
+	/// <param name="resourceID">テクスチャハンドル</param>
+	/// <param name="sizeX">描画サイズ</param>
+	/// <param name="sizeY">描画サイズ</param>
+	/// <param name="reserveDrawCount">描画する数</param>
+	void Create(UINT resourceID, float sizeX, float sizeY);
 
 	//サイズ変更
 	void ResizeSprite(XMFLOAT2 newsize);
@@ -51,6 +57,11 @@ private:
 	UINT sizeInsVB;
 
 	UINT instanceDrawCount;
+
+	bool isVertexBufferNeedResize();
+
+	//頂点バッファのサイズ変更（インスタンシング用バッファ）
+	void ResizeVertexInstanceBuffer(UINT newWidthSize);
 
 };
 
