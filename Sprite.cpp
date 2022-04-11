@@ -156,7 +156,7 @@ void Sprite::CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool 
 
 }
 
-void Sprite::Create(UINT resourceID, float sizeX, float sizeY)
+void Sprite::Create(UINT resourceID)
 {
     HRESULT result;
 
