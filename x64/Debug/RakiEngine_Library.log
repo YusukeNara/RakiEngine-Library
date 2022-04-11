@@ -1,9 +1,9 @@
 ﻿  Sprite.cpp
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(28,2): warning C4091: 'typedef ': 変数が何も宣言されていないときは、'SpriteInstance' の左辺を無視します。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(95,47): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(96,49): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(97,47): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
-C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(98,48): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(29,2): warning C4091: 'typedef ': 変数が何も宣言されていないときは、'SpriteInstance' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(96,47): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(97,49): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(98,47): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(99,48): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
 C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Sprite.cpp(148,99): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
 C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Sprite.cpp(148,72): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
 C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Sprite.cpp(300,99): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
@@ -12,4 +12,10 @@ C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Sprite.c
 C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Sprite.cpp(372,91): warning C4267: '引数': 'size_t' から 'UINT' に変換しました。データが失われているかもしれません。
 C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Sprite.cpp(379,137): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
 C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\Sprite.cpp(379,110): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+  SpriteManager.cpp
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(29,2): warning C4091: 'typedef ': 変数が何も宣言されていないときは、'SpriteInstance' の左辺を無視します。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(96,47): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(97,49): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(98,47): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
+C:\K020G1188\CG\Project1 - コピー (3) - コピー\RakiEngine_Library\SpriteManager.h(99,48): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
   RakiEngine_Library.vcxproj -> C:\K020G1188\CG\Project1 - コピー (3) - コピー\x64\Debug\RakiEngine_Library.lib

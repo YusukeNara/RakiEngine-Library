@@ -11,35 +11,29 @@ void Sprite::CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool 
 
     //頂点情報を適当に作成
     if (animData != nullptr) {
-        this->animData = animData;
-        //頂点データ
-        SpriteVertex vertices[] = {
-            {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetLT},
-            {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetRT},
-            {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetLB},
-            {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetRB},
-        };
+        //this->animData = animData;
+        ////頂点データ
+        //SpriteVertex vertices[] = {
+        //    {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetLT},
+        //    {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetRT},
+        //    {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetLB},
+        //    {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetRB},
+        //};
 
-        spdata.vertices[0] = vertices[0];
-        spdata.vertices[1] = vertices[1];
-        spdata.vertices[2] = vertices[2];
-        spdata.vertices[3] = vertices[3];
+        //spdata.vertices[0] = vertices[0];
+        //spdata.vertices[1] = vertices[1];
+        //spdata.vertices[2] = vertices[2];
+        //spdata.vertices[3] = vertices[3];
     }
     else {
         //引数がヌルならヌルを直接入れる
         this->animData = nullptr;
         //頂点データ
-        SpriteVertex vertices[] = {
-            {{0.0f,0.0f,0.0f},{0.0f,0.0f}},
-            {{0.0f,0.0f,0.0f},{1.0f,0.0f}},
-            {{0.0f,0.0f,0.0f},{0.0f,1.0f}},
-            {{0.0f,0.0f,0.0f},{1.0f,1.0f}},
+        SpriteVertex vertices = {
+            {0.0f,0.0f,0.0f},{0.0f,0.0f},
         };
 
-        spdata.vertices[0] = vertices[0];
-        spdata.vertices[1] = vertices[1];
-        spdata.vertices[2] = vertices[2];
-        spdata.vertices[3] = vertices[3];
+        spdata.vertice = vertices;
     }
 
     //リソースID設定
@@ -49,7 +43,7 @@ void Sprite::CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool 
     spdata.anchorPoint = anchor;
 
 	//頂点データ全体のサイズ = 頂点データ一つ分のサイズ * 頂点データの要素数
-	UINT sizeVB = static_cast<UINT>(sizeof(SpriteVertex) * _countof(spdata.vertices));
+	UINT sizeVB = static_cast<UINT>(sizeof(SpriteVertex) * 1);
 
 	//頂点バッファ生成
     D3D12_HEAP_PROPERTIES heapprop{}; //ヒープ設定
@@ -76,16 +70,13 @@ void Sprite::CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool 
     SpriteVertex *vertMap = nullptr;
     result = spdata.vertBuff->Map(0, nullptr, (void **)&vertMap);
     //全頂点に対して
-    for (int i = 0; i < _countof(spdata.vertices); i++)
-    {
-        vertMap[i] = spdata.vertices[i];//座標をコピー
-    }
+    vertMap = &spdata.vertice;//座標をコピー
     //マップを解除
     spdata.vertBuff->Unmap(0, nullptr);
 
     //頂点バッファビュー生成
     spdata.vbView.BufferLocation = spdata.vertBuff->GetGPUVirtualAddress();
-    spdata.vbView.SizeInBytes = sizeof(spdata.vertices);
+    spdata.vbView.SizeInBytes = sizeof(spdata.vertice);
     spdata.vbView.StrideInBytes = sizeof(SpriteVertex);
 
     //インスタンシング用頂点バッファ生成
@@ -170,46 +161,38 @@ void Sprite::Create(UINT resourceID, float sizeX, float sizeY)
     HRESULT result;
 
     if (animData != nullptr) {
-        this->animData = animData;
-        //頂点データ
-        SpriteVertex vertices[] = {
-            {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetLT},
-            {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetRT},
-            {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetLB},
-            {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetRB},
-        };
+        //this->animData = animData;
+        ////頂点データ
+        //SpriteVertex vertices[] = {
+        //    {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetLT},
+        //    {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetRT},
+        //    {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetLB},
+        //    {{0.0f,0.0f,0.0f},this->animData->GetOffset().offsetRB},
+        //};
 
-        spdata.vertices[0] = vertices[0];
-        spdata.vertices[1] = vertices[1];
-        spdata.vertices[2] = vertices[2];
-        spdata.vertices[3] = vertices[3];
+        //spdata.vertices[0] = vertices[0];
+        //spdata.vertices[1] = vertices[1];
+        //spdata.vertices[2] = vertices[2];
+        //spdata.vertices[3] = vertices[3];
     }
     else {
         //引数がヌルならヌルを直接入れる
         this->animData = nullptr;
         //頂点データ
-        SpriteVertex vertices[] = {
-            {{0.0f,0.0f,0.0f},{0.0f,0.0f}},
-            {{0.0f,0.0f,0.0f},{1.0f,0.0f}},
-            {{0.0f,0.0f,0.0f},{0.0f,1.0f}},
-            {{0.0f,0.0f,0.0f},{1.0f,1.0f}},
+        SpriteVertex vertices = {
+            {0.0f,0.0f,0.0f},{0.0f,0.0f},
         };
 
-        spdata.vertices[0] = vertices[0];
-        spdata.vertices[1] = vertices[1];
-        spdata.vertices[2] = vertices[2];
-        spdata.vertices[3] = vertices[3];
+        spdata.vertice = vertices;
     }
 
     //テクスチャ設定
     spdata.texNumber = resourceID;
 
-
-
     //頂点データとインデックスデータを生成して更新
 
     //頂点データ全体のサイズ = 頂点データ一つ分のサイズ * 頂点データの要素数
-    UINT sizeVB = static_cast<UINT>(sizeof(SpriteVertex) * _countof(spdata.vertices));
+    UINT sizeVB = static_cast<UINT>(sizeof(SpriteVertex) * 1);
     //頂点バッファ生成
     D3D12_HEAP_PROPERTIES heapprop{}; //ヒープ設定
     heapprop.Type = D3D12_HEAP_TYPE_UPLOAD; //GPUへの転送用
@@ -233,15 +216,12 @@ void Sprite::Create(UINT resourceID, float sizeX, float sizeY)
     SpriteVertex *vertMap = nullptr;
     result = spdata.vertBuff->Map(0, nullptr, (void **)&vertMap);
     //全頂点に対して
-    for (int i = 0; i < _countof(spdata.vertices); i++)
-    {
-        vertMap[i] = spdata.vertices[i];//座標をコピー
-    }
+    vertMap = &spdata.vertice;//座標をコピー
     //マップを解除
     spdata.vertBuff->Unmap(0, nullptr);
     //頂点バッファビュー生成
     spdata.vbView.BufferLocation = spdata.vertBuff->GetGPUVirtualAddress();
-    spdata.vbView.SizeInBytes = sizeof(spdata.vertices);
+    spdata.vbView.SizeInBytes = sizeof(spdata.vertice);
     spdata.vbView.StrideInBytes = sizeof(SpriteVertex);
 
     //大きさ変更
@@ -304,47 +284,47 @@ void Sprite::Create(UINT resourceID, float sizeX, float sizeY)
 
 void Sprite::ResizeSprite(XMFLOAT2 newsize)
 {
-    HRESULT result;
+    //HRESULT result;
 
-    spdata.size = newsize;
+    //spdata.size = newsize;
 
-    //アンカーポイントに合わせた設定
-    float left   = (0.0f - spdata.anchorPoint.x) * spdata.size.x;
-    float right  = (1.0f - spdata.anchorPoint.x) * spdata.size.x;
-    float top    = (0.0f - spdata.anchorPoint.y) * spdata.size.y;
-    float bottom = (1.0f - spdata.anchorPoint.y) * spdata.size.y;
+    ////アンカーポイントに合わせた設定
+    //float left   = (0.0f - spdata.anchorPoint.x) * spdata.size.x;
+    //float right  = (1.0f - spdata.anchorPoint.x) * spdata.size.x;
+    //float top    = (0.0f - spdata.anchorPoint.y) * spdata.size.y;
+    //float bottom = (1.0f - spdata.anchorPoint.y) * spdata.size.y;
 
-    spdata.vertices[0].pos = { left  ,   top,0.0f };
-    spdata.vertices[1].pos = { right ,   top,0.0f };
-    spdata.vertices[2].pos = { left  ,bottom,0.0f };
-    spdata.vertices[3].pos = { right ,bottom,0.0f };
+    //spdata.vertices[0].pos = { left  ,   top,0.0f };
+    //spdata.vertices[1].pos = { right ,   top,0.0f };
+    //spdata.vertices[2].pos = { left  ,bottom,0.0f };
+    //spdata.vertices[3].pos = { right ,bottom,0.0f };
 
-    //頂点バッファ転送
-    SpriteVertex *vertMap = nullptr;
-    result = spdata.vertBuff->Map(0, nullptr, (void **)&vertMap);
-    //全頂点に対して
-    memcpy(vertMap, spdata.vertices, sizeof(spdata.vertices));
-    //マップを解除
-    spdata.vertBuff->Unmap(0, nullptr);
+    ////頂点バッファ転送
+    //SpriteVertex *vertMap = nullptr;
+    //result = spdata.vertBuff->Map(0, nullptr, (void **)&vertMap);
+    ////全頂点に対して
+    //memcpy(vertMap, spdata.vertices, sizeof(spdata.vertices));
+    ////マップを解除
+    //spdata.vertBuff->Unmap(0, nullptr);
 
 }
 
 void Sprite::UpdateSprite()
 {
     //アニメーション更新
-    if (animData != nullptr) {
-        spdata.vertices[0].uv = animData->GetOffset().offsetLB; //左上
-        spdata.vertices[1].uv = animData->GetOffset().offsetRB; //左上
-        spdata.vertices[2].uv = animData->GetOffset().offsetLT; //左上
-        spdata.vertices[3].uv = animData->GetOffset().offsetRT; //左上
-        //頂点バッファデータ転送
-        SpriteVertex *vertMap = nullptr;
-        auto result = spdata.vertBuff->Map(0, nullptr, (void **)&vertMap);
-        //全頂点に対して
-        memcpy(vertMap, spdata.vertices, sizeof(spdata.vertices));
-        //マップを解除
-        spdata.vertBuff->Unmap(0, nullptr);
-    }
+    //if (animData != nullptr) {
+    //    spdata.vertices[0].uv = animData->GetOffset().offsetLB; //左上
+    //    spdata.vertices[1].uv = animData->GetOffset().offsetRB; //左上
+    //    spdata.vertices[2].uv = animData->GetOffset().offsetLT; //左上
+    //    spdata.vertices[3].uv = animData->GetOffset().offsetRT; //左上
+    //    //頂点バッファデータ転送
+    //    SpriteVertex *vertMap = nullptr;
+    //    auto result = spdata.vertBuff->Map(0, nullptr, (void **)&vertMap);
+    //    //全頂点に対して
+    //    memcpy(vertMap, spdata.vertices, sizeof(spdata.vertices));
+    //    //マップを解除
+    //    spdata.vertBuff->Unmap(0, nullptr);
+    //}
 
     spdata.matWorld = XMMatrixIdentity();
 

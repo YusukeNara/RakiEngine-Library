@@ -25,6 +25,7 @@ typedef struct SpriteVertex
 typedef struct SpriteInstance
 {
 	XMMATRIX worldmat;	//ワールド変換行列
+	XMFLOAT2 drawsize;	//縦横幅
 };
 
 //定数バッファデータ構造体
@@ -38,7 +39,7 @@ typedef struct SpConstBufferData
 typedef struct SpriteData
 {
 	//頂点座標（一点のみにして、ジオメトリで細かいコントロールをする）
-	SpriteVertex vertices[4] = {};
+	SpriteVertex vertice;
 	//インスタンス行列コンテナ（差分データを格納：アフィン変換もあるし、ここに縦横幅のデータ入れてもいいかも）
 	std::vector<XMMATRIX> insWorldMatrixes;
 
