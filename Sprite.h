@@ -58,6 +58,9 @@ private:
 
 	UINT instanceDrawCount;
 
+	//テクスチャのもとのサイズ
+	XMFLOAT2 TEXTURE_DEFAULT_SIZE;
+
 	bool isVertexBufferNeedResize();
 
 	//頂点バッファのサイズ変更（インスタンシング用バッファ）

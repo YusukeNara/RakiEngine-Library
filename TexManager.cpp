@@ -130,6 +130,12 @@ UINT TexManager::LoadTexture(std::string filename)
     return texNumber;
 }
 
+TexManager::texture TexManager::GetTextureState(UINT bufferRocate)
+{
+
+    return texture();
+}
+
 UINT TexManager::LoadDivTextureTest(uvAnimData *data,const char *filename, const int numDivTex, int sizeX)
 {
     //テクスチャ読み込み

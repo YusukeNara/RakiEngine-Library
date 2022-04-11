@@ -85,6 +85,8 @@ public:
 
 	static UINT LoadTexture(std::string filename);
 
+	static texture GetTextureState(UINT bufferRocate);
+
 	/// <summary>
 	/// テクスチャの分割読み込み
 	/// </summary>
