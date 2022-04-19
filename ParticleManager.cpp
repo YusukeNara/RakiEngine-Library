@@ -201,21 +201,20 @@ void ParticleManager::Draw(UINT drawTexNum)
 	cmd->DrawInstanced(drawNum, 1, 0, 0);
 }
 
-void ParticleManager::Add(int life, RVector3 pos, RVector3 vel, RVector3 acc, 
-	float startScale, float endScale, XMFLOAT4 s_color, XMFLOAT4 e_color)
+void ParticleManager::Add(ParticleGrainState pgState)
 {
 	//要素追加
 	grains.emplace_front();
 	//追加した要素の参照
 	Particle &p = grains.front();
-	p.pos = pos;			//初期位置
-	p.vel = vel;			//速度
-	p.acc = acc;			//加速度
-	p.s_scale = startScale; //開始時のスケールサイズ
-	p.e_scale = endScale;	//終了時のスケールサイズ
-	p.endFrame = life;		//生存時間
-	p.s_color = s_color;
-	p.e_color = e_color;
+	p.pos = pgState.position;			//初期位置
+	p.vel = pgState.vel;			//速度
+	p.acc = pgState.acc;			//加速度
+	p.s_scale = pgState.scale_start; //開始時のスケールサイズ
+	p.e_scale = pgState.scale_end;	//終了時のスケールサイズ
+	//p.endFrame = ;		//生存時間
+	//p.s_color = s_color;
+	//p.e_color = e_color;
 }
 
 void ParticleManager::Prototype_Set(ParticlePrototype *proto)
