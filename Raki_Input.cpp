@@ -189,10 +189,10 @@ bool Input::isXpadButtonPushing(XPAD_INPUT_CODE code)
 	case XPAD_BUTTON_RSTICK:
 		return xInputState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB;
 		break;
-	case XPAD_BUTTON_OPTION_R:
+	case XPAD_BUTTON_OPTION_L:
 		return xInputState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK;
 		break;
-	case XPAD_BUTTON_OPTION_L:
+	case XPAD_BUTTON_OPTION_R:
 		return xInputState.Gamepad.wButtons & XINPUT_GAMEPAD_START;
 		break;
 	default:
@@ -202,7 +202,6 @@ bool Input::isXpadButtonPushing(XPAD_INPUT_CODE code)
 
 bool Input::isXpadButtonPushTrigger(XPAD_INPUT_CODE code)
 {
-
 	return isXpadButtonPushing(code) == true && isOldXpadPushing(code) == false;
 }
 
@@ -223,7 +222,59 @@ int Input::GetXpadLTStrength()
 
 bool Input::isXpadStickTilt(XPAD_STICK_DIRECTION_CODE dircode)
 {
-	return false;
+	switch (dircode)
+	{
+	case XPAD_LSTICK_DIR_UP:
+		return isLSTiltUp();
+		break;
+	case XPAD_LSTICK_DIR_DOWN:
+		return isLSTiltDown();
+		break;
+	case XPAD_LSTICK_DIR_LEFT:
+		return isLSTiltLeft();
+		break;
+	case XPAD_LSTICK_DIR_RIGHT:
+		return isLSTiltRight();
+		break;
+	case XPAD_LSTICK_DIR_UR:
+		return isLSTiltUp() && isLSTiltRight();
+		break;
+	case XPAD_LSTICK_DIR_UL:
+		return isLSTiltUp() && isLSTiltLeft();
+		break;
+	case XPAD_LSTICK_DIR_DR:
+		return isLSTiltDown() && isLSTiltRight();
+		break;
+	case XPAD_LSTICK_DIR_DL:
+		return isLSTiltDown() && isLSTiltLeft();
+		break;
+	case XPAD_RSTICK_DIR_UP:
+		return isRSTiltUp();
+		break;
+	case XPAD_RSTICK_DIR_DOWN:
+		return isRSTiltDown();
+		break;
+	case XPAD_RSTICK_DIR_LEFT:
+		return isRSTiltLeft();
+		break;
+	case XPAD_RSTICK_DIR_RIGHT:
+		return isRSTiltRight();
+		break;
+	case XPAD_RSTICK_DIR_UR:
+		return isRSTiltUp() && isRSTiltRight();
+		break;
+	case XPAD_RSTICK_DIR_UL:
+		return isRSTiltUp() && isRSTiltRight();
+		break;
+	case XPAD_RSTICK_DIR_DR:
+		return isRSTiltUp() && isRSTiltRight();
+		break;
+	case XPAD_RSTICK_DIR_DL:
+		return isRSTiltUp() && isRSTiltRight();
+		break;
+	default:
+		break;
+	}
 }
 
 Input *Input::Get()
@@ -278,10 +329,10 @@ bool Input::isOldXpadPushing(XPAD_INPUT_CODE code)
 	case XPAD_BUTTON_RSTICK:
 		return oldxInputState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB;
 		break;
-	case XPAD_BUTTON_OPTION_R:
+	case XPAD_BUTTON_OPTION_L:
 		return oldxInputState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK;
 		break;
-	case XPAD_BUTTON_OPTION_L:
+	case XPAD_BUTTON_OPTION_R:
 		return oldxInputState.Gamepad.wButtons & XINPUT_GAMEPAD_START;
 		break;
 	default:
