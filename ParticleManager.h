@@ -16,6 +16,7 @@ struct ParticleGrainState
 {
 private:
 	using XMFLOAT4 = DirectX::XMFLOAT4;
+
 public:
 
 	//‹N“_

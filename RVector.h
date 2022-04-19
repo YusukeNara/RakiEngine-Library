@@ -225,36 +225,13 @@ namespace RV3Colider {
 		RVector3 dir;
 	};
 
-	inline RVector3 CalcScreen2World(const XMFLOAT2 &scrPos, float fz,float window_w,float window_h,const XMMATRIX &prj,const XMMATRIX &view) {
-		XMVECTOR pos;
-		//射影変換行列とビューポート行列の逆行列を格納する変数
-		XMMATRIX InvPrj, InvVP,InvV;
-		//各行列の逆行列を出す
-		InvPrj = XMMatrixInverse(nullptr, prj);
-		//ビューポート行列はもとはない？のでここで定義して逆行列を出す
-		InvVP = XMMatrixIdentity();
-		InvVP.r[0].m128_f32[0] = window_w / 2.0f;
-		InvVP.r[1].m128_f32[1] = -window_h / 2.0f;
-		InvVP.r[3].m128_f32[0] = window_w / 2.0f;
-		InvVP.r[3].m128_f32[1] = window_h / 2.0f;
-		InvVP = XMMatrixInverse(nullptr, InvVP);
-
-		InvV = XMMatrixInverse(nullptr, view);
-
-		XMMATRIX inverce = InvVP * InvPrj * InvV;
-		XMVECTOR scr = { scrPos.x,scrPos.y,fz };
-
-		pos = XMVector3TransformCoord(scr, inverce);
-
-		RVector3 returnpos = { pos.m128_f32[0],pos.m128_f32[1],pos.m128_f32[2] };
-		return returnpos;
-	}
+	RVector3 CalcScreen2World(const XMFLOAT2& scrPos, float fz);
 
 	inline Ray CalcScreen2WorldRay(XMFLOAT2 &scrPos, float window_w, float window_h, XMMATRIX &prj,XMMATRIX &view) {
 
 		Ray result;
-		result.start = CalcScreen2World(scrPos, 0, window_w, window_h, prj, view);
-		result.dir = CalcScreen2World(scrPos, 1, window_w, window_h, prj, view);
+		result.start = CalcScreen2World(scrPos, 0);
+		result.dir = CalcScreen2World(scrPos, 1);
 		return result;
 	}
 
