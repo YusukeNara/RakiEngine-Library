@@ -103,7 +103,9 @@ class ParticlePrototype : public Particle
 {
 public:
 	ParticlePrototype() {};
-	~ParticlePrototype() {};
+	~ParticlePrototype() {
+		
+	};
 	//初期化
 	virtual void Init() = 0;
 	//更新
@@ -208,7 +210,7 @@ private:
 
 
 	//パーティクルプロトタイプ
-	ParticlePrototype *prototype_;
+	std::unique_ptr<ParticlePrototype> prototype_;
 	//パーティクルプロトタイプコンテナ
 	std::forward_list<std::unique_ptr<ParticlePrototype>> pplist;
 

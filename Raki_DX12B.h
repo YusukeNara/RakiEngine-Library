@@ -165,6 +165,7 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW			mpvbView;	//結果描画用頂点バッファビュー
 	ComPtr<ID3D12PipelineState>			mpPipeline;	//ペラポリゴン用パイプライン
 	ComPtr<ID3D12RootSignature>			mpRootsig;	//ペラポリゴン用ルートシグネチャ
+	ComPtr<ID3D12Resource>				mpDepth;
 
 	bool isRenderTarget = false;
 	bool isBackBuffer = false;

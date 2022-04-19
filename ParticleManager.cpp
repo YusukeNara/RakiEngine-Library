@@ -219,16 +219,15 @@ void ParticleManager::Add(ParticleGrainState pgState)
 
 void ParticleManager::Prototype_Set(ParticlePrototype *proto)
 {
-	prototype_ = proto;
+	prototype_.reset(proto);
 }
 
 void ParticleManager::Prototype_Add(int addCount, RVector3 startPos)
 {
 	for (int i = 0; i < addCount; i++) {
 		//uniqueポインタで動的生成
-		ParticlePrototype *newp = prototype_->clone(startPos);
-
-		pplist.emplace_front(newp);
+		std::unique_ptr<ParticlePrototype> newp(prototype_->clone(startPos));
+		pplist.emplace_front(std::move(newp));
 	}
 }
 
