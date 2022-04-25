@@ -316,6 +316,12 @@ void NY_Object3DManager::UpdateAllObjects()
     }
 }
 
+void NY_Object3DManager::ClearObjects()
+{
+    
+
+}
+
 
 void NY_Object3DManager::SetCommonBeginDrawObject3D()
 {

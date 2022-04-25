@@ -65,25 +65,25 @@ class Particle {
 
 public:
 	//座標
-	RVector3 pos;
+	RVector3	pos = {0,0,0};
 	//速度
-	RVector3 vel;
+	RVector3	vel = {0,0,0};
 	//加速度
-	RVector3 acc;
+	RVector3	acc = {0,0,0};
 	//色
-	XMFLOAT4 color;
+	XMFLOAT4	color = {1,1,1,1};
 	//スケーリング
-	float scale;
+	float		scale = 1.0f;
 	//回転
-	float rot;
+	float		rot = 0.0f;
 	//初期値
-	XMFLOAT4 s_color = {};
-	float s_scale = 1.0f;
-	float s_rotation = 0.0f;
+	XMFLOAT4	s_color = { 1,1,1,1 };
+	float		s_scale = 1.0f;
+	float		s_rotation = 0.0f;
 	// 最終値
-	XMFLOAT4 e_color = {};
-	float e_scale = 0.0f;
-	float e_rotation = 0.0f;
+	XMFLOAT4	e_color = { 1,1,1,1 };
+	float		e_scale = 0.0f;
+	float		e_rotation = 0.0f;
 	// 現在フレーム
 	int nowFrame = 0;
 	// 終了フレーム
@@ -142,6 +142,13 @@ public:
 		XMMATRIX matBillBoard;
 	};
 
+	// エミッターの設定
+
+	bool is2DParticle = false;	//2dパーティクルか？
+
+	bool isBillboard = true;	//ビルボードを適用するか？
+
+
 private:
 	// 最大生成頂点数
 	static const int MAX_VERTEX = 65536;
@@ -151,12 +158,12 @@ public:
 	/// <summary>
 	/// パーティクルマネージャー生成
 	/// </summary>
-	static ParticleManager *Create();
+	static ParticleManager *Create(bool is2d = false);
 
 	/// <summary>
 	/// パーティクルマネージャー初期化
 	/// </summary>
-	void Initialize();
+	void Initialize(bool is2d);
 	
 	/// <summary>
 	/// 全パーティクル更新
@@ -206,6 +213,7 @@ private:
 	// パーティクルコンテナ
 	std::forward_list<Particle> grains;
 
+
 	HRESULT result = S_FALSE;
 
 
@@ -220,7 +228,7 @@ private:
 	/// <summary>
 	/// パーティクル用グラフィックスパイプライン初期化
 	/// </summary>
-	void InitializeGraphicsPipeline();
+	void InitializeGraphicsPipeline(bool is2d);
 
 	/// <summary>
 	/// パーティクル用モデル生成

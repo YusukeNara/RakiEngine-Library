@@ -52,10 +52,6 @@ bool ImguiMgr::InitImgui(ID3D12Device *dev, HWND hwnd)
 
 void ImguiMgr::StartDrawImgui(const char *windowTitle, float posX, float posY)
 {
-	//imgui描画開始
-	ImGui_ImplDX12_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
 
 	//ウィンドウ表示
 	ImGui::Begin(windowTitle);
@@ -66,6 +62,10 @@ void ImguiMgr::EndDrawImgui()
 {
 	//表示終了、描画
 	ImGui::End();
+}
+
+void ImguiMgr::SendImguiDrawCommand()
+{
 	ImGui::Render();
 
 	//デスクリプタヒープをセット

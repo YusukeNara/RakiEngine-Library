@@ -1,4 +1,6 @@
 #pragma once
+#include <memory>
+
 #include "SpriteManager.h"
 #include "NY_Camera.h"
 #include "TexManager.h"
@@ -7,7 +9,7 @@ class Sprite
 {
 public:
 	//スプライト一枚の情報
-	SpriteData spdata;
+	std::unique_ptr<SpriteData> spdata;
 	//アニメーションデータ
 	uvAnimData *animData;
 
@@ -19,7 +21,8 @@ public:
 		CreateSprite(size, anchor, resourceID, adjustResourceFlag, nullptr);
 	};
 	//引数なし（別で初期化）
-	Sprite() {};
+	Sprite();
+	~Sprite();
 
 	//スプライト初期化(デバイス、スプライトサイズ、アンカーポイント、使用するリソース番号、リソース調整フラグ)
 	void CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool adjustResourceFlag, uvAnimData *animData = nullptr);

@@ -70,6 +70,9 @@
     <Filter Include="Scene\SceneFactory">
       <UniqueIdentifier>{34f70541-4181-43c6-8ae0-b6ee3ee72892}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{ee6ef0fb-d212-4e60-b360-2be92a689f13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Raki_imguiMgr.cpp">
@@ -232,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="SceneFactory.h">
       <Filter>Scene\SceneFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="RakiEngine.h">
+      <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

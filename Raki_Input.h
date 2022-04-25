@@ -162,8 +162,10 @@ public:
 
 	struct StickTiltParam
 	{
-		int x;
-		int y;
+		int x = 0;
+		int y = 0;
+		float x_rate = 0.0f;
+		float y_rate = 0.0f;
 	};
 
 	static StickTiltParam GetXpadRStickTilt();

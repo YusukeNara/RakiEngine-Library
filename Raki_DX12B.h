@@ -7,6 +7,7 @@
 #include <d3dx12.h>
 #include <wrl.h>
 #include <dxgi1_6.h>
+#include <dxgidebug.h>
 #include <cstdlib>
 
 #include "Raki_WinAPI.h"
@@ -25,9 +26,7 @@ private: // エイリアス
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 	Raki_DX12B() {};
-	~Raki_DX12B() {
-	
-	};
+	~Raki_DX12B();
 
 public:
 	//--------------------メンバ関数--------------------//
@@ -132,6 +131,7 @@ private:
 	// Direct3D関連
 	ComPtr<IDXGIFactory6>				dxgiFactory;
 	ComPtr<ID3D12Device>				device;
+	ComPtr<ID3D12Debug>					debugController;
 	ComPtr<ID3D12GraphicsCommandList>	commandList;
 	ComPtr<ID3D12CommandAllocator>		commandAllocator;
 	ComPtr<ID3D12CommandQueue>			commandQueue;

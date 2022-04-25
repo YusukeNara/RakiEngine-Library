@@ -2,6 +2,7 @@
 
 #include "Raki_WinAPI.h"
 #include "NY_Camera.h"
+#include "FPS.h"
 
 bool RV3Colider::ColisionSphereToPlane(const Sphere &sphere, const Plane &plane, RVector3 *coliPos)
 {
@@ -67,4 +68,48 @@ const RVector3 Rv3Ease::InOutQuad(const RVector3 &s, const RVector3 &e, const fl
 	RVector3 start = s;
 	RVector3 end = e;
 	return t < 0.5f ? (start * (1.0f - t)) + end * (t * t) : start * (1.0f - t) + end * (1 - (float)pow(-2 * t + 2, 2) / 2);
+}
+
+float CalcVelocityToForceAndMass(const float force, const float mass, float nowVel, float &acc)
+{
+	float accel = acc + CalcAccelToForceAndMass(force, mass);
+
+	float vel = nowVel + accel;
+
+	acc = accel;
+
+	return vel;
+}
+
+float CalcAccelToForceAndMass(const float force, const float mass)
+{
+	return force / mass;
+}
+
+float CalcAccelToFramePerVel(float onesecmove)
+{
+	return onesecmove / 60.0f;
+}
+
+float CalcGravity(float start, float end, float v0, int time,float &v1)
+{
+
+
+	//現在の速度^2 = 初速度^2 + -2*重力加速度
+	float v = (v0 * v0) + (-2 * CalcAccelToFramePerVel(9.8f));
+
+	float t1 = time / 60.0f;
+	float t2 = (time - 1) / 60.0f;
+
+	//現在座標 = 開始点 + 現在速度
+	float now = start + (sqrtf(v) * -t2);
+
+	float next = now + (sqrtf(v) * -t1);
+
+	if (next < end) {//下降中、終了点より↓
+		now = end;//値を丸める
+	}
+
+	//結果
+	return next;
 }

@@ -54,7 +54,7 @@ const DirectX::XMFLOAT4 operator*(const DirectX::XMFLOAT4 &lhs, const float a) {
 }
 
 
-ParticleManager *ParticleManager::Create() {
+ParticleManager *ParticleManager::Create(bool is2d) {
 
 	//パーティクルマネージャー生成
 	ParticleManager *pm = new ParticleManager(
@@ -63,18 +63,20 @@ ParticleManager *ParticleManager::Create() {
 	);
 
 	//生成したものを初期化
-	pm->Initialize();
+	pm->Initialize(is2d);
+
+	pm->is2DParticle = is2d;
 
 	return pm;
 }
 
-void ParticleManager::Initialize() {
+void ParticleManager::Initialize(bool is2d) {
 	//nullチェック
 
 	HRESULT result;
 
 	//パイプライン初期化
-	InitializeGraphicsPipeline();
+	InitializeGraphicsPipeline(is2d);
 
 	//パーティクル用モデル作成
 	CreateModel();
@@ -212,9 +214,9 @@ void ParticleManager::Add(ParticleGrainState pgState)
 	p.acc = pgState.acc;			//加速度
 	p.s_scale = pgState.scale_start; //開始時のスケールサイズ
 	p.e_scale = pgState.scale_end;	//終了時のスケールサイズ
-	//p.endFrame = ;		//生存時間
-	//p.s_color = s_color;
-	//p.e_color = e_color;
+	p.endFrame = pgState.aliveTime;		//生存時間
+	p.s_color = pgState.color_start;
+	p.e_color = pgState.color_end;
 }
 
 void ParticleManager::Prototype_Set(ParticlePrototype *proto)
@@ -251,6 +253,9 @@ void ParticleManager::Prototype_Update()
 			(*it)->Update();
 			// 座標
 			vertMap->pos = (*it)->pos;
+			if (is2DParticle) {
+				vertMap->pos.z = 0.0f;
+			}
 			// スケール
 			vertMap->scale = (*it)->scale;
 			//色
@@ -269,7 +274,12 @@ void ParticleManager::Prototype_Update()
 	result = constBuff->Map(0, nullptr, (void **)&constMap);
 	if (result == S_OK) {
 		//ビュープロジェクション行列
-		constMap->mat = camera->GetMatrixViewProjection();
+		if (is2DParticle) {
+			constMap->mat = camera->GetMatrixView() * camera->GetMatrixProjection2D();
+		}
+		else {
+			constMap->mat = camera->GetMatrixViewProjection();
+		}
 		//全方向ビルボード
 		constMap->matBillBoard = camera->GetMatrixBillBoardAll();
 		//色
@@ -317,7 +327,7 @@ void ParticleManager::Prototype_Draw(UINT drawTexNum)
 
 
 
-void ParticleManager::InitializeGraphicsPipeline() {
+void ParticleManager::InitializeGraphicsPipeline(bool is2d) {
 
 	result = S_FALSE;
 	ComPtr<ID3DBlob> vsBlob; // 頂点シェーダオブジェクト
@@ -427,6 +437,9 @@ void ParticleManager::InitializeGraphicsPipeline() {
 	//gpipeline.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
 	// デプスステンシルステート
 	gpipeline.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	if (is2d) {
+
+	}
 	// デプスの書き込みを禁止
 	gpipeline.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 

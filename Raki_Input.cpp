@@ -376,6 +376,9 @@ Input::StickTiltParam Input::GetXpadRStickTilt()
 	result.x = (int)xInputState.Gamepad.sThumbRX;
 	result.y = (int)xInputState.Gamepad.sThumbRY;
 
+	result.x_rate = (float)xInputState.Gamepad.sThumbRX / 32768.0f;
+	result.y_rate = (float)xInputState.Gamepad.sThumbRY / 32768.0f;
+
 	return result;
 }
 
@@ -384,6 +387,9 @@ Input::StickTiltParam Input::GetXpadLStickTilt()
 	StickTiltParam result;
 	result.x = (int)xInputState.Gamepad.sThumbLX;
 	result.y = (int)xInputState.Gamepad.sThumbLY;
+
+	result.x_rate = (float)xInputState.Gamepad.sThumbLX / 32768.0f;
+	result.y_rate = (float)xInputState.Gamepad.sThumbLY / 32768.0f;
 
 	return result;
 }

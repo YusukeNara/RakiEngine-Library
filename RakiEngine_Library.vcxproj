@@ -111,6 +111,7 @@
     <ClInclude Include="NY_Object3DMgr.h" />
     <ClInclude Include="NY_random.h" />
     <ClInclude Include="ParticleManager.h" />
+    <ClInclude Include="RakiEngine.h" />
     <ClInclude Include="Raki_DX12B.h" />
     <ClInclude Include="Raki_imguiMgr.h" />
     <ClInclude Include="Raki_Input.h" />

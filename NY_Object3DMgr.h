@@ -142,6 +142,8 @@ public:
 	/// </summary>
 	void UpdateAllObjects();
 
+	void ClearObjects();
+
 	/// <summary>
 	/// 3Dオブジェクトの描画を実行するための前準備を行う
 	/// </summary>

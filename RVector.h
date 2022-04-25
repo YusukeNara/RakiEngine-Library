@@ -70,6 +70,17 @@ inline const RVector3 lerp(const RVector3 &s, const RVector3 &e, const float t) 
 	return start * (1.0f - t) + end * t;
 }
 
+//速度、加速度系
+
+float CalcVelocityToForceAndMass(const float force, const float mass, float nowVel, float &acc);
+
+float CalcAccelToForceAndMass(const float force, const float mass);
+
+float CalcAccelToFramePerVel(float onesecmove);
+
+float CalcGravity(float start, float end, float v0, int time, float& v1);
+
+
 
 //RVector3を使用した、3次元線形補間
 namespace Rv3Ease {

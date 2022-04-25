@@ -18,13 +18,10 @@ bool Raki_DX12B::InitDXGIDevice()
     HRESULT result;
 
 #ifdef _DEBUG
-	ComPtr<ID3D12Debug> debugController;
 	//デバッグレイヤーをオンに	
-	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
-	{
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
 		debugController->EnableDebugLayer();
 	}
-
 #endif
 
 	// 対応レベルの配列
@@ -515,6 +512,18 @@ bool Raki_DX12B::CreateFence()
 	return true;
 }
 
+Raki_DX12B::~Raki_DX12B()
+{
+#ifdef _DEBUG
+	ID3D12DebugDevice* debugDevice;
+	if (SUCCEEDED(device.Get()->QueryInterface(&debugDevice)))
+	{
+		debugDevice->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
+		debugDevice->Release();
+	}
+#endif
+}
+
 void Raki_DX12B::Initialize(Raki_WinAPI *win)
 {
 	// nullptrチェック
@@ -702,6 +711,11 @@ void Raki_DX12B::StartDraw2()
 
 void Raki_DX12B::StartDrawBackbuffer()
 {
+	//imgui描画開始
+	ImGui_ImplDX12_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
 	//1パス用リソースをシェーダーリソースに戻す
 	auto changeState = CD3DX12_RESOURCE_BARRIER::Transition(
 		mpResource.Get(),
@@ -772,6 +786,9 @@ void Raki_DX12B::StartDrawRenderTarget()
 
 void Raki_DX12B::CloseDraw()
 {
+	//imguiの描画コマンドをコマンドリストに移動
+	ImguiMgr::Get()->SendImguiDrawCommand();
+
 	//レンダーターゲット、バックバッファをクローズ
 	////1パス用リソースをシェーダーリソースに戻す
 	//auto changeState = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -780,6 +797,7 @@ void Raki_DX12B::CloseDraw()
 	//	D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 	//);
 	//commandList->ResourceBarrier(1, &changeState);
+
 	// バックバッファのリソースバリアを変更（描画対象→表示状態）
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 	auto barrier_temp = CD3DX12_RESOURCE_BARRIER::Transition(backBuffers[bbIndex].Get(),
