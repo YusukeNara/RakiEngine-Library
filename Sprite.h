@@ -10,8 +10,8 @@ class Sprite
 public:
 	//スプライト一枚の情報
 	std::unique_ptr<SpriteData> spdata;
-	//アニメーションデータ
-	uvAnimData *animData;
+	//uvオフセットハンドル（これを増減させることで分割したuv値を適用可能）
+	int uvOffsetHandle = 0;
 
 public:
 	//スプライト生成（実体生成時に起動でいい？）(デバイス、スプライトサイズ、リソース番号、アンカーポイント、スプライトマネージャーポインタ)
@@ -36,8 +36,16 @@ public:
 	/// <param name="reserveDrawCount">描画する数</param>
 	void Create(UINT resourceID);
 
-	//サイズ変更
-	void ResizeSprite(XMFLOAT2 newsize);
+	/// <summary>
+	/// スプライトを生成し、uv値分割を適用
+	/// </summary>
+	/// <param name="divAllnum">総分割数</param>
+	/// <param name="divX">x方向分割数</param>
+	/// <param name="divY">y方向分割数</param>
+	/// <param name="sizeX">分割サイズ</param>
+	/// <param name="sizeY">分割サイズ</param>
+	/// <param name="resourceID">テクスチャハンドル</param>
+	void CreateAndSetDivisionUVOffsets(int divAllnum, int divX, int divY, int sizeX, int sizeY,UINT resourceID);
 
 	//スプライト更新（エンジンで勝手にやる）
 	void UpdateSprite();
@@ -64,6 +72,7 @@ private:
 	//テクスチャのもとのサイズ
 	XMFLOAT2 TEXTURE_DEFAULT_SIZE;
 
+	//頂点バッファの再確保が必要か？
 	bool isVertexBufferNeedResize();
 
 	//頂点バッファのサイズ変更（インスタンシング用バッファ）

@@ -26,6 +26,7 @@ typedef struct SpriteInstance
 {
 	XMMATRIX worldmat;	//ワールド変換行列
 	XMFLOAT2 drawsize;	//縦横幅
+	XMFLOAT4 uvOffset;	//uv値
 };
 
 //定数バッファデータ構造体
@@ -63,6 +64,9 @@ typedef struct SpriteData
 	XMFLOAT2 screenPos = { 0.0f,0.0f };//スクリーン座標
 
 	XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f };
+
+	//uvオフセットコンテナ
+	std::vector<XMFLOAT4> uvOffsets;
 
 	SpriteData()
 	{

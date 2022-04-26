@@ -1,7 +1,5 @@
 #pragma once
 
-
-
 #include <Windows.h>
 #include <d3d12.h>
 #include <d3dx12.h>
@@ -9,6 +7,7 @@
 #include <dxgi1_6.h>
 #include <dxgidebug.h>
 #include <cstdlib>
+#include <iostream>
 
 #include "Raki_WinAPI.h"
 #include "Raki_Input.h"
@@ -18,6 +17,12 @@ struct mpVertex {
 	DirectX::XMFLOAT3 pos;
 	DirectX::XMFLOAT2 uv;
 };
+
+//hresultèoóÕ
+inline void ExportHRESULTmessage(HRESULT resultCode){ 
+	if(FAILED(resultCode)){ std::cout << std::system_category().message(resultCode) << std::endl; }
+}
+
 
 class Raki_DX12B
 {

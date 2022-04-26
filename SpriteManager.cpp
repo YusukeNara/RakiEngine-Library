@@ -127,6 +127,9 @@ void SpriteManager::CreateSpritePipeline()
         {//縦横幅
             "INSTANCE_DRAWSIZE" ,0,DXGI_FORMAT_R32G32_FLOAT,       1,D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,1
         },
+        {
+            "INSTANCE_UVOFFSET" ,0,DXGI_FORMAT_R32G32B32A32_FLOAT, 1,D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,1
+        },
     };
 
     //-----グラフィックスパイプラインのセット-----//
@@ -206,14 +209,17 @@ void SpriteManager::CreateSpritePipeline()
 
     ComPtr<ID3DBlob> rootSigBlob = nullptr;
     result = D3D12SerializeRootSignature(&rootsignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &rootSigBlob, &errorBlob);
+    ExportHRESULTmessage(result);
     if (result != S_OK) { cout << "ERROR : ENGINE : SPRITE : ROOTSIGNATURE" << endl; }
     result = dev->CreateRootSignature(0, rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(), IID_PPV_ARGS(&rootsignature));
-    if (result != S_OK) { cout << "ERROR : ENGINE : SPRITE : ROOTSIGNATURE" << endl; }
+    ExportHRESULTmessage(result);
+    if (FAILED(result)) { cout << "ERROR : ENGINE : SPRITE : ROOTSIGNATURE" << endl; }
     //パイプラインにルートシグネチャをセット
     gpipeline.pRootSignature = rootsignature.Get();
 
     //パイプラインステート
     result = dev->CreateGraphicsPipelineState(&gpipeline, IID_PPV_ARGS(&pipelinestate));
+    ExportHRESULTmessage(result);
 
     rootsignature->SetName(TEXT("SP_ROOTSIG"));
     pipelinestate->SetName(TEXT("SP_PIPELINE"));

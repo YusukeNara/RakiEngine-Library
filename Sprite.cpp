@@ -35,16 +35,6 @@ void Sprite::CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool 
         //spdata->vertices[2] = vertices[2];
         //spdata->vertices[3] = vertices[3];
     }
-    else {
-        //�������k���Ȃ�k���𒼐ړ����
-        this->animData = nullptr;
-        //���_�f�[�^
-        SpriteVertex vertices = {
-            {0.0f,0.0f,0.0f},{0.0f,0.0f},
-        };
-
-        spdata->vertice = vertices;
-    }
 
     //���\�[�XID�ݒ�
     spdata->texNumber = resourceID;
@@ -166,8 +156,6 @@ void Sprite::CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool 
         spdata->size = size;//�����̃T�C�Y�ɐݒ�
     }
 
-    ResizeSprite(spdata->size);
-
 }
 
 void Sprite::Create(UINT resourceID)
@@ -175,8 +163,6 @@ void Sprite::Create(UINT resourceID)
 
     HRESULT result;
 
-    //�������k���Ȃ�k���𒼐ړ����
-    this->animData = nullptr;
     //���_�f�[�^
     SpriteVertex vertices = {
         {0.0f,0.0f,0.0f},{0.0f,0.0f},
@@ -290,10 +276,43 @@ void Sprite::Create(UINT resourceID)
     //�e�N�X�`���̃f�t�H���g�T�C�Y���擾
     TEXTURE_DEFAULT_SIZE.x = TexManager::textureData[resourceID].metaData.width;
     TEXTURE_DEFAULT_SIZE.y = TexManager::textureData[resourceID].metaData.height;
+
+    //デフォルトのuvを格納
+    spdata->uvOffsets.push_back(XMFLOAT4(0.0, 0.0, 1.0, 1.0));
 }
 
-void Sprite::ResizeSprite(XMFLOAT2 newsize)
+void Sprite::CreateAndSetDivisionUVOffsets(int divAllnum, int divX, int divY, int sizeX, int sizeY, UINT resourceID)
 {
+    //スプライトデータ作成
+    Create(resourceID);
+    //デフォルトサイズを変更
+    TEXTURE_DEFAULT_SIZE.x = sizeX;
+    TEXTURE_DEFAULT_SIZE.y = sizeY;
+    //uv分割が意図しない値にならないかチェック
+
+    //負の値は無効
+
+    //初期化したコンテナを一旦クリア
+    spdata->uvOffsets.clear();
+    spdata->uvOffsets.shrink_to_fit();
+
+    //uvoffsetを計算
+    float x_uvOffset = static_cast<float>(sizeX) / TexManager::textureData[resourceID].metaData.width;
+    float y_uvOffset = static_cast<float>(sizeY) / TexManager::textureData[resourceID].metaData.height;
+
+    int dived = 0;
+    //インスタンシング用オフセットコンテナに格納
+    for (int y = 0; y < divY; y++) {
+        for (int x = 0; x < divX; x++) {
+            float left = x * x_uvOffset;
+            float right = x * x_uvOffset + x_uvOffset;
+            float top = y * y_uvOffset;
+            float bottom = y * y_uvOffset + y_uvOffset;
+            spdata->uvOffsets.push_back(XMFLOAT4(left, top, right, bottom));
+            dived++;
+            if (dived > divAllnum) { break; }
+        }
+    }
 
 }
 
@@ -346,6 +365,7 @@ void Sprite::InstanceUpdate()
     for (int i = 0; i < spdata->insWorldMatrixes.size(); i++) {
         insmap[i].worldmat = spdata->insWorldMatrixes[i].worldmat * camera->GetMatrixProjection2D();
         insmap[i].drawsize = spdata->insWorldMatrixes[i].drawsize;
+        insmap[i].uvOffset = spdata->uvOffsets[uvOffsetHandle];
     }
     spdata->vertInsBuff->Unmap(0, nullptr);
 }
