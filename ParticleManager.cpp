@@ -275,10 +275,14 @@ void ParticleManager::Prototype_Update()
 	if (result == S_OK) {
 		//ビュープロジェクション行列
 		if (is2DParticle) {
-			constMap->mat = camera->GetMatrixView() * camera->GetMatrixProjection2D();
+			constMap->mat = camera->GetMatrixProjection2D();
+			//全方向ビルボード
+			constMap->matBillBoard = XMMatrixIdentity();
 		}
 		else {
 			constMap->mat = camera->GetMatrixViewProjection();
+			//全方向ビルボード
+			constMap->matBillBoard = camera->GetMatrixBillBoardAll();
 		}
 		//全方向ビルボード
 		constMap->matBillBoard = camera->GetMatrixBillBoardAll();

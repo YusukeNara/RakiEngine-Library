@@ -73,6 +73,9 @@
     <Filter Include="Framework">
       <UniqueIdentifier>{ee6ef0fb-d212-4e60-b360-2be92a689f13}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphic\Render">
+      <UniqueIdentifier>{3f2e670b-e90f-4663-99b1-730bea9a064c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Raki_imguiMgr.cpp">
@@ -149,6 +152,15 @@
     </ClCompile>
     <ClCompile Include="SceneFactory.cpp">
       <Filter>Scene\SceneFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTargetManager.cpp">
+      <Filter>Graphic\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="RTex.cpp">
+      <Filter>Graphic\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleManager2D.cpp">
+      <Filter>Graphic\2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -238,6 +250,15 @@
     </ClInclude>
     <ClInclude Include="RakiEngine.h">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargetManager.h">
+      <Filter>Graphic\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="RTex.h">
+      <Filter>Graphic\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleManager2D.h">
+      <Filter>Graphic\2D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

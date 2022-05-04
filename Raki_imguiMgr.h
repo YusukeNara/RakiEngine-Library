@@ -33,7 +33,7 @@ public:
 	/// <returns>boolå^Ç≈ê¨î€</returns>
 	bool InitImgui(ID3D12Device *dev, HWND hwnd);
 
-	void StartDrawImgui(const char *windowTitle, float posX, float posY);
+	void StartDrawImgui(const char *windowTitle, float width, float height);
 
 	void EndDrawImgui();
 

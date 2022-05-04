@@ -63,6 +63,8 @@ public:
 	//マルチパス結果描画
 	void DrawMPRender();
 
+	bool IsCreated();
+
 private:
 
 	UINT sizeInsVB;
@@ -71,6 +73,9 @@ private:
 
 	//テクスチャのもとのサイズ
 	XMFLOAT2 TEXTURE_DEFAULT_SIZE;
+
+	//生成炭？
+	bool isCreated = false;
 
 	//頂点バッファの再確保が必要か？
 	bool isVertexBufferNeedResize();

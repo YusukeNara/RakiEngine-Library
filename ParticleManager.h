@@ -110,7 +110,7 @@ public:
 	virtual void Init() = 0;
 	//更新
 	virtual void Update() = 0;
-	//クローン生成（起点座標だけ取得する?）
+	//クローン生成（起点座標だけ取得する? ユーザ定義でおｋだった）
 	virtual ParticlePrototype *clone(RVector3 startPos) = 0;
 
 	//描画、終了は必要ない（実際の描画はエミッターでやるので）
@@ -126,7 +126,6 @@ private:
 	using XMFLOAT3 = DirectX::XMFLOAT3;
 	using XMFLOAT4 = DirectX::XMFLOAT4;
 	using XMMATRIX = DirectX::XMMATRIX;
-	
 
 public:
 	// 頂点データ

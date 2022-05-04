@@ -101,6 +101,10 @@ public:
 	/// <returns></returns>
 	ID3D12Device *GetDevice() { return device.Get(); }
 
+	IDXGIFactory6* GetDXGIFactory() { return dxgiFactory.Get(); }
+
+	ID3D12CommandQueue* GetCmdQueue() { return commandQueue.Get(); }
+
 	/// <summary>
 	/// imgui用デスクリプタヒープのゲッタ
 	/// </summary>
