@@ -28,6 +28,13 @@ public:
 	//デストラクタ
 	~RenderTargetManager();
 
+	//テスト用
+	static RenderTargetManager* GetInstance()
+	{
+		static RenderTargetManager ins;
+		return &ins;
+	}
+
 	//初期化
 	void InitRenderTargetManager();
 
@@ -42,6 +49,7 @@ public:
 	//レンダーテクスチャハンドルが範囲外か？
 	bool isHandleOutOfRange(int handle) { return handle < 0 || handle > renderTextures.size(); }
 
+
 	/// <summary>
 	/// レンダーテクスチャの生成
 	/// </summary>
@@ -50,11 +58,13 @@ public:
 	/// <returns>生成したレンダーテクスチャのハンドル</returns>
 	int CreateRenderTexture(int width, int height);
 
+
 	/// <summary>
 	/// レンダーテクスチャをレンダーターゲットに設定
 	/// </summary>
 	/// <param name="handle">レンダーテクスチャのハンドル</param>
 	void SetRenderTarget(int handle);
+
 
 	/// <summary>
 	/// レンダーテクスチャのシザー矩形を設定する
@@ -68,6 +78,7 @@ public:
 	/// <param name="y2">シザー矩形下（画像サイズより大きい場合は自動で修正される）</param>
 	void SetRenderTargetDrawArea(int handle, int x1, int y1, int x2, int y2);
 
+
 	/// <summary>
 	/// レンダーテクスチャのビューポートを設定する
 	/// <para>ここで指定したレンダーテクスチャは、ここで設定したビューポートの範囲内に描画される</para>
@@ -79,6 +90,7 @@ public:
 	/// <param name="x2">ビューポート右</param>
 	/// <param name="y2">ビューポート下</param>
 	void SetRenderTargetClipingArea(int handle, int x1, int y1, int x2, int y2);
+
 
 	/// <summary>
 	/// レンダーテクスチャの共通クリアカラーを設定
@@ -96,7 +108,7 @@ public:
 
 private:
 	//スワップチェーン
-	ComPtr<IDXGISwapChain> swapchain;
+	ComPtr<IDXGISwapChain4> swapchain;
 	//バックバッファ(2つ)
 	std::array<ComPtr<ID3D12Resource>, 2> backBuffers;
 	//バックバッファ用デスクリプタヒープ
@@ -119,6 +131,9 @@ private:
 
 	//現在レンダーターゲットにしているやつ
 	int nowRenderTargetHandle = -1;
+
+	//バックバッファをクローズ（描画終了ではない）
+	void CloseDrawBackBuffer();
 
 	//レンダーターゲットのリソースバリアを表示状態に
 	void CloseDrawRenderTexture();

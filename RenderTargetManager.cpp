@@ -150,8 +150,31 @@ void RenderTargetManager::SetDrawBackBuffer()
 	//レンダーテクスチャの状態を表示状態に
 	CloseDrawRenderTexture();
 
+	//バックバッファの描画準備
 
+	//バックバッファの番号取得
+	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 
+	//レンダーターゲットに変更
+	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(backBuffers[bbIndex].Get(),
+		D3D12_RESOURCE_STATE_PRESENT,
+		D3D12_RESOURCE_STATE_RENDER_TARGET);
+	RAKI_DX12B_CMD->ResourceBarrier(1, &barrier);
+
+	//デスクリプタヒープ設定
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvh = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+		rtvHeap->GetCPUDescriptorHandleForHeapStart(),
+		bbIndex,
+		RAKI_DX12B_DEV->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
+	);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvh = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+		dsvHeap->GetCPUDescriptorHandleForHeapStart(),
+		bbIndex,
+		RAKI_DX12B_DEV->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
+	);
+
+	//レンダーターゲットに設定
+	RAKI_DX12B_CMD->OMSetRenderTargets(1, &rtvh, false, &dsvh);
 }
 
 void RenderTargetManager::SwapChainBufferFlip()
@@ -229,6 +252,13 @@ void RenderTargetManager::CreateBackBuffers()
 			nullptr,
 			handle);
 	}
+}
+
+void RenderTargetManager::CloseDrawBackBuffer()
+{
+
+
+
 }
 
 void RenderTargetManager::CloseDrawRenderTexture()

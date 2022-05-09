@@ -2,6 +2,7 @@
 #include "Raki_imguiMgr.h"
 #include "Raki_DX12B.h"
 #include "Raki_WinAPI.h"
+#include "RenderTargetManager.h"
 
 bool ImguiMgr::InitImgui(ID3D12Device *dev, HWND hwnd)
 {
@@ -66,6 +67,9 @@ void ImguiMgr::EndDrawImgui()
 
 void ImguiMgr::SendImguiDrawCommand()
 {
+	//RenderTargetManagerにバックバッファへの描画を伝える
+	RenderTargetManager::GetInstance()->SetDrawBackBuffer();
+
 	ImGui::Render();
 
 	//デスクリプタヒープをセット

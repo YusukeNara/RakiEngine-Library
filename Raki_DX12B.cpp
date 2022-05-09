@@ -1,5 +1,6 @@
 #include "Raki_DX12B.h"
 #include "Raki_imguiMgr.h"
+#include "RenderTargetManager.h"
 
 #include <iostream>
 #include <vector>
@@ -575,6 +576,9 @@ void Raki_DX12B::Initialize(Raki_WinAPI *win)
 	if (!CreateDsvHeapForIngui()) {
 		assert(0);
 	}
+
+	//レンダーターゲットマネージャー初期化
+	RenderTargetManager::GetInstance()->InitRenderTargetManager();
 }
 
 void Raki_DX12B::StartDraw()
