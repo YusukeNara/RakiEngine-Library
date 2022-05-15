@@ -5,6 +5,9 @@
 
 #include "Raki_DX12B.h"
 
+//スプライト加工カラー
+DirectX::XMFLOAT4 Sprite::sprite_color = { 1.0f,1.0f,1.0f,1.0f };
+
 Sprite::Sprite()
 {
     spdata.reset(new SpriteData);
@@ -13,6 +16,14 @@ Sprite::Sprite()
 Sprite::~Sprite()
 {
 
+}
+
+void Sprite::SetSpriteColorParam(float r, float g, float b, float a)
+{
+    sprite_color.x = r;
+    sprite_color.y = g;
+    sprite_color.z = b;
+    sprite_color.w = a;
 }
 
 void Sprite::CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool adjustResourceFlag, uvAnimData *animData)
@@ -348,11 +359,7 @@ void Sprite::UpdateSprite()
     spdata->matWorld *= XMMatrixTranslation(spdata->position.x, spdata->position.y, spdata->position.z);
 
     //�萔�o�b�t�@�]��
-    SpConstBufferData *constMap = nullptr;
-    HRESULT result = spdata->constBuff->Map(0, nullptr, (void **)&constMap);
-    constMap->mat = spdata->matWorld * camera->GetMatrixProjection();
-    constMap->color = spdata->color;
-    spdata->constBuff->Unmap(0, nullptr);
+
 
 }
 
@@ -374,8 +381,15 @@ void Sprite::InstanceUpdate()
         insmap[i].worldmat = spdata->insWorldMatrixes[i].worldmat * camera->GetMatrixProjection2D();
         insmap[i].drawsize = spdata->insWorldMatrixes[i].drawsize;
         insmap[i].uvOffset = spdata->uvOffsets[uvOffsetHandle];
+        insmap[i].color = spdata->insWorldMatrixes[i].color;
     }
     spdata->vertInsBuff->Unmap(0, nullptr);
+
+    SpConstBufferData* constMap = nullptr;
+    result = spdata->constBuff->Map(0, nullptr, (void**)&constMap);
+    constMap->mat = spdata->matWorld * camera->GetMatrixProjection();
+    constMap->color = spdata->color;
+    spdata->constBuff->Unmap(0, nullptr);
 }
 
 void Sprite::Draw()
@@ -418,6 +432,7 @@ void Sprite::DrawSprite(float posX, float posY)
     ins.worldmat *= trans;
     //�f�t�H���g�T�C�Y���i�[
     ins.drawsize = TEXTURE_DEFAULT_SIZE;
+    ins.color = sprite_color;
     spdata->insWorldMatrixes.push_back(ins);
 }
 
@@ -437,6 +452,7 @@ void Sprite::DrawExtendSprite(float x1, float y1, float x2, float y2)
     ins.worldmat *= trans;
     ins.drawsize = { x2 - x1, y2 - y1 };
     //�s��R���e�i�Ɋi�[
+    ins.color = sprite_color;
     spdata->insWorldMatrixes.push_back(ins);
 }
 

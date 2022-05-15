@@ -72,7 +72,7 @@ public:
 	void StartDrawRenderTarget();
 
 	//•`‰æˆ—I—¹
-	void CloseDraw();
+	void CloseDraw(IDXGISwapChain4 *sc);
 
 	/// <summary>
 	/// ]—ˆ‚Ì•`‰æI—¹
@@ -117,6 +117,8 @@ public:
 	/// <returns></returns>
 	ID3D12DescriptorHeap *GetMuliPassSrvDescHeap() { return mpSrvHeap.Get(); }
 
+	IDXGISwapChain4* GetSwapChain() { return swapchain.Get(); }
+
 
 	void ManualRelease() {
 		dxgiFactory.ReleaseAndGetAddressOf();
@@ -124,7 +126,7 @@ public:
 		commandAllocator.ReleaseAndGetAddressOf();
 		commandList.ReleaseAndGetAddressOf();
 		commandQueue.ReleaseAndGetAddressOf();
-		swapchain.ReleaseAndGetAddressOf();
+		//swapchain.ReleaseAndGetAddressOf();
 		depthBuffer.ReleaseAndGetAddressOf();
 		rtvHeaps.ReleaseAndGetAddressOf();
 		dsvHeap.ReleaseAndGetAddressOf();

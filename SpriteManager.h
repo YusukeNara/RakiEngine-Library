@@ -27,6 +27,7 @@ typedef struct SpriteInstance
 	XMMATRIX worldmat;	//ワールド変換行列
 	XMFLOAT2 drawsize;	//縦横幅
 	XMFLOAT4 uvOffset;	//uv値
+	XMFLOAT4 color;
 };
 
 //定数バッファデータ構造体

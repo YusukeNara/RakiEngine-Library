@@ -11,9 +11,15 @@ RenderTargetManager::~RenderTargetManager()
 {
 }
 
-void RenderTargetManager::InitRenderTargetManager()
+void RenderTargetManager::InitRenderTargetManager(ID3D12Device* device, ID3D12GraphicsCommandList* cmd)
 {
+	//デバイスとコマンドを設定
+	dev		= device;
+	cmdlist = cmd;
+
 	CreateSwapChain();
+
+	CreateDepthBuffer();
 
 	CreateBackBuffers();
 
@@ -28,6 +34,37 @@ void RenderTargetManager::FinalizeRenderTargetManager()
 	//コンテナ消去
 	renderTextures.clear();
 	renderTextures.shrink_to_fit();
+}
+
+void RenderTargetManager::CrearAndStartDraw()
+{
+	//バックバッファの番号取得
+	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
+
+	//レンダーターゲットに変更
+	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(backBuffers[bbIndex].Get(),
+		D3D12_RESOURCE_STATE_PRESENT,
+		D3D12_RESOURCE_STATE_RENDER_TARGET);
+	cmdlist->ResourceBarrier(1, &barrier);
+
+	//デスクリプタヒープ設定
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvh = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+		rtvHeap->GetCPUDescriptorHandleForHeapStart(),
+		bbIndex,
+		dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
+	);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvh = CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvHeap->GetCPUDescriptorHandleForHeapStart());
+
+	//レンダーターゲットに設定
+	cmdlist->OMSetRenderTargets(1, &rtvh, false, &dsvh);
+
+	//画面クリア
+	ClearDepthBuffer(dsvHeap.Get());
+	ClearRenderTarget(rtvHeap.Get());
+
+	//ビューポート、シザー矩形設定
+	cmdlist->RSSetViewports(1, &default_viewport);
+	cmdlist->RSSetScissorRects(1, &default_rect);
 }
 
 int RenderTargetManager::CreateRenderTexture(int width, int height)
@@ -84,24 +121,24 @@ void RenderTargetManager::SetRenderTarget(int handle)
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_RENDER_TARGET
 	);
-	RAKI_DX12B_CMD->ResourceBarrier(1, &barrierState);
+	cmdlist->ResourceBarrier(1, &barrierState);
 	
 	//デスクリプタヒープ設定
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvh = renderTextures[handle]->GetDescriptorHeapRTV()->GetCPUDescriptorHandleForHeapStart();
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvh = renderTextures[handle]->GetDescriptorHeapDSV()->GetCPUDescriptorHandleForHeapStart();
 
 	//レンダーターゲット設定
-	RAKI_DX12B_CMD->OMSetRenderTargets(1, &rtvh, false, &dsvh);
+	cmdlist->OMSetRenderTargets(1, &rtvh, false, &dsvh);
 
 	//ビューポート、シザー矩形設定
-	RAKI_DX12B_CMD->RSSetViewports(1, &renderTextures[handle]->viewport);
-	RAKI_DX12B_CMD->RSSetScissorRects(1, &renderTextures[handle]->rect);
+	cmdlist->RSSetViewports(1, &renderTextures[handle]->viewport);
+	cmdlist->RSSetScissorRects(1, &renderTextures[handle]->rect);
 
 	//レンダーターゲットクリア
-	RAKI_DX12B_CMD->ClearRenderTargetView(rtvh, clearcolor, 0, nullptr);
+	cmdlist->ClearRenderTargetView(rtvh, clearcolor, 0, nullptr);
 
 	//深度バッファクリア
-	RAKI_DX12B_CMD->ClearDepthStencilView(dsvh, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	cmdlist->ClearDepthStencilView(dsvh, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 }
 
@@ -159,29 +196,27 @@ void RenderTargetManager::SetDrawBackBuffer()
 	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(backBuffers[bbIndex].Get(),
 		D3D12_RESOURCE_STATE_PRESENT,
 		D3D12_RESOURCE_STATE_RENDER_TARGET);
-	RAKI_DX12B_CMD->ResourceBarrier(1, &barrier);
+	cmdlist->ResourceBarrier(1, &barrier);
 
 	//デスクリプタヒープ設定
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvh = CD3DX12_CPU_DESCRIPTOR_HANDLE(
 		rtvHeap->GetCPUDescriptorHandleForHeapStart(),
 		bbIndex,
-		RAKI_DX12B_DEV->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
+		dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
 	);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvh = CD3DX12_CPU_DESCRIPTOR_HANDLE(
-		dsvHeap->GetCPUDescriptorHandleForHeapStart(),
-		bbIndex,
-		RAKI_DX12B_DEV->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
-	);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvh = CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvHeap->GetCPUDescriptorHandleForHeapStart());
 
 	//レンダーターゲットに設定
-	RAKI_DX12B_CMD->OMSetRenderTargets(1, &rtvh, false, &dsvh);
+	cmdlist->OMSetRenderTargets(1, &rtvh, false, &dsvh);
 }
 
 void RenderTargetManager::SwapChainBufferFlip()
 {
+	//バックバッファをクローズ
+	CloseDrawBackBuffer();
 
-
-
+	//描画終了コマンド
+	Raki_DX12B::Get()->CloseDraw(swapchain.Get());
 }
 
 void RenderTargetManager::CreateSwapChain()
@@ -199,10 +234,9 @@ void RenderTargetManager::CreateSwapChain()
 	swapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;     // フリップ後は速やかに破棄
 	swapchainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; // フルスクリーン切り替えを許可
 	ComPtr<IDXGISwapChain1> swapchain1;
-	HWND hwnd = Raki_WinAPI::GetHWND();
 	result = Raki_DX12B::Get()->GetDXGIFactory()->CreateSwapChainForHwnd(
 		Raki_DX12B::Get()->GetCmdQueue(),
-		hwnd,
+		Raki_WinAPI::GetHWND(),
 		&swapchainDesc,
 		nullptr,
 		nullptr,
@@ -212,6 +246,7 @@ void RenderTargetManager::CreateSwapChain()
 	}
 	swapchain1.Get()->Present(0, 0);
 	swapchain1.As(&swapchain);
+
 }
 
 void RenderTargetManager::CreateBackBuffers()
@@ -228,12 +263,13 @@ void RenderTargetManager::CreateBackBuffers()
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc{};
 	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;	// レンダーターゲットビュー
 	heapDesc.NumDescriptors = swcDesc.BufferCount;
-	result = RAKI_DX12B_DEV->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&rtvHeap));
+	result = dev->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&rtvHeap));
 	if (FAILED(result)) {
 		assert(0);
 	}
 
 	// 裏表の２つ分について
+	backBuffers.resize(swcDesc.BufferCount);
 	for (int i = 0; i < backBuffers.size(); i++)
 	{
 		// スワップチェーンからバッファを取得
@@ -244,21 +280,92 @@ void RenderTargetManager::CreateBackBuffers()
 
 		// ディスクリプタヒープのハンドルを取得
 		CD3DX12_CPU_DESCRIPTOR_HANDLE handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvHeap->GetCPUDescriptorHandleForHeapStart(),
-			i,
-			RAKI_DX12B_DEV->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
+			i, dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
 		// レンダーターゲットビューの生成
-		RAKI_DX12B_DEV->CreateRenderTargetView(
+		dev->CreateRenderTargetView(
 			backBuffers[i].Get(),
 			nullptr,
 			handle);
 	}
+
+}
+
+void RenderTargetManager::CreateDepthBuffer()
+{
+	//ウィンドウサイズに合わせてバッファを生成する
+	CD3DX12_RESOURCE_DESC depthresdesc =
+		CD3DX12_RESOURCE_DESC::Tex2D(
+			DXGI_FORMAT_D32_FLOAT,
+			Raki_WinAPI::window_width,
+			Raki_WinAPI::window_height,
+			1, 0,
+			1, 0,
+			D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
+		);
+
+	auto heapprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	auto clearvalue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_D32_FLOAT, 1.0f, 0);
+	//深度バッファ生成
+	HRESULT rtex_depthbuff_create_result = RAKI_DX12B_DEV->CreateCommittedResource(
+		&heapprop,
+		D3D12_HEAP_FLAG_NONE,
+		&depthresdesc,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		&clearvalue,
+		IID_PPV_ARGS(&depthBuff)
+	);
+
+	//生成失敗は強制終了
+	assert(SUCCEEDED(rtex_depthbuff_create_result));
+
+	//深度バッファからデスクリプタヒープを生成
+	D3D12_DESCRIPTOR_HEAP_DESC depthheapdesc{};
+	depthheapdesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	depthheapdesc.NumDescriptors = 1;
+
+	auto rtex_dsv_descheap_create_result = RAKI_DX12B_DEV->CreateDescriptorHeap(
+		&depthheapdesc,
+		IID_PPV_ARGS(&dsvHeap)
+	);
+	assert(SUCCEEDED(rtex_dsv_descheap_create_result));
+
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = { };
+	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	RAKI_DX12B_DEV->CreateDepthStencilView(
+		depthBuff.Get(),
+		&dsvDesc,
+		dsvHeap->GetCPUDescriptorHandleForHeapStart()
+	);
+}
+
+void RenderTargetManager::ClearDepthBuffer(ID3D12DescriptorHeap* dsv)
+{
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvh = CD3DX12_CPU_DESCRIPTOR_HANDLE(dsv->GetCPUDescriptorHandleForHeapStart());
+	cmdlist->ClearDepthStencilView(dsvh, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+}
+
+void RenderTargetManager::ClearRenderTarget(ID3D12DescriptorHeap* rtv)
+{
+	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvh = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtv->GetCPUDescriptorHandleForHeapStart(),
+		bbIndex,
+		dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
+	);
+	cmdlist->ClearRenderTargetView(rtvh, clearcolor, 0, nullptr);
 }
 
 void RenderTargetManager::CloseDrawBackBuffer()
 {
-
-
-
+	// バックバッファのリソースバリアを変更（描画対象→表示状態）
+	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
+	auto barrier_temp = CD3DX12_RESOURCE_BARRIER::Transition(backBuffers[bbIndex].Get(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PRESENT);
+	
+	//リソースバリア
+	cmdlist->ResourceBarrier(1, &barrier_temp);
 }
 
 void RenderTargetManager::CloseDrawRenderTexture()
@@ -273,4 +380,7 @@ void RenderTargetManager::CloseDrawRenderTexture()
 
 void RenderTargetManager::BufferFlip()
 {
+	//スワップチェーンをフリップ
+	swapchain->Present(1, 0);
+
 }

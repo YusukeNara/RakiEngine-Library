@@ -103,9 +103,7 @@ class ParticlePrototype : public Particle
 {
 public:
 	ParticlePrototype() {};
-	~ParticlePrototype() {
-		
-	};
+	~ParticlePrototype() {};
 	//‰Šú‰»
 	virtual void Init() = 0;
 	//XV

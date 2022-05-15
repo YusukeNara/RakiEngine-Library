@@ -24,8 +24,7 @@ public:
 	Sprite();
 	~Sprite();
 
-	//スプライト初期化(デバイス、スプライトサイズ、アンカーポイント、使用するリソース番号、リソース調整フラグ)
-	void CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool adjustResourceFlag, uvAnimData *animData = nullptr);
+	static void SetSpriteColorParam(float r, float g, float b, float a);
 
 	/// <summary>
 	/// 描画のもとになるスプライトデータ生成
@@ -47,9 +46,6 @@ public:
 	/// <param name="resourceID">テクスチャハンドル</param>
 	void CreateAndSetDivisionUVOffsets(int divAllnum, int divX, int divY, int sizeX, int sizeY,UINT resourceID);
 
-	//スプライト更新（エンジンで勝手にやる）
-	void UpdateSprite();
-
 	//頂点インスタンスデータを更新
 	void InstanceUpdate();
 
@@ -60,12 +56,10 @@ public:
 
 	void DrawExtendSprite(float x1, float y1, float x2, float y2);
 
-	//マルチパス結果描画
-	void DrawMPRender();
 
-	bool IsCreated();
 
 private:
+	static DirectX::XMFLOAT4 sprite_color;
 
 	UINT sizeInsVB;
 
@@ -82,6 +76,17 @@ private:
 
 	//頂点バッファのサイズ変更（インスタンシング用バッファ）
 	void ResizeVertexInstanceBuffer(UINT newWidthSize);
+
+	//スプライト更新（エンジンで勝手にやる）
+	void UpdateSprite();
+
+	//マルチパス結果描画
+	void DrawMPRender();
+
+	bool IsCreated();
+
+	//スプライト初期化(デバイス、スプライトサイズ、アンカーポイント、使用するリソース番号、リソース調整フラグ)
+	void CreateSprite(XMFLOAT2 size, XMFLOAT2 anchor, UINT resourceID, bool adjustResourceFlag, uvAnimData* animData = nullptr);
 
 };
 

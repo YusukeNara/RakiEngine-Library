@@ -22,6 +22,11 @@ private:
 	// Microsoft::WRL::を省略
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
+	//デバイスを参照
+	ID3D12Device* dev;
+	//グラフィックスコマンドリストを参照
+	ID3D12GraphicsCommandList* cmdlist;
+
 public:
 	//コンストラクタ
 	RenderTargetManager();
@@ -36,7 +41,7 @@ public:
 	}
 
 	//初期化
-	void InitRenderTargetManager();
+	void InitRenderTargetManager(ID3D12Device* device, ID3D12GraphicsCommandList* cmd);
 
 	//終了
 	void FinalizeRenderTargetManager();
@@ -49,6 +54,8 @@ public:
 	//レンダーテクスチャハンドルが範囲外か？
 	bool isHandleOutOfRange(int handle) { return handle < 0 || handle > renderTextures.size(); }
 
+	//描画の開始（バックバッファをクリアして、描画コマンド実行開始）
+	void CrearAndStartDraw();
 
 	/// <summary>
 	/// レンダーテクスチャの生成
@@ -100,7 +107,7 @@ public:
 	/// <param name="blue"></param>
 	void SetClearColor(float red, float green, float blue);
 
-	//バックバッファへの描画を開始
+	//バックバッファへの描画を開始（レンダーテクスチャへ描画している時）
 	void SetDrawBackBuffer();
 
 	//スワップチェーン用バッファをフリップし、現在フレームでの描画終了コマンド実行
@@ -109,12 +116,16 @@ public:
 private:
 	//スワップチェーン
 	ComPtr<IDXGISwapChain4> swapchain;
-	//バックバッファ(2つ)
-	std::array<ComPtr<ID3D12Resource>, 2> backBuffers;
+	//取得
+	IDXGISwapChain4* scptr;
+	//バックバッファ
+	std::vector<ComPtr<ID3D12Resource>> backBuffers;
 	//バックバッファ用デスクリプタヒープ
 	ComPtr<ID3D12DescriptorHeap> rtvHeap;
 	//バックバッファ用デプス用デスクリプタヒープ
 	ComPtr<ID3D12DescriptorHeap> dsvHeap;
+	//深度バッファ
+	ComPtr<ID3D12Resource> depthBuff;
 	//ビューポートとシザー矩形は、レンダーテクスチャを使用しない場合はデフォルトのものを使う
 	CD3DX12_VIEWPORT	default_viewport;
 	CD3DX12_RECT		default_rect;
@@ -126,8 +137,18 @@ private:
 
 	//スワップチェーン生成関数
 	void CreateSwapChain();
+
 	//バックバッファ生成関数	
 	void CreateBackBuffers();
+
+	//深度バッファ生成
+	void CreateDepthBuffer();
+
+	//深度バッファクリア
+	void ClearDepthBuffer(ID3D12DescriptorHeap *dsv);
+
+	//レンダーターゲット全クリア
+	void ClearRenderTarget(ID3D12DescriptorHeap *rtv);
 
 	//現在レンダーターゲットにしているやつ
 	int nowRenderTargetHandle = -1;
