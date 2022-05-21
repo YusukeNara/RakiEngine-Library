@@ -16,8 +16,8 @@ void RenderTextureData::CreateTextureBuffer(int texture_width, int texture_heigh
 	auto hp = CD3DX12_HEAP_PROPERTIES(D3D12_CPU_PAGE_PROPERTY_WRITE_BACK, D3D12_MEMORY_POOL_L0);
 	auto resdesc = CD3DX12_RESOURCE_DESC::Tex2D(
 		DXGI_FORMAT_R8G8B8A8_UNORM,
-		texture_width,
-		texture_height,
+		static_cast<UINT>(texture_width),
+		static_cast<UINT>(texture_height),
 		1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET
 	);
 	auto clearvalue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R8G8B8A8_UNORM, clearColor);
@@ -147,6 +147,9 @@ void RTex::CreateRTex(int texture_width, int texture_height, float* clearColor)
 
 	//ビューポート、シザー矩形初期化
 	InitViewAndRect(texture_width, texture_height);
+
+	graph_size.first = texture_width;
+	graph_size.second = texture_height;
 }
 
 void RTex::InitViewAndRect(int width, int height)

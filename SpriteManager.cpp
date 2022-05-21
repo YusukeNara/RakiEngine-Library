@@ -1,6 +1,6 @@
 #include "SpriteManager.h"
 #include "TexManager.h"
-
+#include "RenderTargetManager.h"
 #include "Raki_DX12B.h"
 
 void SpriteManager::CreateSpriteManager(ID3D12Device *dev, ID3D12GraphicsCommandList *cmd, int window_w, int window_h)
@@ -296,4 +296,17 @@ void SpriteManager::SetCommonBeginDrawmpResource()
     ID3D12DescriptorHeap *ppHeaps[] = { RAKI_DX12B_GET->GetMuliPassSrvDescHeap() };
     cmd->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
+}
+
+void SpriteManager::SetCommonBeginDrawRTex(int handle)
+{
+    //パイプラインステートをセット
+    cmd->SetPipelineState(pipelinestate.Get());
+    //ルートシグネチャをセット
+    cmd->SetGraphicsRootSignature(rootsignature.Get());
+    //プリミティブ形状設定
+    cmd->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+    //デスクリプタヒープ設定
+    ID3D12DescriptorHeap* ppHeaps[] = { RenderTargetManager::GetInstance()->renderTextures[handle]->GetDescriptorHeapSRV() };
+    cmd->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 }

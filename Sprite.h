@@ -35,6 +35,8 @@ public:
 	/// <param name="reserveDrawCount">描画する数</param>
 	void Create(UINT resourceID);
 
+	void CreateRtexSprite(int handle);
+
 	/// <summary>
 	/// スプライトを生成し、uv値分割を適用
 	/// </summary>
@@ -51,12 +53,13 @@ public:
 
 	//スプライト描画
 	void Draw();
+	void DrawRenderTexture(int handle);
 
 	void DrawSprite(float posX, float posY);
 
 	void DrawExtendSprite(float x1, float y1, float x2, float y2);
 
-
+	void DrawRTexSprite(int handle, float x1, float y1, float x2, float y2);
 
 private:
 	static DirectX::XMFLOAT4 sprite_color;

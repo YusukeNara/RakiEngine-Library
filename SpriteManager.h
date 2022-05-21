@@ -118,6 +118,8 @@ public:
 	void SetCommonBeginDraw();
 	//マルチパスリソース描画用グラフィクスコマンド
 	void SetCommonBeginDrawmpResource();
+	//マルチテクスチャ用
+	void SetCommonBeginDrawRTex(int handle);
 
 	//インスタンス取得
 	static SpriteManager *Get() {

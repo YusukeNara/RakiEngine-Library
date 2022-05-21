@@ -126,7 +126,6 @@ public:
 		commandAllocator.ReleaseAndGetAddressOf();
 		commandList.ReleaseAndGetAddressOf();
 		commandQueue.ReleaseAndGetAddressOf();
-		//swapchain.ReleaseAndGetAddressOf();
 		depthBuffer.ReleaseAndGetAddressOf();
 		rtvHeaps.ReleaseAndGetAddressOf();
 		dsvHeap.ReleaseAndGetAddressOf();

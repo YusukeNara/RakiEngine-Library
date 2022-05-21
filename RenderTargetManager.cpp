@@ -9,6 +9,7 @@ RenderTargetManager::RenderTargetManager()
 
 RenderTargetManager::~RenderTargetManager()
 {
+
 }
 
 void RenderTargetManager::InitRenderTargetManager(ID3D12Device* device, ID3D12GraphicsCommandList* cmd)
@@ -38,6 +39,14 @@ void RenderTargetManager::FinalizeRenderTargetManager()
 
 void RenderTargetManager::CrearAndStartDraw()
 {
+	//すべてのレンダーテクスチャをクリアするために、一度レンダーテクスチャを設定する
+	for (int i = 0; i < renderTextures.size(); i++) {
+		SetRenderTarget(i);
+		ClearRenderTarget(renderTextures[i]->GetDescriptorHeapRTV());
+		ClearDepthBuffer(renderTextures[i]->GetDescriptorHeapDSV());
+		CloseDrawRenderTexture();
+	}
+
 	//バックバッファの番号取得
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 
@@ -59,12 +68,13 @@ void RenderTargetManager::CrearAndStartDraw()
 	cmdlist->OMSetRenderTargets(1, &rtvh, false, &dsvh);
 
 	//画面クリア
-	ClearDepthBuffer(dsvHeap.Get());
-	ClearRenderTarget(rtvHeap.Get());
+	ClearBackBuffer();
 
 	//ビューポート、シザー矩形設定
 	cmdlist->RSSetViewports(1, &default_viewport);
 	cmdlist->RSSetScissorRects(1, &default_rect);
+
+	isDrawing = USING_BACKBUFFER;
 }
 
 int RenderTargetManager::CreateRenderTexture(int width, int height)
@@ -92,7 +102,7 @@ void RenderTargetManager::SetRenderTarget(int handle)
 	//ハンドルのエラーに対処
 
 	//すでにレンダーターゲットのハンドル
-	if (handle == nowRenderTargetHandle) {
+	if (handle == nowRenderTargetHandle && isDrawing != USING_BACKBUFFER) {
 		std::cout << "WARNING : RENDERTARGETMANAGER : Pointing to an using handle. But if you know that, it is not a problem." << std::endl;
 		return;
 	}
@@ -113,7 +123,7 @@ void RenderTargetManager::SetRenderTarget(int handle)
 	//該当テクスチャをレンダーターゲットに設定する処理
 
 	//前のレンダーターゲットの終了処理
-	CloseDrawRenderTexture();
+	if(isDrawing != USING_BACKBUFFER){ CloseDrawRenderTexture(); }
 
 	//テクスチャのリソースステートをレンダーターゲットに変更
 	auto barrierState = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -134,12 +144,8 @@ void RenderTargetManager::SetRenderTarget(int handle)
 	cmdlist->RSSetViewports(1, &renderTextures[handle]->viewport);
 	cmdlist->RSSetScissorRects(1, &renderTextures[handle]->rect);
 
-	//レンダーターゲットクリア
-	cmdlist->ClearRenderTargetView(rtvh, clearcolor, 0, nullptr);
-
-	//深度バッファクリア
-	cmdlist->ClearDepthStencilView(dsvh, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-
+	isDrawing = USING_RENDERTEXTURE;
+	nowRenderTargetHandle = handle;
 }
 
 void RenderTargetManager::SetRenderTargetDrawArea(int handle, int x1, int y1, int x2, int y2)
@@ -155,7 +161,11 @@ void RenderTargetManager::SetRenderTargetDrawArea(int handle, int x1, int y1, in
 	}
 
 	//画像サイズより大きい場合はサイズに抑える
-	
+	int temp_sizeX = renderTextures[handle]->graph_size.first;
+	int temp_sizeY = renderTextures[handle]->graph_size.second;
+
+	if (temp_sizeX < x2 - x1) { x2 = x1 + temp_sizeX; }
+	if (temp_sizeY < y2 - y1) { y2 = y1 + temp_sizeY; }
 
 	renderTextures[handle]->rect = CD3DX12_RECT(x1, y1, x2, y2);
 }
@@ -171,6 +181,8 @@ void RenderTargetManager::SetRenderTargetClipingArea(int handle, int x1, int y1,
 		std::cout << "ERROR : RENDERTARGETMANAGER : Render texture handle is out of range" << std::endl;
 		return;
 	}
+
+
 
 	renderTextures[handle]->viewport = CD3DX12_VIEWPORT(x1, y1, x2, y2);
 }
@@ -192,12 +204,6 @@ void RenderTargetManager::SetDrawBackBuffer()
 	//バックバッファの番号取得
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 
-	//レンダーターゲットに変更
-	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(backBuffers[bbIndex].Get(),
-		D3D12_RESOURCE_STATE_PRESENT,
-		D3D12_RESOURCE_STATE_RENDER_TARGET);
-	cmdlist->ResourceBarrier(1, &barrier);
-
 	//デスクリプタヒープ設定
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvh = CD3DX12_CPU_DESCRIPTOR_HANDLE(
 		rtvHeap->GetCPUDescriptorHandleForHeapStart(),
@@ -208,6 +214,12 @@ void RenderTargetManager::SetDrawBackBuffer()
 
 	//レンダーターゲットに設定
 	cmdlist->OMSetRenderTargets(1, &rtvh, false, &dsvh);
+
+	//ビューポート、シザー矩形設定
+	cmdlist->RSSetViewports(1, &default_viewport);
+	cmdlist->RSSetScissorRects(1, &default_rect);
+
+	isDrawing = USING_BACKBUFFER;
 }
 
 void RenderTargetManager::SwapChainBufferFlip()
@@ -347,9 +359,18 @@ void RenderTargetManager::ClearDepthBuffer(ID3D12DescriptorHeap* dsv)
 
 void RenderTargetManager::ClearRenderTarget(ID3D12DescriptorHeap* rtv)
 {
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvh = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtv->GetCPUDescriptorHandleForHeapStart());
+	cmdlist->ClearRenderTargetView(rtvh, clearcolor, 0, nullptr);
+}
+
+void RenderTargetManager::ClearBackBuffer()
+{
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvh = CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvHeap->GetCPUDescriptorHandleForHeapStart());
+	cmdlist->ClearDepthStencilView(dsvh, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvh = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtv->GetCPUDescriptorHandleForHeapStart(),
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvh = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvHeap->GetCPUDescriptorHandleForHeapStart(),
 		bbIndex,
 		dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
 	);

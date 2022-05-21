@@ -132,6 +132,14 @@ private:
 	//レンダーテクスチャコンテナ
 	std::vector<std::shared_ptr<RTex>> renderTextures;
 
+	//現在の描画対象は？
+	enum DRAW_TARGET
+	{
+		USING_BACKBUFFER,
+		USING_RENDERTEXTURE,
+	};
+	DRAW_TARGET isDrawing;
+
 	//背景クリアカラー
 	float clearcolor[4] = { 0.1f,0.25f,0.5f,0.0f };
 
@@ -150,8 +158,10 @@ private:
 	//レンダーターゲット全クリア
 	void ClearRenderTarget(ID3D12DescriptorHeap *rtv);
 
+	void ClearBackBuffer();
+
 	//現在レンダーターゲットにしているやつ
-	int nowRenderTargetHandle = -1;
+	int nowRenderTargetHandle = 0;
 
 	//バックバッファをクローズ（描画終了ではない）
 	void CloseDrawBackBuffer();
@@ -161,4 +171,9 @@ private:
 
 	//バッファフリップ
 	void BufferFlip();
+
+	friend class Sprite;
+	friend class SpriteManager;
+	friend class Object3d;
+	friend class NY_Object3DManager;
 };
