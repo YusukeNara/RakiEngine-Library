@@ -131,6 +131,7 @@ public:
 		RVector3	pos;
 		float		scale;
 		XMFLOAT4	color;
+		XMMATRIX	worldmat;
 	};
 
 	//定数バッファデータ構造体

@@ -260,6 +260,10 @@ void ParticleManager::Prototype_Update()
 			vertMap->scale = (*it)->scale;
 			//色
 			vertMap->color = (*it)->color;
+			if(is2DParticle){ vertMap->worldmat = XMMatrixTranslation((*it)->pos.x, (*it)->pos.y, (*it)->pos.z); }
+			else { vertMap->worldmat = XMMatrixIdentity(); }
+			
+
 			// 次の頂点へ
 			vertMap++;
 			if (++vcount >= MAX_VERTEX) {
@@ -275,8 +279,9 @@ void ParticleManager::Prototype_Update()
 	if (result == S_OK) {
 		//ビュープロジェクション行列
 		if (is2DParticle) {
+			//プロジェクション行列
 			constMap->mat = camera->GetMatrixProjection2D();
-			//全方向ビルボード
+
 			constMap->matBillBoard = XMMatrixIdentity();
 		}
 		else {
@@ -284,8 +289,6 @@ void ParticleManager::Prototype_Update()
 			//全方向ビルボード
 			constMap->matBillBoard = camera->GetMatrixBillBoardAll();
 		}
-		//全方向ビルボード
-		constMap->matBillBoard = camera->GetMatrixBillBoardAll();
 		//色
 		constBuff->Unmap(0, nullptr);
 	}
@@ -313,7 +316,6 @@ void ParticleManager::Prototype_Draw(UINT drawTexNum)
 
 	// 頂点バッファの設定
 	cmd->IASetVertexBuffers(0, 1, &vbview);
-
 	// デスクリプタヒープの配列
 	ID3D12DescriptorHeap *ppHeaps[] = { TexManager::texDsvHeap.Get() };
 	cmd->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
@@ -339,73 +341,156 @@ void ParticleManager::InitializeGraphicsPipeline(bool is2d) {
 	ComPtr<ID3DBlob> gsBlob;	// ジオメトリシェーダオブジェクト
 	ComPtr<ID3DBlob> errorBlob; // エラーオブジェクト
 
-	// 頂点シェーダの読み込みとコンパイル
-	result = D3DCompileFromFile(
-		L"Resources/Shaders/ParticleVS.hlsl",	// シェーダファイル名
-		nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
-		"main", "vs_5_0",	// エントリーポイント名、シェーダーモデル指定
-		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
-		0,
-		&vsBlob, &errorBlob);
-	if (FAILED(result)) {
-		// errorBlobからエラー内容をstring型にコピー
-		std::string errstr;
-		errstr.resize(errorBlob->GetBufferSize());
 
-		std::copy_n((char *)errorBlob->GetBufferPointer(),
-			errorBlob->GetBufferSize(),
-			errstr.begin());
-		errstr += "\n";
-		// エラー内容を出力ウィンドウに表示
-		OutputDebugStringA(errstr.c_str());
-		exit(1);
+
+	if (is2d) {
+		// 頂点シェーダの読み込みとコンパイル
+		result = D3DCompileFromFile(
+			L"Resources/Shaders/Particle2dVS.hlsl",	// シェーダファイル名
+			nullptr,
+			D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
+			"main", "vs_5_0",	// エントリーポイント名、シェーダーモデル指定
+			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
+			0,
+			&vsBlob, &errorBlob);
+		if (FAILED(result)) {
+			// errorBlobからエラー内容をstring型にコピー
+			std::string errstr;
+			errstr.resize(errorBlob->GetBufferSize());
+
+			std::copy_n((char*)errorBlob->GetBufferPointer(),
+				errorBlob->GetBufferSize(),
+				errstr.begin());
+			errstr += "\n";
+			// エラー内容を出力ウィンドウに表示
+			OutputDebugStringA(errstr.c_str());
+			exit(1);
+		}
+
+		// ピクセルシェーダの読み込みとコンパイル
+		result = D3DCompileFromFile(
+			L"Resources/Shaders/Particle2dPS.hlsl",	// シェーダファイル名
+			nullptr,
+			D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
+			"main", "ps_5_0",	// エントリーポイント名、シェーダーモデル指定
+			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
+			0,
+			&psBlob, &errorBlob);
+		if (FAILED(result)) {
+			// errorBlobからエラー内容をstring型にコピー
+			std::string errstr;
+			errstr.resize(errorBlob->GetBufferSize());
+
+			std::copy_n((char*)errorBlob->GetBufferPointer(),
+				errorBlob->GetBufferSize(),
+				errstr.begin());
+			errstr += "\n";
+			// エラー内容を出力ウィンドウに表示
+			OutputDebugStringA(errstr.c_str());
+			exit(1);
+		}
+
+		// ジオメトリシェーダの読み込みとコンパイル
+		result = D3DCompileFromFile(
+			L"Resources/Shaders/Particle2dGS.hlsl",	// シェーダファイル名
+			nullptr,
+			D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
+			"main", "gs_5_0",	// エントリーポイント名、シェーダーモデル指定
+			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
+			0,
+			&gsBlob, &errorBlob);
+		if (FAILED(result)) {
+			// errorBlobからエラー内容をstring型にコピー
+			std::string errstr;
+			errstr.resize(errorBlob->GetBufferSize());
+
+			std::copy_n((char*)errorBlob->GetBufferPointer(),
+				errorBlob->GetBufferSize(),
+				errstr.begin());
+			errstr += "\n";
+			// エラー内容を出力ウィンドウに表示
+			OutputDebugStringA(errstr.c_str());
+			exit(1);
+		}
+
+
+
 	}
+	else {
 
-	// ピクセルシェーダの読み込みとコンパイル
-	result = D3DCompileFromFile(
-		L"Resources/Shaders/ParticlePS.hlsl",	// シェーダファイル名
-		nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
-		"main", "ps_5_0",	// エントリーポイント名、シェーダーモデル指定
-		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
-		0,
-		&psBlob, &errorBlob);
-	if (FAILED(result)) {
-		// errorBlobからエラー内容をstring型にコピー
-		std::string errstr;
-		errstr.resize(errorBlob->GetBufferSize());
 
-		std::copy_n((char *)errorBlob->GetBufferPointer(),
-			errorBlob->GetBufferSize(),
-			errstr.begin());
-		errstr += "\n";
-		// エラー内容を出力ウィンドウに表示
-		OutputDebugStringA(errstr.c_str());
-		exit(1);
-	}
 
-	// ジオメトリシェーダの読み込みとコンパイル
-	result = D3DCompileFromFile(
-		L"Resources/Shaders/ParticleGS.hlsl",	// シェーダファイル名
-		nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
-		"main", "gs_5_0",	// エントリーポイント名、シェーダーモデル指定
-		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
-		0,
-		&gsBlob, &errorBlob);
-	if (FAILED(result)) {
-		// errorBlobからエラー内容をstring型にコピー
-		std::string errstr;
-		errstr.resize(errorBlob->GetBufferSize());
+		// 頂点シェーダの読み込みとコンパイル
+		result = D3DCompileFromFile(
+			L"Resources/Shaders/ParticleVS.hlsl",	// シェーダファイル名
+			nullptr,
+			D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
+			"main", "vs_5_0",	// エントリーポイント名、シェーダーモデル指定
+			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
+			0,
+			&vsBlob, &errorBlob);
+		if (FAILED(result)) {
+			// errorBlobからエラー内容をstring型にコピー
+			std::string errstr;
+			errstr.resize(errorBlob->GetBufferSize());
 
-		std::copy_n((char *)errorBlob->GetBufferPointer(),
-			errorBlob->GetBufferSize(),
-			errstr.begin());
-		errstr += "\n";
-		// エラー内容を出力ウィンドウに表示
-		OutputDebugStringA(errstr.c_str());
-		exit(1);
+			std::copy_n((char*)errorBlob->GetBufferPointer(),
+				errorBlob->GetBufferSize(),
+				errstr.begin());
+			errstr += "\n";
+			// エラー内容を出力ウィンドウに表示
+			OutputDebugStringA(errstr.c_str());
+			exit(1);
+		}
+
+		// ピクセルシェーダの読み込みとコンパイル
+		result = D3DCompileFromFile(
+			L"Resources/Shaders/ParticlePS.hlsl",	// シェーダファイル名
+			nullptr,
+			D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
+			"main", "ps_5_0",	// エントリーポイント名、シェーダーモデル指定
+			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
+			0,
+			&psBlob, &errorBlob);
+		if (FAILED(result)) {
+			// errorBlobからエラー内容をstring型にコピー
+			std::string errstr;
+			errstr.resize(errorBlob->GetBufferSize());
+
+			std::copy_n((char*)errorBlob->GetBufferPointer(),
+				errorBlob->GetBufferSize(),
+				errstr.begin());
+			errstr += "\n";
+			// エラー内容を出力ウィンドウに表示
+			OutputDebugStringA(errstr.c_str());
+			exit(1);
+		}
+
+		// ジオメトリシェーダの読み込みとコンパイル
+		result = D3DCompileFromFile(
+			L"Resources/Shaders/ParticleGS.hlsl",	// シェーダファイル名
+			nullptr,
+			D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
+			"main", "gs_5_0",	// エントリーポイント名、シェーダーモデル指定
+			D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
+			0,
+			&gsBlob, &errorBlob);
+		if (FAILED(result)) {
+			// errorBlobからエラー内容をstring型にコピー
+			std::string errstr;
+			errstr.resize(errorBlob->GetBufferSize());
+
+			std::copy_n((char*)errorBlob->GetBufferPointer(),
+				errorBlob->GetBufferSize(),
+				errstr.begin());
+			errstr += "\n";
+			// エラー内容を出力ウィンドウに表示
+			OutputDebugStringA(errstr.c_str());
+			exit(1);
+		}
+
+
+
 	}
 
 	// 頂点レイアウト
@@ -425,7 +510,29 @@ void ParticleManager::InitializeGraphicsPipeline(bool is2d) {
 			D3D12_APPEND_ALIGNED_ELEMENT,
 			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
 		},
+		{
+			"WMATRIX",0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+		{
+			"WMATRIX",1U, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+		{
+			"WMATRIX",2U, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+		{
+			"WMATRIX",3U, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
 	};
+
+
 
 	// グラフィックスパイプラインの流れを設定
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC gpipeline{};
@@ -437,15 +544,19 @@ void ParticleManager::InitializeGraphicsPipeline(bool is2d) {
 	gpipeline.SampleMask = D3D12_DEFAULT_SAMPLE_MASK; // 標準設定
 	// ラスタライザステート
 	gpipeline.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	//gpipeline.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-	//gpipeline.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
 	// デプスステンシルステート
 	gpipeline.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	if (is2d) {
-
+		//デプスステンシルステート設定
+		gpipeline.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;//常に上書き
+		gpipeline.DepthStencilState.DepthEnable = false;//深度テスト無効
+		gpipeline.DSVFormat = DXGI_FORMAT_D32_FLOAT; //深度値フォーマット
 	}
-	// デプスの書き込みを禁止
-	gpipeline.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+	else {
+		// デプスの書き込みを禁止
+		gpipeline.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+	}
+
 
 	// レンダーターゲットのブレンド設定
 	D3D12_RENDER_TARGET_BLEND_DESC blenddesc{};
