@@ -450,7 +450,7 @@ void Input::XpadStickTiltRoundOffToDeadzone()
 
 
 bool Input::isRightStickTiltRight() {
-	xpadTiltFlags.isLStickTiltRight = xInputState.Gamepad.sThumbRX > XPAD_RS_DEADZONE;
+	xpadTiltFlags.isRStickTiltRight = xInputState.Gamepad.sThumbRX > XPAD_RS_DEADZONE;
 	return xpadTiltFlags.isRStickTiltRight;
 }
 

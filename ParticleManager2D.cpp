@@ -61,29 +61,29 @@ void ParticleManager2D::Add(ParticleGrainState2D& pgState2d)
 
 void ParticleManager2D::Update()
 {
-	//寿命切れ削除
-	std::erase_if(_pplist, [](Grain2d* g) {return g->nowFrame > g->endFrame; });
+	////寿命切れ削除
+	//std::erase_if(_pplist, [](Grain2d* g) {return g->nowFrame > g->endFrame; });
 
-	//パラメーターによる更新
-	for (auto& e : _pplist) {
+	////パラメーターによる更新
+	//for (auto& e : _pplist) {
 
-		//中心座標
-		e->pos += e->vel;
-		e->vel += e->acc;
+	//	//中心座標
+	//	e->pos += e->vel;
+	//	e->vel += e->acc;
 
-		//補完レート
-		float rate = e->nowFrame / e->endFrame;
+	//	//補完レート
+	//	float rate = e->nowFrame / e->endFrame;
 
-		//色線形補間
-		e->color = e->s_color + (e->e_color - e->s_color) * rate;
+	//	//色線形補間
+	//	e->color = e->s_color + (e->e_color - e->s_color) * rate;
 
-		//スケーリング線形補間
-		e->scale = e->s_scale + (e->e_scale - e->s_scale) * rate;
+	//	//スケーリング線形補間
+	//	e->scale = e->s_scale + (e->e_scale - e->s_scale) * rate;
 
-		//回転補完
-		e->rot = e->rot + (e->e_rotation - e->s_rotation) * rate;
+	//	//回転補完
+	//	e->rot = e->rot + (e->e_rotation - e->s_rotation) * rate;
 
-	}
+	//}
 
 
 }

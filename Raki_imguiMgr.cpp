@@ -51,9 +51,15 @@ bool ImguiMgr::InitImgui(ID3D12Device *dev, HWND hwnd)
 	return true;
 }
 
+void ImguiMgr::NewFrame()
+{
+	ImGui_ImplDX12_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+}
+
 void ImguiMgr::StartDrawImgui(const char *windowTitle, float posX, float posY)
 {
-
 	//ウィンドウ表示
 	ImGui::Begin(windowTitle);
 	ImGui::SetWindowSize(ImVec2(posX, posY), ImGuiCond_::ImGuiCond_FirstUseEver);

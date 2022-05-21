@@ -75,6 +75,9 @@ void RenderTargetManager::CrearAndStartDraw()
 	cmdlist->RSSetScissorRects(1, &default_rect);
 
 	isDrawing = USING_BACKBUFFER;
+
+	//ImGuiの描画準備
+	ImguiMgr::Get()->NewFrame();
 }
 
 int RenderTargetManager::CreateRenderTexture(int width, int height)
@@ -197,9 +200,9 @@ void RenderTargetManager::SetClearColor(float red, float green, float blue)
 void RenderTargetManager::SetDrawBackBuffer()
 {
 	//レンダーテクスチャの状態を表示状態に
+	if (isDrawing == USING_BACKBUFFER) { return; }
+	
 	CloseDrawRenderTexture();
-
-	//バックバッファの描画準備
 
 	//バックバッファの番号取得
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
@@ -210,6 +213,7 @@ void RenderTargetManager::SetDrawBackBuffer()
 		bbIndex,
 		dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
 	);
+
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvh = CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvHeap->GetCPUDescriptorHandleForHeapStart());
 
 	//レンダーターゲットに設定
@@ -224,6 +228,9 @@ void RenderTargetManager::SetDrawBackBuffer()
 
 void RenderTargetManager::SwapChainBufferFlip()
 {
+	//Imgui描画実行
+	ImguiMgr::Get()->SendImguiDrawCommand();
+
 	//バックバッファをクローズ
 	CloseDrawBackBuffer();
 
