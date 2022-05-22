@@ -9,6 +9,8 @@
 //スプライト加工カラー
 DirectX::XMFLOAT4 Sprite::sprite_color = { 1.0f,1.0f,1.0f,1.0f };
 
+float Sprite::depthZ = 1.0f;
+
 Sprite::Sprite()
 {
     spdata.reset(new SpriteData);
@@ -608,6 +610,26 @@ void Sprite::DrawExtendSprite(float x1, float y1, float x2, float y2)
     //�s��R���e�i�Ɋi�[
     ins.color = sprite_color;
     spdata->insWorldMatrixes.push_back(ins);
+}
+
+void Sprite::DrawRotaSprite(float x1, float y1, float x2, float y2, float angle)
+{
+
+    XMMATRIX trans = XMMatrixTranslation(x1, y1, 0);
+    XMMATRIX rot = XMMatrixRotationZ(XMConvertToRadians(angle));
+    XMMATRIX noScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+
+    //�s��R���e�i�Ɋi�[
+    SpriteInstance ins = {};
+
+    ins.worldmat = XMMatrixIdentity();
+    ins.worldmat *= rot;
+    ins.worldmat *= trans;
+    ins.drawsize = { x2 - x1, y2 - y1 };
+    //�s��R���e�i�Ɋi�[
+    ins.color = sprite_color;
+    spdata->insWorldMatrixes.push_back(ins);
+
 }
 
 void Sprite::DrawRTexSprite(int handle, float x1, float y1, float x2, float y2)

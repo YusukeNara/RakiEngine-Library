@@ -59,6 +59,8 @@ public:
 
 	void DrawExtendSprite(float x1, float y1, float x2, float y2);
 
+	void DrawRotaSprite(float x1, float y1, float x2, float y2, float angle);
+
 	void DrawRTexSprite(int handle, float x1, float y1, float x2, float y2);
 
 private:
@@ -73,6 +75,8 @@ private:
 
 	//生成炭？
 	bool isCreated = false;
+
+	static float depthZ;
 
 	//頂点バッファの再確保が必要か？
 	bool isVertexBufferNeedResize();

@@ -166,8 +166,8 @@ void SpriteManager::CreateSpritePipeline()
 
     //デプスステンシルステート設定
     gpipeline.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);//一度表示設定
+    gpipeline.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
     gpipeline.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;//常に上書き
-    gpipeline.DepthStencilState.DepthEnable = false;//深度テスト無効
     gpipeline.DSVFormat = DXGI_FORMAT_D32_FLOAT; //深度値フォーマット
 
     //頂点レイアウトの設定

@@ -65,25 +65,25 @@ struct Grain2d
 
 public:
 	//座標
-	RVector3	pos = { 0,0,0 };
+	RVector3	pos		= { 0,0,0 };
 	//速度
-	RVector3	vel = { 0,0,0 };
+	RVector3	vel		= { 0,0,0 };
 	//加速度
-	RVector3	acc = { 0,0,0 };
+	RVector3	acc		= { 0,0,0 };
 	//色
-	XMFLOAT4	color = { 1,1,1,1 };
+	XMFLOAT4	color	= { 1,1,1,1 };
 	//スケーリング
-	float		scale = 1.0f;
+	float		scale	= 1.0f;
 	//回転(2dなのでz軸)
-	float		rot = 0.0f;
+	float		rot		= 0.0f;
 	//初期値
-	XMFLOAT4	s_color = { 1,1,1,1 };
-	float		s_scale = 1.0f;
-	float		s_rotation = 0.0f;
+	XMFLOAT4	s_color		= { 1,1,1,1 };
+	float		s_scale		= 1.0f;
+	float		s_rotation	= 0.0f;
 	// 最終値
-	XMFLOAT4	e_color = { 1,1,1,1 };
-	float		e_scale = 0.0f;
-	float		e_rotation = 0.0f;
+	XMFLOAT4	e_color		= { 1,1,1,1 };
+	float		e_scale		= 0.0f;
+	float		e_rotation	= 0.0f;
 	// 現在フレーム
 	int nowFrame = 0;
 	// 終了フレーム
@@ -137,6 +137,7 @@ public:
 
 	void Prototype_Draw();
 
+	ParticlePrototype2D* GetPrototypeInstance() { return _prototype.get(); }
 
 private:
 	//3Dと異なり、グラフィックパイプラインなどはスプライトのものを使うのでナシ
@@ -147,6 +148,9 @@ private:
 	std::unique_ptr<ParticlePrototype2D> _prototype;
 	//パーティクル情報コンテナ
 	std::vector<std::unique_ptr<ParticlePrototype2D>> _pplist;
+
+	//通常パーティクルポインタ
+	std::vector<std::unique_ptr<Grain2d>> _grains;
 
 };
 
