@@ -40,12 +40,14 @@ void RenderTargetManager::FinalizeRenderTargetManager()
 void RenderTargetManager::CrearAndStartDraw()
 {
 	//すべてのレンダーテクスチャをクリアするために、一度レンダーテクスチャを設定する
-	for (int i = 0; i < renderTextures.size(); i++) {
-		SetRenderTarget(i);
-		ClearRenderTarget(renderTextures[i]->GetDescriptorHeapRTV());
-		ClearDepthBuffer(renderTextures[i]->GetDescriptorHeapDSV());
-		CloseDrawRenderTexture();
-	}
+	//for (int i = 0; i < renderTextures.size(); i++) {
+	//	SetRenderTarget(i);
+	//	ClearRenderTarget(renderTextures[i]->GetDescriptorHeapRTV());
+	//	ClearDepthBuffer(renderTextures[i]->GetDescriptorHeapDSV());
+	//	CloseDrawRenderTexture();
+	//}
+
+	//レンダーテクスチャはユーザーが任意のタイミングでクリアする。
 
 	//バックバッファの番号取得
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
@@ -106,7 +108,6 @@ void RenderTargetManager::SetRenderTarget(int handle)
 
 	//すでにレンダーターゲットのハンドル
 	if (handle == nowRenderTargetHandle && isDrawing != USING_BACKBUFFER) {
-		std::cout << "WARNING : RENDERTARGETMANAGER : Pointing to an using handle. But if you know that, it is not a problem." << std::endl;
 		return;
 	}
 
@@ -195,6 +196,25 @@ void RenderTargetManager::SetClearColor(float red, float green, float blue)
 	clearcolor[0] = red;
 	clearcolor[1] = green;
 	clearcolor[2] = blue;
+}
+
+void RenderTargetManager::ClearRenderTexture(int handle)
+{
+	int handletmp = 0;
+	if (handle != nowRenderTargetHandle && isDrawing != USING_BACKBUFFER) {
+		handletmp = nowRenderTargetHandle;
+		SetRenderTarget(handle);
+		ClearRenderTarget(renderTextures[handle]->GetDescriptorHeapRTV());
+		ClearDepthBuffer(renderTextures[handle]->GetDescriptorHeapDSV());
+		CloseDrawRenderTexture();
+		
+		SetRenderTarget(handletmp);
+	}
+	else {
+		ClearRenderTarget(renderTextures[nowRenderTargetHandle]->GetDescriptorHeapRTV());
+		ClearDepthBuffer(renderTextures[nowRenderTargetHandle]->GetDescriptorHeapDSV());
+	}
+
 }
 
 void RenderTargetManager::SetDrawBackBuffer()
@@ -398,6 +418,7 @@ void RenderTargetManager::CloseDrawBackBuffer()
 
 void RenderTargetManager::CloseDrawRenderTexture()
 {
+
 	//現在のレンダーテクスチャを表示状態に
 	auto resourceBattier = CD3DX12_RESOURCE_BARRIER::Transition(
 		renderTextures[nowRenderTargetHandle]->GetTextureBuffer(),

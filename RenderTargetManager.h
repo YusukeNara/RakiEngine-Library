@@ -57,6 +57,7 @@ public:
 	//描画の開始（バックバッファをクリアして、描画コマンド実行開始）
 	void CrearAndStartDraw();
 
+
 	/// <summary>
 	/// レンダーテクスチャの生成
 	/// </summary>
@@ -107,6 +108,8 @@ public:
 	/// <param name="blue"></param>
 	void SetClearColor(float red, float green, float blue);
 
+	void ClearRenderTexture(int handle);
+
 	//バックバッファへの描画を開始（レンダーテクスチャへ描画している時）
 	void SetDrawBackBuffer();
 
@@ -155,7 +158,7 @@ private:
 	//深度バッファクリア
 	void ClearDepthBuffer(ID3D12DescriptorHeap *dsv);
 
-	//レンダーターゲット全クリア
+	//レンダーターゲットクリア
 	void ClearRenderTarget(ID3D12DescriptorHeap *rtv);
 
 	void ClearBackBuffer();

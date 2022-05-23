@@ -64,6 +64,8 @@ private:
 	Pipeline3D object3dPipelineSet;
 	//即時描画用パイプライン
 	Pipeline3D quickDrawPipelineSet;
+	//マルチパステクスチャ用
+	Pipeline3D mpTexPipelineSet;
 
 	//----------パイプラインステート構造体--------------//
 
@@ -71,6 +73,7 @@ private:
 
 	//モデル用グラフィックスパイプラインステート構造体
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC gpipelineStateDesc;
+	
 
 	//----------シェーダーオブジェクト----------//
 
@@ -105,18 +108,9 @@ public:
 		static NY_Object3DManager obj;
 		return &obj;
 	}
-
-	////共通射影行列
-	//XMMATRIX matProjection{};
 	
 	//共通ビューポート行列
 	XMMATRIX matViewport{};
-	////テクスチャ用デスクリプタヒープ
-	//ComPtr<ID3D12DescriptorHeap> descheap;
-	////テクスチャリソース配列
-	//ComPtr<ID3D12Resource> texbuff[256];
-	////ウィンドウサイズ
-	//int window_width, window_height;
 
 	/// <summary>
 	/// <para>NY_Object3DManagerの生成</para>
@@ -150,6 +144,8 @@ public:
 	/// <param name="cmd">ID3D12GraphicsCommandListのポインタ</param>
 	void SetCommonBeginDrawObject3D();
 
+	void SetCommonBeginDrawObject3DFeatRTex(int rtHandle);
+
 	void SetCommonBeginDrawObject3D2MultiPassRenderResource();
 
 	static ID3D12Device *GetDev() {
@@ -176,6 +172,8 @@ private:
 	/// <param name="dev">ID3D12Deviceのポインタ</param>
 	/// <returns>作成したPipeline3D構造体</returns>
 	Pipeline3D Create3DPipelineState(ID3D12Device *dev);
+
+	Pipeline3D CreateMPPipelineState(Pipeline3D defaultPP);
 
 };
 

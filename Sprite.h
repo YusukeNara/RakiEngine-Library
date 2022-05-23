@@ -87,9 +87,6 @@ private:
 	//スプライト更新（エンジンで勝手にやる）
 	void UpdateSprite();
 
-	//マルチパス結果描画
-	void DrawMPRender();
-
 	bool IsCreated();
 
 	//スプライト初期化(デバイス、スプライトサイズ、アンカーポイント、使用するリソース番号、リソース調整フラグ)

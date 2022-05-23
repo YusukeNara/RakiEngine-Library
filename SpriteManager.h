@@ -91,9 +91,8 @@ private:
 	ComPtr<ID3D12PipelineState> pipelinestate;
 	ComPtr<ID3D12RootSignature> rootsignature;
 
-	//マルチパスエフェクト用グラフィクスパイプラインセット
-	ComPtr<ID3D12PipelineState> mpPipeline;
-	ComPtr<ID3D12RootSignature> mpRootsig;
+	//マルチパス用にブレンド設定をいじったグラフィックスパイプライン
+	ComPtr<ID3D12PipelineState> mpPipelineState;
 
 	SpriteManager(int window_width, int window_height) {
 		//ビューポート行列初期化
@@ -116,8 +115,6 @@ public:
 	void CreateSpritePipeline();
 	//スプライト共通のグラフィックスコマンドをセット
 	void SetCommonBeginDraw();
-	//マルチパスリソース描画用グラフィクスコマンド
-	void SetCommonBeginDrawmpResource();
 	//マルチテクスチャ用
 	void SetCommonBeginDrawRTex(int handle);
 

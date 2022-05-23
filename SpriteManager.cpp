@@ -231,44 +231,27 @@ void SpriteManager::CreateSpritePipeline()
 
 #pragma region mpPipeline
 
-    //シェーダーコンパイル
-    ComPtr<ID3DBlob> mpPsBlob;
-    //ピクセルシェーダーの読み込みとコンパイル
-    result = D3DCompileFromFile(
-        L"Resources/Shaders/mpEffectPixelShader.hlsl",
-        nullptr,
-        D3D_COMPILE_STANDARD_FILE_INCLUDE,
-        "main", "ps_5_0",
-        D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
-        0,
-        &mpPsBlob, &errorBlob
-    );
-    //シェーダーのエラー内容を表示
-    if (FAILED(result))
-    {
-        std::string errstr;
-        errstr.resize(errorBlob->GetBufferSize());
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC mpGP{};
+    //殆どの設定は共通
+    mpGP = gpipeline;
+    //ブレンド設定のみ書き換える
+    D3D12_RENDER_TARGET_BLEND_DESC& mpblenddesc = mpGP.BlendState.RenderTarget[0];//blenddescを書き換えるとRenderTarget[0]が書き換わる
+    //ブレンドステートの共通設定
+    mpblenddesc.BlendEnable = true;//ブレンド有効
+    mpblenddesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;//加算合成
+    mpblenddesc.SrcBlendAlpha = D3D12_BLEND_ONE;//ソースの値を100%使用
+    mpblenddesc.DestBlendAlpha = D3D12_BLEND_ZERO;//デストの値を0%使用
 
-        std::copy_n((char *)errorBlob->GetBufferPointer(),
-            errorBlob->GetBufferSize(),
-            errstr.begin());
-        errstr += "\n";
-        //エラー内容を出力ウインドウに表示
-        OutputDebugStringA(errstr.c_str());
-        exit(1);
-    }
+    //合成設定(各項目を書き換えることで設定可能)
+    mpblenddesc.BlendOp = D3D12_BLEND_OP_ADD;//加算
+    mpblenddesc.SrcBlend = D3D12_BLEND_ONE;//ソースの値を100%使用
+    mpblenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;//デストの値を100%使用
+
+    mpGP.pRootSignature = rootsignature.Get();
+    result = dev->CreateGraphicsPipelineState(&mpGP, IID_PPV_ARGS(&mpPipelineState));
+    ExportHRESULTmessage(result);
 
 #pragma endregion mpPipeline
-
-    gpipeline.PS = CD3DX12_SHADER_BYTECODE(mpPsBlob.Get());
-
-    result = dev->CreateRootSignature(0, rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(), IID_PPV_ARGS(&mpRootsig));
-
-    //パイプラインにルートシグネチャをセット
-    gpipeline.pRootSignature = mpRootsig.Get();
-
-    //パイプラインステート
-    result = dev->CreateGraphicsPipelineState(&gpipeline, IID_PPV_ARGS(&mpPipeline));
 }
 
 void SpriteManager::SetCommonBeginDraw()
@@ -284,24 +267,10 @@ void SpriteManager::SetCommonBeginDraw()
     cmd->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 }
 
-void SpriteManager::SetCommonBeginDrawmpResource()
-{
-    //パイプラインステートセット
-    cmd->SetPipelineState(mpPipeline.Get());
-    //ルートシグネチャをセット
-    cmd->SetGraphicsRootSignature(mpRootsig.Get());
-    //プリミティブ形状設定
-    cmd->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
-    //デスクリプタヒープ設定
-    ID3D12DescriptorHeap *ppHeaps[] = { RAKI_DX12B_GET->GetMuliPassSrvDescHeap() };
-    cmd->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-
-}
-
 void SpriteManager::SetCommonBeginDrawRTex(int handle)
 {
-    //パイプラインステートをセット
-    cmd->SetPipelineState(pipelinestate.Get());
+    //専用パイプラインステートをセット
+    cmd->SetPipelineState(mpPipelineState.Get());
     //ルートシグネチャをセット
     cmd->SetGraphicsRootSignature(rootsignature.Get());
     //プリミティブ形状設定

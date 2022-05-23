@@ -131,10 +131,10 @@ void ParticleManager2D::Prototype_Draw()
 
 	for (auto& p : _pplist) {
 		//スケーリングによる座標の移動
-		float x1 = p->pos.x - (1.0f * p->scale);
-		float y1 = p->pos.y - (1.0f * p->scale);
-		float x2 = p->pos.x + (1.0f * p->scale);
-		float y2 = p->pos.y + (1.0f * p->scale);
+		float x1 = p->pos.x - (p->drawsize.x / 2) * (1.0f * p->scale);
+		float y1 = p->pos.y - (p->drawsize.y / 2) * (1.0f * p->scale);
+		float x2 = p->pos.x + (p->drawsize.x / 2) * (1.0f * p->scale);
+		float y2 = p->pos.y + (p->drawsize.y / 2) * (1.0f * p->scale);
 
 		Sprite::SetSpriteColorParam(p->color.x, p->color.y, p->color.z, p->color.w);
 

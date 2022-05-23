@@ -90,12 +90,11 @@ public:
 	//ビルボード更新（カメラオブジェクトをそのまま取り込んで、ビルボード用の更新処理を行う）
 	void UpdateBillBoard3D();
 
-	//モデルデータを使用したオブジェクト描画
-	//static void DrawModel3D(Object3d *obj, ID3D12GraphicsCommandList *cmd,ID3D12Device *dev);
-	//void DrawModel3D(ID3D12GraphicsCommandList *cmd, ID3D12Device *dev);
-	//void DrawModel3DSelectTexture(UINT useTexNum);
-
+	//オブジェクト描画
 	void DrawObject();
+
+	//レンダーテクスチャを使用した描画
+	void DrawRTexObject(int rtHandle);
 
 	//マルチパスレンダリングを使用した描画（マルチパスで作ったリソースを使って描画）
 	void DrawMultiPassResource();

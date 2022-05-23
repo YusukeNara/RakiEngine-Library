@@ -74,6 +74,8 @@ public:
 	XMFLOAT4	color	= { 1,1,1,1 };
 	//スケーリング
 	float		scale	= 1.0f;
+	//サイズ
+	XMFLOAT2	drawsize = { 16.0f,16.0f };
 	//回転(2dなのでz軸)
 	float		rot		= 0.0f;
 	//初期値

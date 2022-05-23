@@ -616,7 +616,8 @@ void Sprite::DrawRotaSprite(float x1, float y1, float x2, float y2, float angle)
 {
 
     XMMATRIX trans = XMMatrixTranslation(x1, y1, 0);
-    XMMATRIX rot = XMMatrixRotationZ(XMConvertToRadians(angle));
+    XMMATRIX rot = XMMatrixIdentity();
+    rot *= XMMatrixRotationZ(XMConvertToRadians(angle));
     XMMATRIX noScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 
     //�s��R���e�i�Ɋi�[
@@ -652,21 +653,6 @@ void Sprite::DrawRTexSprite(int handle, float x1, float y1, float x2, float y2)
     spdata->insWorldMatrixes.push_back(ins);
 
     DrawRenderTexture(handle);
-}
-
-void Sprite::DrawMPRender()
-{
-    SpriteManager::Get()->SetCommonBeginDrawmpResource();
-    //���_�o�b�t�@�Z�b�g
-    SpriteManager::Get()->cmd->IASetVertexBuffers(0, 1, &spdata->vbView);
-    //�萔�o�b�t�@�Z�b�g
-    SpriteManager::Get()->cmd->SetGraphicsRootConstantBufferView(0, spdata->constBuff->GetGPUVirtualAddress());
-    //�V�F�[�_�[���\�[�X�r���[���Z�b�g
-    SpriteManager::Get()->cmd->SetGraphicsRootDescriptorTable(1,
-        CD3DX12_GPU_DESCRIPTOR_HANDLE(RAKI_DX12B_GET->GetMuliPassSrvDescHeap()->GetGPUDescriptorHandleForHeapStart(),
-            0, RAKI_DX12B_DEV->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)));
-    //�`��
-    SpriteManager::Get()->cmd->DrawInstanced(4, 1, 0, 0);
 }
 
 bool Sprite::IsCreated()
