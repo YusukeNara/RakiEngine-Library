@@ -63,15 +63,15 @@ public:
 
 	void DrawRTexSprite(int handle, float x1, float y1, float x2, float y2);
 
+	//テクスチャのもとのサイズ
+	XMFLOAT2 TEXTURE_DEFAULT_SIZE;
+
 private:
 	static DirectX::XMFLOAT4 sprite_color;
 
 	UINT sizeInsVB;
 
 	UINT instanceDrawCount;
-
-	//テクスチャのもとのサイズ
-	XMFLOAT2 TEXTURE_DEFAULT_SIZE;
 
 	//生成炭？
 	bool isCreated = false;

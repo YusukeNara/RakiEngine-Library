@@ -18,7 +18,8 @@ Sprite::Sprite()
 
 Sprite::~Sprite()
 {
-
+    //明示的開放
+    spdata.reset();
 }
 
 void Sprite::SetSpriteColorParam(float r, float g, float b, float a)
@@ -509,8 +510,8 @@ void Sprite::InstanceUpdate()
     auto result = spdata->vertInsBuff->Map(0, nullptr, (void **)&insmap);
     for (int i = 0; i < spdata->insWorldMatrixes.size(); i++) {
         insmap[i].worldmat = spdata->insWorldMatrixes[i].worldmat * camera->GetMatrixProjection2D();
+        insmap[i].uvOffset = spdata->insWorldMatrixes[i].uvOffset;
         insmap[i].drawsize = spdata->insWorldMatrixes[i].drawsize;
-        insmap[i].uvOffset = spdata->uvOffsets[uvOffsetHandle];
         insmap[i].color = spdata->insWorldMatrixes[i].color;
     }
     spdata->vertInsBuff->Unmap(0, nullptr);
@@ -586,6 +587,7 @@ void Sprite::DrawSprite(float posX, float posY)
     ins.worldmat = XMMatrixIdentity();
     ins.worldmat *= norot;
     ins.worldmat *= trans;
+    ins.uvOffset = spdata->uvOffsets[uvOffsetHandle];
     //�f�t�H���g�T�C�Y���i�[
     ins.drawsize = TEXTURE_DEFAULT_SIZE;
     ins.color = sprite_color;
@@ -606,6 +608,7 @@ void Sprite::DrawExtendSprite(float x1, float y1, float x2, float y2)
     ins.worldmat = XMMatrixIdentity();
     ins.worldmat *= norot;
     ins.worldmat *= trans;
+    ins.uvOffset = spdata->uvOffsets[uvOffsetHandle];
     ins.drawsize = { x2 - x1, y2 - y1 };
     //�s��R���e�i�Ɋi�[
     ins.color = sprite_color;
@@ -626,6 +629,7 @@ void Sprite::DrawRotaSprite(float x1, float y1, float x2, float y2, float angle)
     ins.worldmat = XMMatrixIdentity();
     ins.worldmat *= rot;
     ins.worldmat *= trans;
+    ins.uvOffset = spdata->uvOffsets[uvOffsetHandle];
     ins.drawsize = { x2 - x1, y2 - y1 };
     //�s��R���e�i�Ɋi�[
     ins.color = sprite_color;

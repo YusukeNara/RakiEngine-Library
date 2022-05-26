@@ -513,12 +513,12 @@ bool Raki_DX12B::CreateFence()
 Raki_DX12B::~Raki_DX12B()
 {
 #ifdef _DEBUG
-	ID3D12DebugDevice* debugDevice;
-	if (SUCCEEDED(device.Get()->QueryInterface(&debugDevice)))
-	{
-		debugDevice->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
-		debugDevice->Release();
-	}
+	//ID3D12DebugDevice* debugDevice;
+	//if (SUCCEEDED(device.Get()->QueryInterface(&debugDevice)))
+	//{
+	//	debugDevice->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
+	//	debugDevice->Release();
+	//}
 #endif
 }
 
@@ -539,30 +539,10 @@ void Raki_DX12B::Initialize(Raki_WinAPI *win)
 		assert(0);
 	}
 
-	//// スワップチェーンの生成
-	//if (!CreateSwapChain()) {
-	//	assert(0);
-	//}
-
-	//// レンダーターゲット生成
-	//if (!CreateRenderTargetView()) {
-	//	assert(0);
-	//}
-
-	//// 深度バッファ生成
-	//if (!CreateDepthBuffer()) {
-	//	assert(0);
-	//}
-
 	// フェンス生成
 	if (!CreateFence()) {
 		assert(0);
 	}
-
-	////2つ目のレンダーターゲットとリソースを生成
-	//if (!CreateSecondRenderTargetAndResource()) {
-	//	assert(0);
-	//}
 
 	//キー入力系
 	if (!InitInput(win)) {

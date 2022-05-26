@@ -10,50 +10,6 @@
 
 const int ParticleManager::MAX_VERTEX;
 
-const DirectX::XMFLOAT4 operator+(const DirectX::XMFLOAT4 &lhs, const DirectX::XMFLOAT4 &rhs) {
-	XMFLOAT4 result;
-	result.x = lhs.x + rhs.x;
-	result.y = lhs.y + rhs.y;
-	result.z = lhs.z + rhs.z;
-	result.w = lhs.w + rhs.w;
-	return result;
-}
-
-static void operator+=(DirectX::XMFLOAT4 &lhs, const DirectX::XMFLOAT4 &rhs) {
-	lhs.x += rhs.x;
-	lhs.y += rhs.y;
-	lhs.z += rhs.z;
-	lhs.w += rhs.w;
-}
-
-const DirectX::XMFLOAT4 operator-(DirectX::XMFLOAT4 &lhs, const DirectX::XMFLOAT4 &rhs) {
-	XMFLOAT4 result;
-	result.x = lhs.x - rhs.x;
-	result.y = lhs.y - rhs.y;
-	result.z = lhs.z - rhs.z;
-	result.w = lhs.w - rhs.w;
-	return result;
-}
-
-const DirectX::XMFLOAT4 operator/(const DirectX::XMFLOAT4 &lhs, const float a) {
-	XMFLOAT4 result;
-	result.x = lhs.x / a;
-	result.y = lhs.y / a;
-	result.z = lhs.z / a;
-	result.w = lhs.w / a;
-	return result;
-}
-
-const DirectX::XMFLOAT4 operator*(const DirectX::XMFLOAT4 &lhs, const float a) {
-	XMFLOAT4 result;
-	result.x = lhs.x * a;
-	result.y = lhs.y * a;
-	result.z = lhs.z * a;
-	result.w = lhs.w * a;
-	return result;
-}
-
-
 ParticleManager *ParticleManager::Create(bool is2d) {
 
 	//パーティクルマネージャー生成
