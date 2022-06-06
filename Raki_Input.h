@@ -189,6 +189,8 @@ public:
 
 	static bool isXpadStickTiltTrigger(XPAD_STICK_DIRECTION_CODE dircode);
 
+	static bool isXpadStickTiltReleased(XPAD_STICK_DIRECTION_CODE dircode);
+
 	struct StickTiltParam
 	{
 		int x = 0;

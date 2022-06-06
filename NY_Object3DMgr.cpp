@@ -180,14 +180,14 @@ Pipeline3D NY_Object3DManager::Create3DPipelineState(ID3D12Device *dev)
 
     //ブレンドステートの共通設定
     blenddesc.BlendEnable = true;//ブレンド有効
-    blenddesc.BlendOpAlpha      = D3D12_BLEND_OP_ADD;//加算合成
-    blenddesc.SrcBlendAlpha     = D3D12_BLEND_ONE;//ソースの値を100%使用
-    blenddesc.DestBlendAlpha    = D3D12_BLEND_ZERO;//デストの値を0%使用
+    blenddesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;//加算合成
+    blenddesc.SrcBlendAlpha = D3D12_BLEND_ONE;//ソースの値を100%使用
+    blenddesc.DestBlendAlpha = D3D12_BLEND_ZERO;//デストの値を0%使用
 
     //合成設定(各項目を書き換えることで設定可能)
-    blenddesc.BlendOp           = D3D12_BLEND_OP_ADD;//加算
-    blenddesc.SrcBlend          = D3D12_BLEND_SRC_ALPHA;//ソースの値を100%使用
-    blenddesc.DestBlend         = D3D12_BLEND_INV_SRC_ALPHA;//デストの値を100%使用
+    blenddesc.BlendOp = D3D12_BLEND_OP_ADD;//加算
+    blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;//ソースの値を100%使用
+    blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;//デストの値を100%使用
 
     //デプスステンシルステート設定
     gpipeline.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
@@ -259,14 +259,14 @@ Pipeline3D NY_Object3DManager::Create3DPipelineState(ID3D12Device *dev)
     D3D12_RENDER_TARGET_BLEND_DESC& mpblenddesc = mpGP.BlendState.RenderTarget[0];//blenddescを書き換えるとRenderTarget[0]が書き換わる
     //ブレンドステートの共通設定
     mpblenddesc.BlendEnable = true;//ブレンド有効
-    mpblenddesc.BlendOpAlpha    = D3D12_BLEND_OP_ADD;//加算合成
-    mpblenddesc.SrcBlendAlpha   = D3D12_BLEND_SRC_ALPHA;//ソースの値を100%使用
-    mpblenddesc.DestBlendAlpha  = D3D12_BLEND_INV_SRC_ALPHA;//デストの値を0%使用
+    mpblenddesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;//加算合成
+    mpblenddesc.SrcBlendAlpha = D3D12_BLEND_SRC_ALPHA;//ソースの値を100%使用
+    mpblenddesc.DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;//デストの値を0%使用
 
     //合成設定(各項目を書き換えることで設定可能)
-    mpblenddesc.BlendOp         = D3D12_BLEND_OP_ADD;//加算
-    mpblenddesc.SrcBlend        = D3D12_BLEND_ONE;//ソースの値を100%使用
-    mpblenddesc.DestBlend       = D3D12_BLEND_ZERO;//デストの値を100%使用
+    mpblenddesc.BlendOp = D3D12_BLEND_OP_ADD;//加算
+    mpblenddesc.SrcBlend = D3D12_BLEND_ONE;//ソースの値を100%使用
+    mpblenddesc.DestBlend = D3D12_BLEND_ZERO;//デストの値を100%使用
 
 
     mpGP.pRootSignature = pipelineset.rootsignature.Get();
@@ -289,7 +289,7 @@ Pipeline3D NY_Object3DManager::CreateMPPipelineState(Pipeline3D defaultPP)
     mpblenddesc.BlendEnable = true;//ブレンド有効
     mpblenddesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;//加算合成
     mpblenddesc.SrcBlendAlpha = D3D12_BLEND_ONE;//ソースの値を100%使用
-    mpblenddesc.DestBlendAlpha = D3D12_BLEND_ZERO;//デストの値を0%使用
+    mpblenddesc.DestBlendAlpha = D3D12_BLEND_ONE;//デストの値を0%使用
 
     //合成設定(各項目を書き換えることで設定可能)
     mpblenddesc.BlendOp = D3D12_BLEND_OP_ADD;//加算

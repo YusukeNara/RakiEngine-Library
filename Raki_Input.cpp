@@ -367,6 +367,66 @@ bool Input::isXpadStickTiltTrigger(XPAD_STICK_DIRECTION_CODE dircode)
 	}
 }
 
+bool Input::isXpadStickTiltReleased(XPAD_STICK_DIRECTION_CODE dircode)
+{
+	switch (dircode)
+	{
+	case XPAD_LSTICK_DIR_UP:
+		return !isLeftStickTiltUp() && oldTiltFlags.isLStickTiltUp;
+		break;
+	case XPAD_LSTICK_DIR_DOWN:
+		return !isLeftStickTiltDown() && oldTiltFlags.isLStickTiltDown;
+		break;
+	case XPAD_LSTICK_DIR_LEFT:
+		return !isLeftStickTiltLeft() && oldTiltFlags.isLStickTiltLeft;
+		break;
+	case XPAD_LSTICK_DIR_RIGHT:
+		return !isLeftStickTiltRight() && oldTiltFlags.isLStickTiltRight;
+		break;
+	case XPAD_LSTICK_DIR_UR:
+		return !isLeftStickTiltRightUp() && oldTiltFlags.isLStickTiltRightUp;
+		break;
+	case XPAD_LSTICK_DIR_UL:
+		return !isLeftStickTiltLeftUp() && oldTiltFlags.isLStickTiltLeftUp;
+		break;
+	case XPAD_LSTICK_DIR_DR:
+		return !isLeftStickTiltRightDown() && oldTiltFlags.isLStickTiltRightDown;
+		break;
+	case XPAD_LSTICK_DIR_DL:
+		return !isLeftStickTiltLeftDown() && oldTiltFlags.isLStickTiltLeftDown;
+		break;
+
+
+
+	case XPAD_RSTICK_DIR_UP:
+		return !isRightStickTiltUp() && oldTiltFlags.isRStickTiltUp;
+		break;
+	case XPAD_RSTICK_DIR_DOWN:
+		return !isRightStickTiltDown() && oldTiltFlags.isRStickTiltDown;
+		break;
+	case XPAD_RSTICK_DIR_LEFT:
+		return !isRightStickTiltLeft() && oldTiltFlags.isRStickTiltLeft;
+		break;
+	case XPAD_RSTICK_DIR_RIGHT:
+		return !isRightStickTiltRight() && oldTiltFlags.isRStickTiltRight;
+		break;
+	case XPAD_RSTICK_DIR_UR:
+		return !isRightStickTiltUp() && oldTiltFlags.isRStickTiltRightUp;
+		break;
+	case XPAD_RSTICK_DIR_UL:
+		return !isRightStickTiltUp() && oldTiltFlags.isRStickTiltLeftUp;
+		break;
+	case XPAD_RSTICK_DIR_DR:
+		return !isRightStickTiltUp() && oldTiltFlags.isRStickTiltRightDown;
+		break;
+	case XPAD_RSTICK_DIR_DL:
+		return !isRightStickTiltUp() && oldTiltFlags.isRStickTiltLeftDown;
+		break;
+	default:
+		break;
+	}
+}
+
 Input *Input::Get()
 {
 	static Input instance;

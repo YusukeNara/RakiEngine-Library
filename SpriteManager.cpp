@@ -133,6 +133,9 @@ void SpriteManager::CreateSpritePipeline()
         {//色
             "INSTANCE_COLOR"    ,0,DXGI_FORMAT_R32G32B32A32_FLOAT, 1,D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,1
         },
+        {//ユーザ使用データ
+            "INSTANCE_FREEDATA",0,DXGI_FORMAT_R32G32B32A32_FLOAT, 1,D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,1
+        },
     };
 
     //-----グラフィックスパイプラインのセット-----//
@@ -157,7 +160,7 @@ void SpriteManager::CreateSpritePipeline()
     blenddesc.BlendEnable = true;//ブレンド有効
     blenddesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;//加算合成
     blenddesc.SrcBlendAlpha = D3D12_BLEND_ONE;//ソースの値を100%使用
-    blenddesc.DestBlendAlpha = D3D12_BLEND_ZERO;//デストの値を0%使用
+    blenddesc.DestBlendAlpha = D3D12_BLEND_ONE;//デストの値を0%使用
 
     //合成設定(各項目を書き換えることで設定可能)
     blenddesc.BlendOp = D3D12_BLEND_OP_ADD;//加算
@@ -234,6 +237,34 @@ void SpriteManager::CreateSpritePipeline()
     D3D12_GRAPHICS_PIPELINE_STATE_DESC mpGP{};
     //殆どの設定は共通
     mpGP = gpipeline;
+
+    ComPtr<ID3DBlob> sepiaPS;
+    //ピクセルシェーダーの読み込みとコンパイル
+    result = D3DCompileFromFile(
+        L"Resources/Shaders/SpriteSepiaPS.hlsl",
+        nullptr,
+        D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        "main", "ps_5_0",
+        D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+        0,
+        &sepiaPS, &errorBlob
+    );
+    //シェーダーのエラー内容を表示
+    if (FAILED(result))
+    {
+        std::string errstr;
+        errstr.resize(errorBlob->GetBufferSize());
+
+        std::copy_n((char*)errorBlob->GetBufferPointer(),
+            errorBlob->GetBufferSize(),
+            errstr.begin());
+        errstr += "\n";
+        //エラー内容を出力ウインドウに表示
+        OutputDebugStringA(errstr.c_str());
+        exit(1);
+    }
+    mpGP.PS = CD3DX12_SHADER_BYTECODE(sepiaPS.Get());
+
     //ブレンド設定のみ書き換える
     D3D12_RENDER_TARGET_BLEND_DESC& mpblenddesc = mpGP.BlendState.RenderTarget[0];//blenddescを書き換えるとRenderTarget[0]が書き換わる
     //ブレンドステートの共通設定

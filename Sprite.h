@@ -61,7 +61,7 @@ public:
 
 	void DrawRotaSprite(float x1, float y1, float x2, float y2, float angle);
 
-	void DrawRTexSprite(int handle, float x1, float y1, float x2, float y2);
+	void DrawRTexSprite(int handle, float x1, float y1, float x2, float y2, float angle, DirectX::XMFLOAT4 freedata01 = { 1,1,1,1 });
 
 	//テクスチャのもとのサイズ
 	XMFLOAT2 TEXTURE_DEFAULT_SIZE;

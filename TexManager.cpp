@@ -4,9 +4,9 @@
 #include <fstream>
 #include <sstream>
 
-TexManager::texture								TexManager::textureData[1024];
+TexManager::texture								TexManager::textureData[2048];
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>	TexManager::texDsvHeap;
-const int										TexManager::MAX_TEXNUM = 1024;
+const int										TexManager::MAX_TEXNUM = 2048;
 
 ID3D12Device *TexManager::dev;
 
@@ -77,7 +77,7 @@ UINT TexManager::LoadTexture(const char *filename)
     texresDesc.MipLevels        = (UINT16)textureData[useTexIndexNum].metaData.mipLevels;
     texresDesc.SampleDesc.Count = 1;
 
-    result = dev->CreateCommittedResource(//GPUリソース生成
+    result = RAKI_DX12B_DEV->CreateCommittedResource(//GPUリソース生成
         &texHeapProp,
         D3D12_HEAP_FLAG_NONE,
         &texresDesc,
